@@ -1,0 +1,384 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>SkillSync Dashboard</title>
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+<style>
+
+*{
+margin:0;
+padding:0;
+box-sizing:border-box;
+font-family:'Segoe UI',sans-serif;
+}
+
+body{
+background:linear-gradient(135deg,#6a7ce8,#b8c0ff);
+min-height:100vh;
+padding:40px;
+color:#222;
+}
+
+/* HEADER */
+
+.header{
+display:flex;
+justify-content:space-between;
+align-items:center;
+margin-bottom:30px;
+color:white;
+}
+
+.header h1{
+font-size:32px;
+}
+
+.controls{
+display:flex;
+gap:10px;
+}
+
+select,button{
+padding:10px 18px;
+border:none;
+border-radius:30px;
+font-weight:600;
+}
+
+button{
+background:#111;
+color:white;
+cursor:pointer;
+transition:0.2s;
+}
+
+button:hover{
+transform:scale(1.05);
+}
+
+/* DASHBOARD GRID */
+
+.dashboard{
+display:grid;
+grid-template-columns:1fr 1fr;
+gap:25px;
+}
+
+/* CARDS */
+
+.card{
+background:rgba(255,255,255,0.9);
+padding:25px;
+border-radius:18px;
+box-shadow:0 10px 30px rgba(0,0,0,0.2);
+backdrop-filter:blur(10px);
+transition:0.25s;
+}
+
+.card:hover{
+transform:translateY(-8px);
+}
+
+.card h2{
+margin-bottom:15px;
+}
+
+/* PROGRESS BARS */
+
+.progress-bar{
+height:16px;
+background:#ddd;
+border-radius:20px;
+overflow:hidden;
+margin-top:5px;
+}
+
+.progress{
+height:100%;
+background:linear-gradient(90deg,#00c853,#69f0ae);
+animation:grow 1s ease;
+}
+
+@keyframes grow{
+from{width:0}
+}
+
+/* ITEMS */
+
+.skill-item,
+.career-item{
+margin-bottom:15px;
+}
+
+.highlight{
+font-size:22px;
+font-weight:bold;
+}
+
+.badge{
+display:inline-block;
+background:#00c853;
+color:white;
+padding:5px 10px;
+border-radius:10px;
+margin-top:5px;
+font-size:12px;
+}
+
+</style>
+</head>
+
+<body>
+
+<div class="header">
+
+<h1>SkillSync Dashboard</h1>
+
+<div class="controls">
+
+<select id="studentSelect">
+<option value="1">Jagriti</option>
+<option value="2">Rahul</option>
+<option value="3">Dr Sharma</option>
+</select>
+
+<button onclick="loadDashboard()">Load Dashboard</button>
+
+</div>
+
+</div>
+
+
+<div class="dashboard">
+
+<div class="card">
+<h2>Recommended Career</h2>
+<div id="recommended-career"></div>
+</div>
+
+<div class="card">
+<h2>Student Info</h2>
+<div id="student-info"></div>
+</div>
+
+<div class="card">
+<h2>Skills</h2>
+<div id="skills"></div>
+</div>
+
+<div class="card">
+<h2>Career Match</h2>
+<div id="career-match"></div>
+</div>
+
+<div class="card">
+<h2>Skills To Learn</h2>
+<div id="skill-gap"></div>
+</div>
+
+<div class="card">
+<h2>Career Match Chart</h2>
+<canvas id="careerChart"></canvas>
+</div>
+
+<div class="card">
+<h2>Skill Radar</h2>
+<canvas id="skillRadar"></canvas>
+</div>
+
+<div class="card">
+<h2>Internship Recommendations</h2>
+<div id="internships"></div>
+</div>
+
+<div class="card">
+<h2>Admin Analytics</h2>
+<div id="analytics"></div>
+</div>
+
+</div>
+
+
+<script>
+
+let careerChart;
+let radarChart;
+
+async function loadDashboard(){
+
+const studentId=document.getElementById("studentSelect").value;
+
+/* DASHBOARD DATA */
+
+const response=await fetch(`http://127.0.0.1:3001/api/students/${studentId}/dashboard`);
+const data=await response.json();
+
+const gapResponse=await fetch(`http://127.0.0.1:3001/api/students/${studentId}/skill-gap`);
+const gapData=await gapResponse.json();
+
+
+/* STUDENT INFO */
+
+document.getElementById("student-info").innerHTML=
+`<b>Name:</b> ${data.student.name}<br>
+<b>Department:</b> ${data.student.department}<br>
+<b>Year:</b> ${data.student.year}`;
+
+
+/* RECOMMENDED CAREER */
+
+let bestCareer="";
+let highestMatch=0;
+
+data.career_match.forEach(c=>{
+const m=parseFloat(c.match_percentage);
+
+if(m>highestMatch){
+highestMatch=m;
+bestCareer=c.career_name;
+}
+});
+
+document.getElementById("recommended-career").innerHTML=
+`<div class="highlight">${bestCareer}</div>
+Match Score: ${highestMatch}%`;
+
+
+/* SKILLS */
+
+const skillsDiv=document.getElementById("skills");
+skillsDiv.innerHTML="";
+
+data.skills.forEach(skill=>{
+
+skillsDiv.innerHTML+=`
+<div class="skill-item">
+${skill.skill_name} (Level ${skill.skill_level})
+<div class="progress-bar">
+<div class="progress" style="width:${skill.skill_level*20}%"></div>
+</div>
+</div>
+`;
+
+});
+
+
+/* CAREER MATCH */
+
+const matchDiv=document.getElementById("career-match");
+matchDiv.innerHTML="";
+
+data.career_match.forEach(career=>{
+
+matchDiv.innerHTML+=`
+<div class="career-item">
+${career.career_name} - ${career.match_percentage}%
+<div class="progress-bar">
+<div class="progress" style="width:${career.match_percentage}%"></div>
+</div>
+</div>
+`;
+
+});
+
+
+/* SKILL GAP */
+
+const gapDiv=document.getElementById("skill-gap");
+gapDiv.innerHTML="";
+
+gapData.forEach(item=>{
+gapDiv.innerHTML+=`
+<div><b>${item.career_name}</b> → ${item.skill_name}</div>
+`;
+});
+
+
+/* INTERNSHIP RECOMMENDATION */
+
+document.getElementById("internships").innerHTML=
+`
+Software Developer Intern <span class="badge">Recommended</span><br><br>
+AI Research Intern<br><br>
+Data Analyst Intern
+`;
+
+
+/* ADMIN ANALYTICS */
+
+document.getElementById("analytics").innerHTML=
+`
+Most Demanded Skill: <b>Python</b><br><br>
+Top Career: <b>Software Developer</b><br><br>
+Average Skill Level: <b>3.7</b>
+`;
+
+
+/* CAREER CHART */
+
+const labels=[];
+const percentages=[];
+
+data.career_match.forEach(c=>{
+labels.push(c.career_name);
+percentages.push(parseFloat(c.match_percentage));
+});
+
+if(careerChart) careerChart.destroy();
+
+careerChart=new Chart(
+document.getElementById("careerChart"),
+{
+type:"bar",
+data:{
+labels:labels,
+datasets:[{
+data:percentages,
+backgroundColor:["#00c853","#2196F3","#FFC107"]
+}]
+},
+options:{
+plugins:{legend:{display:false}},
+scales:{y:{beginAtZero:true,max:100}}
+}
+});
+
+
+/* SKILL RADAR */
+
+const skillNames=[];
+const skillLevels=[];
+
+data.skills.forEach(s=>{
+skillNames.push(s.skill_name);
+skillLevels.push(s.skill_level);
+});
+
+if(radarChart) radarChart.destroy();
+
+radarChart=new Chart(
+document.getElementById("skillRadar"),
+{
+type:"radar",
+data:{
+labels:skillNames,
+datasets:[{
+data:skillLevels,
+backgroundColor:"rgba(0,200,83,0.3)",
+borderColor:"#00c853"
+}]
+},
+options:{
+scales:{r:{min:0,max:5,ticks:{stepSize:1}}}
+}
+});
+
+}
+
+</script>
+
+</body>
+</html>
