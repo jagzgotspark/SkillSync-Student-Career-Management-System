@@ -1,0 +1,308 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SkillSync | Skill Gap Analyzer</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Outfit:wght@700;800;900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="../src/style.css">
+    <style>
+        body { background: linear-gradient(135deg, #e0f7fa 0%, #e8eaf6 60%, #fce4ec 100%); }
+        .page-main { padding: 2rem 3rem; position: relative; z-index: 1; }
+        .analyzer-grid { display: grid; grid-template-columns: 1fr 1.6fr; gap: 2rem; margin-top: 2rem; }
+        @media(max-width:900px){ .analyzer-grid{ grid-template-columns:1fr; } }
+
+        /* Panel */
+        .panel {
+            background: rgba(255,255,255,0.55);
+            border: 1px solid rgba(255,255,255,0.8);
+            border-radius: 1.25rem;
+            padding: 2rem;
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            box-shadow: 0 8px 32px rgba(6,182,212,0.12);
+            position: relative;
+            overflow: hidden;
+            transition: transform 0.3s, box-shadow 0.3s;
+        }
+        .panel:hover { transform: translateY(-3px); box-shadow: 0 16px 48px rgba(6,182,212,0.18); }
+        .panel::before {
+            content:''; position:absolute; top:0; left:0; right:0; height:3px;
+            background: linear-gradient(90deg, #06b6d4, #8b5cf6, #ec4899);
+        }
+        .panel h3 { font-family:'Outfit'; font-size:1.15rem; font-weight:800; margin-bottom:1.5rem; color:#0e7490; }
+
+        /* Role card */
+        .role-card {
+            padding: 1rem 1.25rem;
+            border-radius: 0.875rem;
+            border: 2px solid rgba(6,182,212,0.15);
+            cursor: pointer;
+            margin-bottom: 0.6rem;
+            transition: all 0.25s;
+            background: rgba(255,255,255,0.5);
+        }
+        .role-card:hover { border-color: #06b6d4; background: rgba(6,182,212,0.06); transform: translateX(6px); }
+        .role-card.selected { border-color: #06b6d4; background: rgba(6,182,212,0.1); box-shadow: 0 4px 16px rgba(6,182,212,0.15); }
+        .rc-title { font-weight: 700; color: #0e7490; }
+        .rc-meta { font-size: 0.8rem; color: #6b7280; margin-top: 0.2rem; }
+
+        /* Match ring */
+        .ring-wrap { display:flex; flex-direction:column; align-items:center; justify-content:center; width:180px; height:180px; position:relative; margin:1.5rem auto; }
+        .ring-center { position:absolute; inset:22px; border-radius:50%; background:rgba(255,255,255,0.7); display:flex; flex-direction:column; align-items:center; justify-content:center; }
+        .ring-pct { font-size:2.4rem; font-weight:900; font-family:'Outfit'; color:#0e7490; }
+        .ring-lbl { font-size:0.65rem; font-weight:800; text-transform:uppercase; letter-spacing:1px; color:#06b6d4; }
+
+        /* Skill chips */
+        .skill-chip { display:inline-flex; align-items:center; gap:0.4rem; padding:0.45rem 0.9rem; border-radius:100px; font-size:0.83rem; font-weight:700; margin:0.25rem; transition:transform 0.2s; }
+        .skill-chip:hover{ transform:scale(1.06); }
+        .chip-match { background:rgba(16,185,129,0.12); color:#065f46; border:1px solid rgba(16,185,129,0.3); }
+        .chip-miss  { background:rgba(239,68,68,0.1);  color:#991b1b; border:1px solid rgba(239,68,68,0.25); }
+        .empty-state { text-align:center; padding:3rem; color:#6b7280; }
+        .empty-state .ico { font-size:3.5rem; margin-bottom:1rem; }
+        .loading-shimmer { background:linear-gradient(90deg, rgba(6,182,212,0.1) 25%, rgba(6,182,212,0.2) 50%, rgba(6,182,212,0.1) 75%); background-size:200% 100%; animation:shimmer 1.4s infinite; border-radius:0.5rem; height:60px; margin-bottom:0.6rem; }
+        @keyframes shimmer { 0%{background-position:200% 0} 100%{background-position:-200% 0} }
+    </style>
+</head>
+<body>
+    <!-- Doodle Background — Teal Tech Theme -->
+    <div class="doodle-bg">
+        <span class="doodle-icon" style="top:5%;left:3%">📊</span>
+        <span class="doodle-icon" style="top:15%;left:88%">🔍</span>
+        <span class="doodle-icon" style="top:30%;left:10%">💡</span>
+        <span class="doodle-icon" style="top:45%;right:5%">🎯</span>
+        <span class="doodle-icon" style="top:60%;left:80%">📈</span>
+        <span class="doodle-icon" style="bottom:20%;left:5%">⚡</span>
+        <span class="doodle-icon" style="bottom:10%;right:8%">🧩</span>
+        <span class="doodle-icon" style="top:70%;left:45%">📌</span>
+        <span class="doodle-icon" style="top:8%;left:50%">🏷️</span>
+        <span class="doodle-icon" style="bottom:35%;right:20%">🔗</span>
+        <span class="doodle-icon" style="top:50%;left:30%">💼</span>
+        <span class="doodle-icon" style="bottom:5%;left:40%">🛠️</span>
+    </div>
+
+    <nav class="sidebar">
+        <div class="logo-container"><div class="logo-icon">∞</div><h2>SkillSync</h2></div>
+        <ul class="nav-links">
+            <li onclick="window.location.href='index.html'"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7"></rect><rect x="14" y="3" width="7" height="7"></rect><rect x="14" y="14" width="7" height="7"></rect><rect x="3" y="14" width="7" height="7"></rect></svg>Dashboard</li>
+            <li onclick="window.location.href='profile.html'"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path><circle cx="12" cy="7" r="4"></circle></svg>My Profile</li>
+            <li class="active" onclick="window.location.href='skill-gap.html'"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 12h-4l-3 9L9 3l-3 9H2"></path></svg>Skill Gap Analyzer</li>
+            <li onclick="window.location.href='leaderboard.html'"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="23 6 13.5 15.5 8.5 10.5 1 18"></polyline><polyline points="17 6 23 6 23 12"></polyline></svg>Leaderboard</li>
+            <li onclick="window.location.href='resume-score.html'"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="9 11 12 14 22 4"></polyline><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"></path></svg>Resume Score</li>
+            <li onclick="window.location.href='analytics.html'"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 12h-4l-3 9L9 3l-3 9H2"></path></svg>Analytics</li>
+            <li onclick="window.location.href='dashboard-careers.html'"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"></path><path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"></path></svg>Careers</li>
+            <li onclick="window.location.href='settings.html'"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"></circle></svg>Settings</li>
+        </ul>
+        <div class="nav-footer">
+            <div class="admin-profile">
+                <div id="sidebar-avatar" style="background:linear-gradient(135deg,#06b6d4,#6366f1);color:white;display:flex;align-items:center;justify-content:center;font-weight:bold;font-size:1.1rem;width:40px;height:40px;border-radius:50%;flex-shrink:0;">U</div>
+                <div class="admin-info"><span class="admin-name" id="user-name-sidebar">Loading...</span><span class="admin-role">Student</span></div>
+            </div>
+            <button onclick="logout()" style="margin-top:0.75rem;width:100%;padding:0.5rem;background:rgba(239,68,68,0.12);border:1px solid rgba(239,68,68,0.2);border-radius:8px;color:#f87171;font-size:0.82rem;cursor:pointer;font-weight:600;">Sign Out</button>
+        </div>
+    </nav>
+
+    <main class="main-content page-main">
+        <header class="top-header anim-fade-up" style="margin-bottom:1.5rem;">
+            <div>
+                <h1 style="background:linear-gradient(120deg,#0891b2,#6366f1);-webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent;">🔍 Skill Gap Analyzer</h1>
+                <p class="subtitle">Select a target job role to see your matched and missing skills instantly.</p>
+            </div>
+            <div id="my-skills-count" style="display:none;text-align:right;">
+                <div style="font-size:0.75rem;color:#6b7280;text-transform:uppercase;letter-spacing:1px;font-weight:700;">My Skills</div>
+                <div id="skills-count-num" style="font-size:2rem;font-weight:900;font-family:'Outfit';color:#0e7490;">—</div>
+            </div>
+        </header>
+
+        <div class="analyzer-grid">
+            <!-- Left -->
+            <div class="panel anim-fade-up anim-delay-1">
+                <h3>💼 Available Job Roles</h3>
+                <div id="role-list">
+                    <div class="loading-shimmer"></div>
+                    <div class="loading-shimmer" style="height:50px;"></div>
+                    <div class="loading-shimmer" style="height:55px;"></div>
+                </div>
+            </div>
+
+            <!-- Right -->
+            <div class="panel anim-fade-up anim-delay-2">
+                <h3>🎯 Your Skill Analysis</h3>
+
+                <!-- Placeholder -->
+                <div id="result-placeholder" class="empty-state">
+                    <div class="ico">🎯</div>
+                    <p style="font-size:1rem;font-weight:600;color:#0e7490;">Click a job role on the left to begin.</p>
+                    <p style="font-size:0.85rem;margin-top:0.5rem;">We'll compare your skills vs the role requirements in real-time.</p>
+                </div>
+
+                <!-- Result -->
+                <div id="gap-result" style="display:none;">
+                    <div style="text-align:center;padding-bottom:1.5rem;border-bottom:1px solid rgba(6,182,212,0.15);">
+                        <div id="role-badge" style="display:inline-block;background:linear-gradient(90deg,#0891b2,#6366f1);color:white;padding:0.3rem 1rem;border-radius:100px;font-size:0.8rem;font-weight:700;margin-bottom:0.75rem;"></div>
+                        <h3 id="role-title" style="font-family:'Outfit';font-size:1.6rem;font-weight:900;color:#0e7490;"></h3>
+                        <p id="company-name" style="color:#6b7280;font-size:0.9rem;"></p>
+
+                        <div class="ring-wrap">
+                            <svg style="position:absolute;inset:0;width:100%;height:100%;transform:rotate(-90deg);" viewBox="0 0 180 180">
+                                <circle cx="90" cy="90" r="76" fill="none" stroke="rgba(6,182,212,0.12)" stroke-width="12"/>
+                                <circle id="ring-arc" cx="90" cy="90" r="76" fill="none" stroke="url(#cyanGrad)" stroke-width="12" stroke-linecap="round" stroke-dasharray="477" stroke-dashoffset="477" style="transition:stroke-dashoffset 1.2s ease;"/>
+                                <defs><linearGradient id="cyanGrad" x1="0%" y1="0%" x2="100%" y2="0%"><stop offset="0%" stop-color="#06b6d4"/><stop offset="100%" stop-color="#8b5cf6"/></linearGradient></defs>
+                            </svg>
+                            <div class="ring-center">
+                                <div class="ring-pct" id="match-pct-text">0%</div>
+                                <div class="ring-lbl">Match</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div style="display:grid;grid-template-columns:1fr 1fr;gap:1.5rem;margin-top:1.5rem;">
+                        <div>
+                            <div style="font-size:0.75rem;font-weight:800;text-transform:uppercase;letter-spacing:1px;color:#059669;margin-bottom:0.75rem;">✅ You Have</div>
+                            <div id="matched-chips"></div>
+                        </div>
+                        <div>
+                            <div style="font-size:0.75rem;font-weight:800;text-transform:uppercase;letter-spacing:1px;color:#dc2626;margin-bottom:0.75rem;">❌ You're Missing</div>
+                            <div id="missing-chips"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div><!-- /analyzer-grid -->
+
+        <!-- ── Skill Recommendation Engine (CTE + Window Functions) ── -->
+        <div id="skill-rec-section" style="display:none;margin-top:2rem;">
+            <div class="panel anim-fade-up" style="border-top:3px solid #8b5cf6;">
+                <h3 style="color:#7c3aed;">⭐ Skill Recommendation Engine
+                    <span style="font-size:0.7rem;font-weight:700;background:rgba(139,92,246,0.12);color:#7c3aed;padding:0.2rem 0.6rem;border-radius:2rem;margin-left:0.5rem;">CTE + RANK() Window Function</span>
+                </h3>
+                <p style="font-size:0.83rem;color:#6b7280;margin-bottom:1.25rem;">Missing skills from this role — ranked by market demand across all job postings.</p>
+                <div id="srec-grid" style="display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:1rem;"></div>
+                <div id="srec-empty" style="display:none;text-align:center;padding:1.5rem;">
+                    <span style="font-size:2rem;">🎉</span>
+                    <p style="color:#059669;font-weight:700;margin-top:0.5rem;">You have all required skills for this role!</p>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <script>
+        const API = (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1' || window.location.protocol === 'file:') ? 'http://localhost:3002' : '';
+        function loadTheme(){ document.body.className = localStorage.getItem('theme') || 'theme-lavender'; }
+        loadTheme();
+        function logout(){ localStorage.clear(); window.location.href='login.html'; }
+
+        let currentUser = null;
+
+        async function init(){
+            const u = localStorage.getItem('user');
+            if(!u) return window.location.href='login.html';
+            currentUser = JSON.parse(u);
+
+            if (currentUser.role && currentUser.role !== 'student') {
+                if (currentUser.role === 'mentor' || currentUser.role === 'company') {
+                    window.location.href = 'company-dashboard.html';
+                    return;
+                } else if (currentUser.role === 'admin') {
+                    window.location.href = 'students.html';
+                    return;
+                }
+            }
+            document.getElementById('user-name-sidebar').textContent = currentUser.name||'Student';
+            const av = document.getElementById('sidebar-avatar');
+            if(av) av.textContent = (currentUser.name||'U')[0].toUpperCase();
+            await loadRoles();
+        }
+
+        async function loadRoles(){
+            try{
+                const res = await fetch(`${API}/api/analytics/job-recommendations/${currentUser.id}`);
+                const data = await res.json();
+                const roles = (data.recommendations||[]);
+                if(!roles.length){
+                    document.getElementById('role-list').innerHTML = `<div class="empty-state"><div class="ico">📋</div><p>No job roles found. Ensure the backend is seeded.</p></div>`;
+                    return;
+                }
+                // Show skills count
+                const sc = roles.reduce((a,r)=>(r.matched_skills||[]).length + a, 0);
+                document.getElementById('my-skills-count').style.display='block';
+                document.getElementById('skills-count-num').textContent = (roles[0]?.matched_skills?.length||0)+(roles[0]?.missing_skills?.length||0);
+
+                document.getElementById('role-list').innerHTML = roles.map(r=>`
+                    <div class="role-card" id="rc-${r.role_id}" onclick="analyzeGap(${r.role_id},'${(r.role_name||'').replace(/'/g,"\\'")}','${(r.company_name||'').replace(/'/g,"\\'")}')">
+                        <div style="display:flex;justify-content:space-between;align-items:center;">
+                            <div class="rc-title">💼 ${r.role_name||'Role'}</div>
+                            <span style="font-size:0.75rem;font-weight:800;padding:0.2rem 0.6rem;border-radius:100px;background:${r.match_percentage>=70?'rgba(16,185,129,0.12)':'rgba(245,158,11,0.12)'};color:${r.match_percentage>=70?'#059669':'#b45309'};">${r.match_percentage}%</span>
+                        </div>
+                        <div class="rc-meta">${r.company_name||''} ${r.salary_range?'· '+r.salary_range:''}</div>
+                    </div>`).join('');
+            }catch(e){
+                document.getElementById('role-list').innerHTML = `<div class="empty-state"><div class="ico">⚠️</div><p>Backend not running.<br>Start with <code>node server.js</code></p></div>`;
+            }
+        }
+
+        async function analyzeGap(roleId, roleName, company){
+            document.querySelectorAll('.role-card').forEach(c=>c.classList.remove('selected'));
+            const rc = document.getElementById(`rc-${roleId}`);
+            if(rc) rc.classList.add('selected');
+
+            document.getElementById('result-placeholder').style.display='none';
+            document.getElementById('gap-result').style.display='block';
+            document.getElementById('role-title').textContent = roleName;
+            document.getElementById('role-badge').textContent = company||'Job Role';
+            document.getElementById('company-name').textContent = company;
+            document.getElementById('match-pct-text').textContent = '...';
+
+            try{
+                const res = await fetch(`${API}/api/analytics/skill-gap/${currentUser.id}/${roleId}`);
+                const d = await res.json();
+                const pct = parseFloat(d.match_percentage)||0;
+                document.getElementById('match-pct-text').textContent = `${pct}%`;
+                const circumference = 477;
+                document.getElementById('ring-arc').style.strokeDashoffset = circumference-(pct/100)*circumference;
+                const matched = (d.required||[]).filter(s=>!(d.missing||[]).includes(s));
+                document.getElementById('matched-chips').innerHTML = matched.length
+                    ? matched.map(s=>`<span class="skill-chip chip-match">✓ ${s}</span>`).join('')
+                    : `<span style="color:#6b7280;font-size:0.85rem;">None yet — add skills on your profile.</span>`;
+                document.getElementById('missing-chips').innerHTML = (d.missing||[]).length
+                    ? (d.missing||[]).map(s=>`<span class="skill-chip chip-miss">✗ ${s}</span>`).join('')
+                    : `<span class="skill-chip chip-match">✓ You meet all requirements!</span>`;
+
+                // Load Skill Recommendation Engine
+                loadSkillRecommendations(roleId);
+            }catch(e){
+                document.getElementById('match-pct-text').textContent = 'N/A';
+            }
+        }
+
+        async function loadSkillRecommendations(roleId) {
+            const section = document.getElementById('skill-rec-section');
+            const grid    = document.getElementById('srec-grid');
+            const empty   = document.getElementById('srec-empty');
+            section.style.display = 'block';
+            grid.innerHTML = '<div class="loading-shimmer" style="height:60px;"></div><div class="loading-shimmer" style="height:60px;"></div>';
+            empty.style.display = 'none';
+            try {
+                const d = await fetch(`${API}/api/analytics/skill-recommendations/${currentUser.id}/${roleId}`).then(r=>r.json());
+                if (!d.recommendations?.length) {
+                    grid.innerHTML = ''; empty.style.display='block'; return;
+                }
+                const max = Math.max(...d.recommendations.map(r=>r.job_demand||1));
+                grid.innerHTML = d.recommendations.map((r,i)=>`
+                    <div style="background:rgba(255,255,255,0.6);border:1.5px solid rgba(139,92,246,0.15);border-radius:0.875rem;padding:1rem;">
+                        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:0.5rem;">
+                            <strong style="font-size:0.9rem;color:#1e1b4b;">${r.skill_name}</strong>
+                            <span style="font-size:0.7rem;font-weight:800;background:rgba(139,92,246,0.1);color:#7c3aed;padding:0.15rem 0.5rem;border-radius:1rem;">#${i+1}</span>
+                        </div>
+                        <div style="font-size:0.73rem;color:#6b7280;margin-bottom:0.4rem;">${r.category||'General'} · ${r.job_demand} job${r.job_demand!==1?'s':''} need this</div>
+                        <div style="height:5px;background:rgba(0,0,0,0.07);border-radius:100px;">
+                            <div style="height:100%;border-radius:100px;background:linear-gradient(90deg,#8b5cf6,#ec4899);width:${Math.round((r.job_demand||1)/max*100)}%;transition:width 0.8s ease;"></div>
+                        </div>
+                    </div>`).join('');
+            } catch(e) { grid.innerHTML=''; }
+        }
+        init();
+    </script>
+</body>
+</html>

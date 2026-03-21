@@ -1,0 +1,283 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SkillSync | Resume Score</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Outfit:wght@700;800;900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="../src/style.css">
+    <style>
+        body { background: linear-gradient(135deg, #e8f5e9 0%, #e0e7ff 55%, #fce4ec 100%); }
+        .page-main { padding: 2rem 3rem; position: relative; z-index: 1; }
+        .score-grid { display: grid; grid-template-columns: 1fr 1.6fr; gap: 2rem; margin-top: 2rem; }
+        @media(max-width:900px){ .score-grid{ grid-template-columns:1fr; } }
+
+        /* Panel */
+        .panel {
+            background: rgba(255,255,255,0.55);
+            border: 1px solid rgba(255,255,255,0.8);
+            border-radius: 1.25rem;
+            padding: 2rem;
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            box-shadow: 0 8px 32px rgba(16,185,129,0.1);
+            position: relative; overflow: hidden;
+            transition: transform 0.3s;
+        }
+        .panel:hover { transform: translateY(-3px); }
+        .panel::before { content:''; position:absolute; top:0; left:0; right:0; height:3px; background:linear-gradient(90deg,#10b981,#6366f1,#ec4899); }
+
+        /* Score ring */
+        .ring-wrap { position:relative; width:220px; height:220px; margin:1.5rem auto; }
+        .ring-center { position:absolute; inset:28px; border-radius:50%; background:rgba(255,255,255,0.8); display:flex; flex-direction:column; align-items:center; justify-content:center; }
+        .score-num { font-size:3.8rem; font-weight:900; font-family:'Outfit'; color:#065f46; line-height:1; }
+        .score-sub { font-size:0.7rem; font-weight:800; text-transform:uppercase; letter-spacing:1px; color:#6b7280; }
+        .grade-badge { display:inline-block; padding:0.4rem 1.2rem; border-radius:100px; font-weight:800; font-size:1rem; font-family:'Outfit'; margin-top:1rem; }
+        .grade-excellent { background:linear-gradient(90deg,rgba(16,185,129,0.15),rgba(5,150,105,0.1)); color:#065f46; border:1px solid rgba(16,185,129,0.3); }
+        .grade-good      { background:linear-gradient(90deg,rgba(99,102,241,0.12),rgba(79,70,229,0.06)); color:#4f46e5; border:1px solid rgba(99,102,241,0.25); }
+        .grade-average   { background:linear-gradient(90deg,rgba(245,158,11,0.12),rgba(180,114,9,0.06)); color:#b45309; border:1px solid rgba(245,158,11,0.3); }
+        .grade-needs     { background:linear-gradient(90deg,rgba(236,72,153,0.12),rgba(190,24,93,0.06)); color:#9d174d; border:1px solid rgba(236,72,153,0.25); }
+
+        /* Breakdown */
+        .breakdown-row {
+            display:flex; align-items:center; gap:1rem; padding:1.25rem;
+            border-radius:1rem; border:1px solid rgba(16,185,129,0.12);
+            background:rgba(255,255,255,0.4); margin-bottom:0.85rem;
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+        .breakdown-row:hover { transform:translateX(4px); box-shadow:0 4px 16px rgba(16,185,129,0.12); }
+        .br-icon { font-size:2rem; flex-shrink:0; }
+        .br-info { flex:1; }
+        .br-label { font-weight:700; color:#1e1b4b; font-size:0.95rem; }
+        .br-detail { font-size:0.8rem; color:#6b7280; margin-top:0.1rem; }
+        .br-score { font-size:1.5rem; font-weight:900; font-family:'Outfit'; color:#065f46; white-space:nowrap; }
+        .br-score span { font-size:0.75rem; font-weight:600; color:#6b7280; font-family:'Inter'; }
+        .prog-bar { height:8px; border-radius:100px; background:rgba(16,185,129,0.1); margin-top:0.5rem; overflow:hidden; }
+        .prog-fill { height:100%; border-radius:100px; }
+
+        /* Tips */
+        .tip-card {
+            display:flex; gap:0.75rem; align-items:flex-start;
+            padding:0.9rem 1.1rem; border-radius:0.875rem;
+            background:rgba(99,102,241,0.06); border:1px solid rgba(99,102,241,0.15);
+            margin-bottom:0.6rem; font-size:0.87rem; color:#1e1b4b;
+            transition: transform 0.2s;
+        }
+        .tip-card:hover { transform:translateX(4px); background:rgba(99,102,241,0.09); }
+        .tip-icon { font-size:1.1rem; flex-shrink:0; margin-top:0.1rem; }
+
+        /* Shimmer */
+        .shimmer { background:linear-gradient(90deg,rgba(16,185,129,0.08) 25%,rgba(16,185,129,0.18) 50%,rgba(16,185,129,0.08) 75%); background-size:200% 100%; animation:shimmer 1.4s infinite; border-radius:1rem; height:88px; margin-bottom:0.85rem; }
+        @keyframes shimmer{0%{background-position:200% 0}100%{background-position:-200% 0}}
+    </style>
+</head>
+<body>
+    <!-- Doodle Background — Green Achievement/Document Theme -->
+    <div class="doodle-bg">
+        <span class="doodle-icon" style="top:5%;left:3%">📋</span>
+        <span class="doodle-icon" style="top:12%;right:5%">📊</span>
+        <span class="doodle-icon" style="top:28%;left:6%">✅</span>
+        <span class="doodle-icon" style="top:45%;right:3%">🌟</span>
+        <span class="doodle-icon" style="top:60%;left:84%">📜</span>
+        <span class="doodle-icon" style="bottom:25%;left:4%">🎯</span>
+        <span class="doodle-icon" style="bottom:10%;right:8%">💎</span>
+        <span class="doodle-icon" style="top:75%;left:46%">🏅</span>
+        <span class="doodle-icon" style="top:5%;left:54%">📝</span>
+        <span class="doodle-icon" style="bottom:40%;right:18%">🎓</span>
+        <span class="doodle-icon" style="top:50%;left:28%">🧑‍💻</span>
+        <span class="doodle-icon" style="bottom:6%;left:38%">💡</span>
+    </div>
+
+    <nav class="sidebar">
+        <div class="logo-container"><div class="logo-icon">∞</div><h2>SkillSync</h2></div>
+        <ul class="nav-links">
+            <li onclick="window.location.href='index.html'"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7"></rect><rect x="14" y="3" width="7" height="7"></rect><rect x="14" y="14" width="7" height="7"></rect><rect x="3" y="14" width="7" height="7"></rect></svg>Dashboard</li>
+            <li onclick="window.location.href='profile.html'"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path><circle cx="12" cy="7" r="4"></circle></svg>My Profile</li>
+            <li onclick="window.location.href='skill-gap.html'"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 12h-4l-3 9L9 3l-3 9H2"></path></svg>Skill Gap Analyzer</li>
+            <li onclick="window.location.href='leaderboard.html'"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="23 6 13.5 15.5 8.5 10.5 1 18"></polyline><polyline points="17 6 23 6 23 12"></polyline></svg>Leaderboard</li>
+            <li class="active" onclick="window.location.href='resume-score.html'"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="9 11 12 14 22 4"></polyline><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"></path></svg>Resume Score</li>
+            <li onclick="window.location.href='analytics.html'"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 12h-4l-3 9L9 3l-3 9H2"></path></svg>Analytics</li>
+            <li onclick="window.location.href='dashboard-careers.html'"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"></path><path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"></path></svg>Careers</li>
+        </ul>
+        <div class="nav-footer">
+            <div class="admin-profile">
+                <div id="sidebar-avatar" style="background:linear-gradient(135deg,#10b981,#6366f1);color:white;display:flex;align-items:center;justify-content:center;font-weight:bold;font-size:1.1rem;width:40px;height:40px;border-radius:50%;flex-shrink:0;">U</div>
+                <div class="admin-info"><span class="admin-name" id="user-name-sidebar">Loading...</span><span class="admin-role">Student</span></div>
+            </div>
+            <button onclick="logout()" style="margin-top:0.75rem;width:100%;padding:0.5rem;background:rgba(239,68,68,0.12);border:1px solid rgba(239,68,68,0.2);border-radius:8px;color:#f87171;font-size:0.82rem;cursor:pointer;font-weight:600;">Sign Out</button>
+        </div>
+    </nav>
+
+    <main class="main-content page-main">
+        <header class="top-header anim-fade-up" style="margin-bottom:1.5rem;">
+            <div>
+                <h1 style="background:linear-gradient(120deg,#065f46,#6366f1);-webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent;">📊 Resume Score</h1>
+                <p class="subtitle">Your profile strength score — calculated from CGPA, Skills, Projects &amp; Certificates.</p>
+            </div>
+        </header>
+
+        <div class="score-grid">
+            <!-- Score Ring -->
+            <div class="panel anim-fade-up anim-delay-1" style="display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;">
+                <h3 style="font-family:'Outfit';font-weight:900;color:#065f46;font-size:1.2rem;margin-bottom:0.25rem;">Your Score</h3>
+                <p style="color:#6b7280;font-size:0.85rem;margin-bottom:0.5rem;">Out of 100 points</p>
+
+                <div class="ring-wrap">
+                    <svg style="width:100%;height:100%;transform:rotate(-90deg);" viewBox="0 0 220 220">
+                        <circle cx="110" cy="110" r="90" fill="none" stroke="rgba(16,185,129,0.1)" stroke-width="14"/>
+                        <circle id="score-arc" cx="110" cy="110" r="90" fill="none"
+                            stroke="url(#greenGrad)" stroke-width="14" stroke-linecap="round"
+                            stroke-dasharray="565" stroke-dashoffset="565"
+                            style="transition:stroke-dashoffset 1.3s cubic-bezier(0.34,1.56,0.64,1);"/>
+                        <defs>
+                            <linearGradient id="greenGrad" x1="0%" y1="0%" x2="100%" y2="0%">
+                                <stop offset="0%" stop-color="#10b981"/>
+                                <stop offset="100%" stop-color="#6366f1"/>
+                            </linearGradient>
+                        </defs>
+                    </svg>
+                    <div class="ring-center">
+                        <div class="score-num" id="score-num">—</div>
+                        <div class="score-sub">/ 100</div>
+                    </div>
+                </div>
+
+                <div class="grade-badge" id="grade-badge">Calculating...</div>
+                <p id="score-msg" style="color:#6b7280;font-size:0.85rem;margin-top:0.75rem;max-width:260px;line-height:1.6;"></p>
+
+                <a href="profile.html" style="margin-top:1.5rem;display:inline-flex;align-items:center;gap:0.5rem;padding:0.6rem 1.5rem;background:linear-gradient(90deg,#10b981,#6366f1);color:white;border-radius:100px;font-weight:700;font-size:0.88rem;text-decoration:none;box-shadow:0 4px 20px rgba(16,185,129,0.3);transition:transform 0.2s,box-shadow 0.2s;" onmouseover="this.style.transform='translateY(-2px)'" onmouseout="this.style.transform=''">
+                    ✏️ Improve My Profile →
+                </a>
+            </div>
+
+            <!-- Breakdown -->
+            <div class="panel anim-fade-up anim-delay-2">
+                <h3 style="font-family:'Outfit';font-weight:900;color:#065f46;font-size:1.1rem;margin-bottom:1.5rem;">📋 Score Breakdown</h3>
+                <div id="breakdown-container">
+                    <div class="shimmer"></div>
+                    <div class="shimmer" style="height:75px;"></div>
+                    <div class="shimmer"></div>
+                    <div class="shimmer" style="height:75px;"></div>
+                </div>
+
+                <div style="margin-top:2rem;border-top:1px solid rgba(16,185,129,0.12);padding-top:1.5rem;">
+                    <h4 style="font-family:'Outfit';font-weight:800;color:#1e1b4b;margin-bottom:1rem;">💡 How to Boost Your Score</h4>
+                    <div id="tips-container"></div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <script>
+        const API = (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1' || window.location.protocol === 'file:') ? 'http://localhost:3002' : '';
+        function loadTheme(){ document.body.className = localStorage.getItem('theme')||'theme-lavender'; }
+        loadTheme();
+        function logout(){ localStorage.clear(); window.location.href='login.html'; }
+
+        async function init(){
+            const u = localStorage.getItem('user');
+            if(!u) return window.location.href='login.html';
+            const user = JSON.parse(u);
+
+            if (user.role && user.role !== 'student') {
+                if (user.role === 'mentor' || user.role === 'company') {
+                    window.location.href = 'company-dashboard.html';
+                    return;
+                } else if (user.role === 'admin') {
+                    window.location.href = 'students.html';
+                    return;
+                }
+            }
+            document.getElementById('user-name-sidebar').textContent = user.name||'Student';
+            const av = document.getElementById('sidebar-avatar');
+            if(av) av.textContent = (user.name||'U')[0].toUpperCase();
+
+            try{
+                const res = await fetch(`${API}/api/analytics/resume-score/${user.id}`);
+                const data = await res.json();
+                renderScore(data);
+            }catch(e){
+                console.error("Offline or fetch error:", e);
+                // Offline fallback
+                const offlineData = {
+                    total: 82,
+                    breakdown: { cgpa: 26, skills: 24, projects: 16, certificates: 16 },
+                    counts: { skills: 8, projects: 4, certificates: 4 },
+                    cgpa: user.cgpa || 8.5
+                };
+                renderScore(offlineData);
+                const toast = document.createElement('div');
+                toast.className = 'toast show';
+                toast.textContent = 'Running in offline mode (Mock Data).';
+                document.body.appendChild(toast);
+                setTimeout(() => toast.remove(), 3000);
+            }
+        }
+
+        function animateNumber(el, target, duration=1200){
+            let start = 0;
+            const step = (timestamp) => {
+                if(!start) start = timestamp;
+                const progress = Math.min((timestamp-start)/duration, 1);
+                el.textContent = Math.floor(progress * target);
+                if(progress < 1) requestAnimationFrame(step);
+                else el.textContent = target;
+            };
+            requestAnimationFrame(step);
+        }
+
+        function renderScore(data){
+            const total = data.total||0;
+            animateNumber(document.getElementById('score-num'), total);
+
+            // Ring animation
+            setTimeout(()=>{
+                document.getElementById('score-arc').style.strokeDashoffset = 565 - (total/100)*565;
+            }, 200);
+
+            // Grade
+            const gradeEl = document.getElementById('grade-badge');
+            if(total>=85){ gradeEl.className='grade-badge grade-excellent'; gradeEl.textContent='⭐ Excellent Profile'; }
+            else if(total>=70){ gradeEl.className='grade-badge grade-good'; gradeEl.textContent='👍 Good Profile'; }
+            else if(total>=50){ gradeEl.className='grade-badge grade-average'; gradeEl.textContent='📈 Average Profile'; }
+            else { gradeEl.className='grade-badge grade-needs'; gradeEl.textContent='🚀 Needs Improvement'; }
+
+            const msgs = {85:'Your profile is highly competitive. Top recruiters will notice you!', 70:'Strong profile. A few more projects can push you to the top tier.', 50:'Solid base! Focus on adding skills and certificates to grow.', 0:'Lots of room to grow! Start by adding your skills and projects.'};
+            document.getElementById('score-msg').textContent = Object.entries(msgs).sort((a,b)=>b[0]-a[0]).find(([k])=>total>=+k)?.[1]||'';
+
+            // Breakdown
+            const bd = data.breakdown||{};
+            const ct = data.counts||{};
+            const items = [
+                {icon:'🎓',label:'CGPA',detail:`CGPA: ${data.cgpa||'—'} / 10`,score:bd.cgpa||0,max:30,color:'#10b981'},
+                {icon:'⚡',label:'Skills',detail:`${ct.skills||0} skills added (max 10 scored)`,score:bd.skills||0,max:30,color:'#6366f1'},
+                {icon:'🔧',label:'Projects',detail:`${ct.projects||0} projects (max 5 scored)`,score:bd.projects||0,max:20,color:'#8b5cf6'},
+                {icon:'📜',label:'Certificates',detail:`${ct.certificates||0} certificates (max 5 scored)`,score:bd.certificates||0,max:20,color:'#f59e0b'}
+            ];
+
+            document.getElementById('breakdown-container').innerHTML = items.map((b,i)=>`
+                <div class="breakdown-row anim-fade-up anim-delay-${i+1}">
+                    <div class="br-icon">${b.icon}</div>
+                    <div class="br-info">
+                        <div class="br-label">${b.label}</div>
+                        <div class="br-detail">${b.detail}</div>
+                        <div class="prog-bar"><div class="prog-fill" style="width:${Math.round((b.score/b.max)*100)}%;background:linear-gradient(90deg,${b.color},${b.color}88);"></div></div>
+                    </div>
+                    <div class="br-score">${b.score} <span>/ ${b.max}</span></div>
+                </div>
+            `).join('');
+
+            // Tips
+            const tips = [];
+            if((ct.skills||0)<10)       tips.push({icon:'💡',text:`Add ${10-(ct.skills||0)} more skill(s) to reach the maximum Skills score.`});
+            if((ct.projects||0)<5)      tips.push({icon:'🔧',text:`Add ${5-(ct.projects||0)} more project(s) — each gives 4 extra points.`});
+            if((ct.certificates||0)<5)  tips.push({icon:'📜',text:`Add ${5-(ct.certificates||0)} certificate(s) — recruiters love verified credentials.`});
+            if((data.cgpa||0)<9.5)      tips.push({icon:'🎓',text:`Studying for CGPA above 9.5 would maximize your CGPA points.`});
+            if(!tips.length)            tips.push({icon:'🎉',text:'Amazing! You have maximized all scoring areas. Keep it up!'});
+            document.getElementById('tips-container').innerHTML = tips.map(t=>`<div class="tip-card"><div class="tip-icon">${t.icon}</div><div>${t.text}</div></div>`).join('');
+        }
+        init();
+    </script>
+</body>
+</html>

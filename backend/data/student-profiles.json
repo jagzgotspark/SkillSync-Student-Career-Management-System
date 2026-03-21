@@ -1,0 +1,56 @@
+[
+  {
+    "student_id": 1,
+    "skills": [
+      {
+        "skill_name": "JavaScript",
+        "level": 3
+      },
+      {
+        "skill_name": "Python",
+        "level": 3
+      },
+      {
+        "skill_name": "C++",
+        "level": 3
+      },
+      {
+        "skill_name": "Java",
+        "level": 3
+      },
+      {
+        "skill_name": "HTML/CSS",
+        "level": 3
+      },
+      {
+        "skill_name": "SQL",
+        "level": 3
+      },
+      {
+        "skill_name": "Linux",
+        "level": 3
+      },
+      {
+        "skill_name": "Microcontrollers",
+        "level": 3
+      },
+      {
+        "skill_name": "C",
+        "level": 3
+      }
+    ],
+    "created_at": "2026-03-07T03:02:45.028Z",
+    "updated_at": "2026-03-07T03:37:19.794Z"
+  },
+  {
+    "student_id": 1772842160876,
+    "skills": [],
+    "department": "CSE-AI",
+    "year": 2,
+    "cgpa": 8,
+    "career_goal": "ML",
+    "updated_at": "2026-03-08T16:03:24.539Z",
+    "profile_image": "/uploads/profile_images/student_1772842160876_1772985804534.jpg",
+    "created_at": "2026-03-08T16:03:24.539Z"
+  }
+]

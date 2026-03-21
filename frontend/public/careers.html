@@ -1,0 +1,639 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SkillSync | Career Insights — Explore High-Growth Careers</title>
+    <meta name="description" content="Explore high-growth career paths, salary benchmarks, and required skill profiles. Find your perfect career with SkillSync's AI-powered matching.">
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+
+    <style>
+        :root {
+            --primary: #06b6d4;
+            --secondary: #6366f1;
+            --accent: #10b981;
+            --pink: #ec4899;
+            --orange: #f97316;
+            --purple: #a855f7;
+            --bg-dark: #050b1a;
+            --bg-card: rgba(255,255,255,0.04);
+            --text-light: #f1f5f9;
+            --text-muted: #94a3b8;
+            --border: rgba(255,255,255,0.08);
+        }
+
+        * { margin:0; padding:0; box-sizing:border-box; font-family:'Inter',sans-serif; }
+        html { scroll-behavior:smooth; }
+        body { background:var(--bg-dark); color:var(--text-light); overflow-x:hidden; line-height:1.6; }
+
+        /* NAV */
+        nav {
+            position: sticky; top:0; z-index:1000;
+            background: rgba(5,11,26,0.93);
+            backdrop-filter: blur(20px);
+            border-bottom: 1px solid var(--border);
+            padding: 1rem 6%;
+            display: flex; justify-content:space-between; align-items:center;
+        }
+
+        .logo { font-size:1.4rem; font-weight:800; text-decoration:none; background:linear-gradient(90deg,#22d3ee,#818cf8,#f472b6); -webkit-background-clip:text; background-clip:text; -webkit-text-fill-color:transparent; }
+
+        .nav-links { display:flex; gap:2rem; list-style:none; }
+        .nav-links a { text-decoration:none; color:var(--text-muted); font-weight:500; font-size:0.9rem; transition:color 0.2s; }
+        .nav-links a:hover { color:white; }
+
+        .btn { padding:0.55rem 1.4rem; border-radius:100px; font-weight:600; text-decoration:none; transition:all 0.3s; cursor:pointer; border:none; font-size:0.9rem; display:inline-flex; align-items:center; gap:0.4rem; }
+        .btn-ghost { background:transparent; color:var(--text-muted); border:1px solid var(--border); }
+        .btn-ghost:hover { color:white; background:var(--bg-card); }
+        .btn-primary { background:linear-gradient(135deg,#06b6d4,#6366f1); color:white; box-shadow:0 0 20px rgba(6,182,212,0.3); }
+        .btn-primary:hover { transform:translateY(-2px); box-shadow:0 0 30px rgba(6,182,212,0.5); }
+        .btn-lg { padding:0.9rem 2.2rem; font-size:1rem; }
+
+        /* HERO */
+        .page-hero {
+            padding: 5rem 6% 4rem;
+            position: relative; overflow: hidden;
+            border-bottom: 1px solid var(--border);
+            text-align: center;
+        }
+
+        .page-hero::before {
+            content:'';
+            position:absolute; inset:0;
+            background: radial-gradient(ellipse 70% 80% at 50% 0%, rgba(6,182,212,0.15) 0%, transparent 70%),
+                        radial-gradient(ellipse 50% 50% at 10% 80%, rgba(99,102,241,0.1) 0%, transparent 60%),
+                        radial-gradient(ellipse 50% 50% at 90% 70%, rgba(236,72,153,0.08) 0%, transparent 60%);
+        }
+
+        .hero-content { position:relative; z-index:2; max-width:800px; margin:0 auto; animation:fadeInUp 0.8s ease-out; }
+
+        .section-tag {
+            display:inline-flex; align-items:center; gap:0.5rem;
+            padding:0.35rem 1rem; border-radius:100px;
+            font-size:0.78rem; font-weight:700; text-transform:uppercase; letter-spacing:0.08em;
+            margin-bottom:1.2rem;
+        }
+        .tag-cyan { background:rgba(6,182,212,0.15); color:#22d3ee; border:1px solid rgba(6,182,212,0.2); }
+        .tag-green { background:rgba(16,185,129,0.15); color:#34d399; border:1px solid rgba(16,185,129,0.2); }
+        .tag-purple { background:rgba(168,85,247,0.15); color:#c084fc; border:1px solid rgba(168,85,247,0.2); }
+        .tag-orange { background:rgba(249,115,22,0.15); color:#fb923c; border:1px solid rgba(249,115,22,0.2); }
+        .tag-pink { background:rgba(236,72,153,0.15); color:#f472b6; border:1px solid rgba(236,72,153,0.2); }
+        .tag-indigo { background:rgba(99,102,241,0.15); color:#818cf8; border:1px solid rgba(99,102,241,0.2); }
+
+        .page-hero h1 { font-size:clamp(2.4rem,5vw,4rem); font-weight:900; line-height:1.1; margin-bottom:1.5rem; }
+        .gradient-cyan { background:linear-gradient(135deg,#22d3ee,#818cf8,#f472b6); -webkit-background-clip:text; background-clip:text; -webkit-text-fill-color:transparent; }
+
+        .page-hero p { font-size:1.1rem; color:var(--text-muted); margin-bottom:2.5rem; max-width:600px; margin-left:auto; margin-right:auto; }
+
+        .filter-bar {
+            display: flex;
+            gap: 0.6rem;
+            justify-content: center;
+            flex-wrap: wrap;
+            margin-bottom: 0;
+            position: relative; z-index: 2;
+        }
+
+        .filter-btn {
+            padding: 0.5rem 1.2rem;
+            border-radius: 100px;
+            font-size: 0.82rem;
+            font-weight: 600;
+            cursor: pointer;
+            border: 1px solid var(--border);
+            background: rgba(255,255,255,0.04);
+            color: var(--text-muted);
+            transition: all 0.2s;
+        }
+        .filter-btn:hover, .filter-btn.active {
+            background: rgba(6,182,212,0.15);
+            color: #22d3ee;
+            border-color: rgba(6,182,212,0.3);
+        }
+
+        /* MAIN */
+        .main-section { padding: 4rem 6%; }
+        .max-w { max-width: 1200px; margin: 0 auto; }
+        .section-center { text-align:center; margin-bottom:3rem; }
+        .section-center h2 { font-size:2.2rem; font-weight:800; margin-bottom:0.75rem; }
+        .section-center p { color:var(--text-muted); max-width:550px; margin:0 auto; }
+
+        /* CAREER GRID */
+        .career-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
+            gap: 1.5rem;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .career-card {
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: 1.5rem;
+            padding: 0;
+            transition: all 0.35s ease;
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .career-card:hover {
+            transform: translateY(-8px);
+            border-color: rgba(6,182,212,0.25);
+            box-shadow: 0 20px 50px rgba(0,0,0,0.3);
+        }
+
+        .career-card-top {
+            padding: 2rem 2rem 1.5rem;
+            border-bottom: 1px solid var(--border);
+            position: relative;
+        }
+
+        .career-card-top::before {
+            content: '';
+            position: absolute;
+            top: 0; left: 0; right: 0;
+            height: 3px;
+            background: var(--card-gradient, linear-gradient(90deg,#06b6d4,#6366f1));
+        }
+
+        .career-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: 1rem;
+        }
+
+        .career-icon {
+            width: 52px; height: 52px;
+            border-radius: 14px;
+            display: flex; align-items: center; justify-content: center;
+            font-size: 1.5rem;
+            margin-bottom: 0.8rem;
+        }
+
+        .career-title { font-size: 1.3rem; font-weight: 800; margin-bottom: 0.25rem; }
+        .career-domain { font-size: 0.82rem; color: var(--text-muted); }
+
+        .growth-badge {
+            display: flex;
+            align-items: center;
+            gap: 0.3rem;
+            padding: 0.4rem 0.9rem;
+            background: rgba(16,185,129,0.12);
+            color: #34d399;
+            border: 1px solid rgba(16,185,129,0.2);
+            border-radius: 100px;
+            font-size: 0.8rem;
+            font-weight: 700;
+            flex-shrink: 0;
+        }
+
+        .salary-row {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            background: rgba(255,255,255,0.03);
+            border: 1px solid var(--border);
+            border-radius: 0.75rem;
+            padding: 0.9rem 1.2rem;
+        }
+
+        .salary-icon { font-size: 1.3rem; }
+        .salary-label { font-size: 0.75rem; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.05em; }
+        .salary-val { font-size: 1.25rem; font-weight: 800; color: white; }
+
+        .career-card-bottom { padding: 1.5rem 2rem 2rem; flex: 1; }
+
+        .skills-label {
+            font-size: 0.8rem;
+            font-weight: 700;
+            color: var(--text-muted);
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            margin-bottom: 0.8rem;
+            display: flex;
+            align-items: center;
+            gap: 0.4rem;
+        }
+
+        .skills-list { display: flex; flex-wrap: wrap; gap: 0.5rem; }
+
+        .skill-tag {
+            padding: 0.3rem 0.8rem;
+            border-radius: 6px;
+            font-size: 0.78rem;
+            font-weight: 600;
+            background: rgba(255,255,255,0.05);
+            border: 1px solid var(--border);
+            color: var(--text-muted);
+            transition: all 0.2s;
+        }
+
+        .career-card:hover .skill-tag {
+            background: rgba(6,182,212,0.1);
+            border-color: rgba(6,182,212,0.2);
+            color: #22d3ee;
+        }
+
+        /* EXPLORE PATH */
+        .path-section {
+            border-top: 1px solid var(--border);
+            background: rgba(255,255,255,0.01);
+        }
+
+        .path-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(240px,1fr));
+            gap: 1.5rem;
+            max-width: 1100px;
+            margin: 0 auto;
+        }
+
+        .path-card {
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: 1.5rem;
+            padding: 2rem;
+            text-align: center;
+            transition: all 0.3s;
+            cursor: pointer;
+        }
+
+        .path-card:hover { transform: translateY(-6px); border-color: rgba(255,255,255,0.15); }
+
+        .path-icon { font-size: 2.5rem; margin-bottom: 1rem; display: block; }
+        .path-card h3 { font-size: 1.1rem; font-weight: 700; margin-bottom: 0.5rem; }
+        .path-card p { font-size: 0.85rem; color: var(--text-muted); line-height: 1.5; }
+        .path-card .count { display: inline-block; margin-top: 1rem; font-size: 0.78rem; font-weight: 700; padding: 0.3rem 0.8rem; border-radius: 100px; }
+
+        /* CTA */
+        .cta-box {
+            background: linear-gradient(135deg, rgba(6,182,212,0.12), rgba(99,102,241,0.12), rgba(236,72,153,0.1));
+            border: 1px solid rgba(6,182,212,0.2);
+            border-radius: 2rem;
+            padding: 4rem 3rem;
+            text-align: center;
+            max-width: 800px;
+            margin: 0 auto;
+        }
+        .cta-box h2 { font-size: 2rem; font-weight: 800; margin-bottom: 1rem; }
+        .cta-box p { color: var(--text-muted); margin-bottom: 2rem; }
+        .cta-btns { display: flex; gap: 1rem; justify-content: center; flex-wrap: wrap; }
+
+        /* LOADER */
+        .loader {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 5rem;
+            color: var(--text-muted);
+        }
+        .spinner {
+            width: 44px; height: 44px;
+            border: 3px solid var(--border);
+            border-top-color: var(--primary);
+            border-radius: 50%;
+            animation: spin 0.8s linear infinite;
+            margin-bottom: 1rem;
+        }
+        @keyframes spin { to { transform: rotate(360deg); } }
+
+        footer { padding:2rem 6%; border-top:1px solid var(--border); display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:1rem; }
+        footer p { color:var(--text-muted); font-size:0.88rem; }
+        .footer-links { display:flex; gap:2rem; list-style:none; }
+        .footer-links a { color:var(--text-muted); text-decoration:none; font-size:0.88rem; transition:color 0.2s; }
+        .footer-links a:hover { color:white; }
+
+        @keyframes fadeInUp { from{opacity:0;transform:translateY(25px);} to{opacity:1;transform:translateY(0);} }
+        .reveal { opacity:0; transform:translateY(25px); transition:opacity 0.6s ease, transform 0.6s ease; }
+        .reveal.visible { opacity:1; transform:translateY(0); }
+
+        @media(max-width:900px) {
+            .nav-links { display:none; }
+            .career-grid { grid-template-columns:1fr; }
+        }
+    </style>
+</head>
+<body>
+
+    <nav>
+        <a href="landing.html" class="logo">∞ SkillSync</a>
+        <ul class="nav-links">
+            <li><a href="landing.html">Home</a></li>
+            <li><a href="recruiters.html">Recruiters</a></li>
+            <li><a href="mentorship.html">Mentorship</a></li>
+            <li><a href="#explore">Explore Roles</a></li>
+        </ul>
+        <div style="display:flex;gap:0.8rem;">
+            <a href="login.html" class="btn btn-ghost">Log in</a>
+            <a href="signup.html" class="btn btn-primary">Get Started →</a>
+        </div>
+    </nav>
+
+    <!-- HERO -->
+    <section class="page-hero">
+        <div class="hero-content">
+            <div class="section-tag tag-cyan">🚀 Career Insights</div>
+            <h1>Explore <span class="gradient-cyan">high-growth</span> careers</h1>
+            <p>Discover the hottest career paths in tech, finance, and beyond. Real salary data, required skills, and growth rates — all in one place.</p>
+            <div class="filter-bar" id="filterBar">
+                <button class="filter-btn active" onclick="filterCareers('all', this)">All Domains</button>
+                <button class="filter-btn" onclick="filterCareers('tech', this)">💻 Tech</button>
+                <button class="filter-btn" onclick="filterCareers('data', this)">📊 Data & AI</button>
+                <button class="filter-btn" onclick="filterCareers('design', this)">🎨 Design</button>
+                <button class="filter-btn" onclick="filterCareers('finance', this)">💰 Finance</button>
+                <button class="filter-btn" onclick="filterCareers('management', this)">📦 Management</button>
+            </div>
+        </div>
+    </section>
+
+    <!-- CAREERS GRID -->
+    <section class="main-section">
+        <div id="loader" class="loader">
+            <div class="spinner"></div>
+            Loading career data...
+        </div>
+        <div id="careers-container" class="career-grid" style="display:none;"></div>
+    </section>
+
+    <!-- EXPLORE PATHS -->
+    <section id="explore-paths" class="main-section path-section">
+        <div class="section-center reveal">
+            <div class="section-tag tag-purple">🗺️ Learning Paths</div>
+            <h2>Explore by <span class="gradient-cyan">domain</span></h2>
+            <p>Choose a domain and get a curated roadmap of skills, certifications, and projects to land your dream job.</p>
+        </div>
+        <div class="path-grid max-w">
+            <div class="path-card reveal" style="border-color:rgba(6,182,212,0.15);" onclick="filterCareers('tech', document.querySelector('[onclick*=tech]'))">
+                <span class="path-icon">💻</span>
+                <h3>Software Engineering</h3>
+                <p>Frontend, backend, full-stack, mobile, cloud — build things people use every day.</p>
+                <span class="count" style="background:rgba(6,182,212,0.15);color:#22d3ee;">8 Careers</span>
+            </div>
+            <div class="path-card reveal" style="border-color:rgba(168,85,247,0.15);" onclick="filterCareers('data', document.querySelector('[onclick*=data]'))">
+                <span class="path-icon">🤖</span>
+                <h3>Data Science & AI</h3>
+                <p>Machine learning, NLP, computer vision, analytics — shape decisions with data.</p>
+                <span class="count" style="background:rgba(168,85,247,0.15);color:#c084fc;">6 Careers</span>
+            </div>
+            <div class="path-card reveal" style="border-color:rgba(236,72,153,0.15);">
+                <span class="path-icon">🎨</span>
+                <h3>UX / Product Design</h3>
+                <p>Design experiences that are intuitive, beautiful, and user-centric. Figma, research, and more.</p>
+                <span class="count" style="background:rgba(236,72,153,0.15);color:#f472b6;">4 Careers</span>
+            </div>
+            <div class="path-card reveal" style="border-color:rgba(16,185,129,0.15);">
+                <span class="path-icon">💰</span>
+                <h3>Finance & Investment</h3>
+                <p>Banking, FinTech, analytics, and investment roles driving the global economy.</p>
+                <span class="count" style="background:rgba(16,185,129,0.15);color:#34d399;">5 Careers</span>
+            </div>
+        </div>
+    </section>
+
+    <!-- TOP COMPANIES -->
+    <section class="main-section" style="background: rgba(255,255,255,0.01); border-top: 1px solid var(--border);">
+        <div class="section-center reveal">
+            <div class="section-tag tag-orange">🏢 Top Employers</div>
+            <h2>Meet our <span class="gradient-cyan">Hiring Partners</span></h2>
+            <p>Explore top companies actively recruiting from our verified student pool.</p>
+        </div>
+        <div id="companies-grid" class="path-grid max-w" style="grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));">
+            <!-- Rendered via JS -->
+            <div style="text-align: center; grid-column: 1/-1; padding: 2rem;">
+                <div class="spinner" style="margin: 0 auto;"></div>
+            </div>
+        </div>
+    </section>
+
+    <!-- TIPS -->
+    <section class="main-section" style="border-top: 1px solid var(--border);">
+        <div class="section-center reveal">
+            <div class="section-tag tag-orange">💡 Career Tips</div>
+            <h2>Boost your <span class="gradient-cyan">chances</span></h2>
+        </div>
+        <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:1.5rem;max-width:1100px;margin:0 auto;">
+            <div class="path-card reveal" style="text-align:left;">
+                <span class="path-icon">🏆</span>
+                <h3>Build Verified Skills</h3>
+                <p>Complete SkillSync assessments to earn verification badges. Verified skills get 3x more recruiter views.</p>
+            </div>
+            <div class="path-card reveal" style="text-align:left;">
+                <span class="path-icon">🔗</span>
+                <h3>Showcase Projects</h3>
+                <p>Link your GitHub, portfolio, and live projects. Recruiters want to see what you can build — not just what you know.</p>
+            </div>
+            <div class="path-card reveal" style="text-align:left;">
+                <span class="path-icon">🤝</span>
+                <h3>Get a Mentor</h3>
+                <p>Students with mentors are 2.4x more likely to land their target role. Book a free intro session today.</p>
+            </div>
+            <div class="path-card reveal" style="text-align:left;">
+                <span class="path-icon">📝</span>
+                <h3>Targeted Resume</h3>
+                <p>Tailor your resume for each role using SkillSync's ATS-optimizer. One size does not fit all.</p>
+            </div>
+        </div>
+    </section>
+
+    <!-- CTA -->
+    <section class="main-section">
+        <div class="cta-box reveal">
+            <div class="section-tag tag-cyan" style="margin:0 auto 1.5rem;display:inline-flex;">🎯 Get Matched</div>
+            <h2>Find your <span class="gradient-cyan">perfect career path</span></h2>
+            <p>Take SkillSync's 2-minute assessment and get personalized career recommendations based on your skills and interests.</p>
+            <div class="cta-btns">
+                <a href="signup.html" class="btn btn-primary btn-lg">Start My Journey →</a>
+                <a href="landing.html" class="btn btn-ghost btn-lg">← Back to Home</a>
+            </div>
+        </div>
+    </section>
+
+    <!-- FOOTER -->
+    <footer>
+        <p>© 2025 SkillSync · All rights reserved.</p>
+        <ul class="footer-links">
+            <li><a href="landing.html">Home</a></li>
+            <li><a href="mentorship.html">Mentorship</a></li>
+            <li><a href="recruiters.html">Recruiters</a></li>
+            <li><a href="#">Privacy</a></li>
+        </ul>
+    </footer>
+
+    <script>
+        // Reveal
+        const obs = new IntersectionObserver(entries => {
+            entries.forEach((e, i) => {
+                if (e.isIntersecting) { setTimeout(() => e.target.classList.add('visible'), i * 80); obs.unobserve(e.target); }
+            });
+        }, { threshold: 0.1, rootMargin: '0px 0px -40px 0px' });
+        document.querySelectorAll('.reveal').forEach(el => obs.observe(el));
+
+        // Career card styling config
+        const careerConfig = {
+            domains: {
+                'Software': { icon: '💻', gradient: 'linear-gradient(90deg,#06b6d4,#6366f1)', iconBg: 'rgba(6,182,212,0.15)', filter: 'tech' },
+                'Data Science': { icon: '📊', gradient: 'linear-gradient(90deg,#a855f7,#6366f1)', iconBg: 'rgba(168,85,247,0.15)', filter: 'data' },
+                'Machine Learning': { icon: '🤖', gradient: 'linear-gradient(90deg,#a855f7,#818cf8)', iconBg: 'rgba(168,85,247,0.15)', filter: 'data' },
+                'AI': { icon: '🤖', gradient: 'linear-gradient(90deg,#a855f7,#06b6d4)', iconBg: 'rgba(168,85,247,0.15)', filter: 'data' },
+                'Web': { icon: '🌐', gradient: 'linear-gradient(90deg,#06b6d4,#ec4899)', iconBg: 'rgba(6,182,212,0.15)', filter: 'tech' },
+                'Full Stack': { icon: '🔧', gradient: 'linear-gradient(90deg,#6366f1,#ec4899)', iconBg: 'rgba(99,102,241,0.15)', filter: 'tech' },
+                'Cybersecurity': { icon: '🔐', gradient: 'linear-gradient(90deg,#f97316,#ec4899)', iconBg: 'rgba(249,115,22,0.15)', filter: 'tech' },
+                'Finance': { icon: '💰', gradient: 'linear-gradient(90deg,#10b981,#06b6d4)', iconBg: 'rgba(16,185,129,0.15)', filter: 'finance' },
+                'Product': { icon: '📦', gradient: 'linear-gradient(90deg,#ec4899,#a855f7)', iconBg: 'rgba(236,72,153,0.15)', filter: 'management' },
+                'Design': { icon: '🎨', gradient: 'linear-gradient(90deg,#f472b6,#a855f7)', iconBg: 'rgba(236,72,153,0.15)', filter: 'design' },
+                'Cloud': { icon: '☁️', gradient: 'linear-gradient(90deg,#06b6d4,#6366f1)', iconBg: 'rgba(6,182,212,0.15)', filter: 'tech' },
+                'DevOps': { icon: '⚙️', gradient: 'linear-gradient(90deg,#f97316,#6366f1)', iconBg: 'rgba(249,115,22,0.15)', filter: 'tech' },
+                'Mobile': { icon: '📱', gradient: 'linear-gradient(90deg,#818cf8,#f472b6)', iconBg: 'rgba(99,102,241,0.15)', filter: 'tech' },
+            }
+        };
+
+        function getCardConfig(name) {
+            for (const [key, cfg] of Object.entries(careerConfig.domains)) {
+                if (name.toLowerCase().includes(key.toLowerCase())) return cfg;
+            }
+            return { icon: '💼', gradient: 'linear-gradient(90deg,#6366f1,#ec4899)', iconBg: 'rgba(99,102,241,0.15)', filter: 'tech' };
+        }
+
+        function getFilterKey(name) {
+            return getCardConfig(name).filter || 'tech';
+        }
+
+        let allCareers = [];
+
+        const sampleCareers = [
+            { career_name: 'Full Stack Developer', average_salary: 1800000, growth_rate: 22, required_skills: 'React, Node.js, MongoDB, PostgreSQL, Docker' },
+            { career_name: 'Machine Learning Engineer', average_salary: 2400000, growth_rate: 35, required_skills: 'Python, TensorFlow, PyTorch, SQL, Statistics' },
+            { career_name: 'Cybersecurity Analyst', average_salary: 1500000, growth_rate: 28, required_skills: 'Networking, SIEM, Pen Testing, Firewalls, Python' },
+            { career_name: 'Product Manager', average_salary: 2200000, growth_rate: 19, required_skills: 'Agile, Jira, Analytics, UX Research, Roadmapping' },
+            { career_name: 'Data Scientist', average_salary: 2000000, growth_rate: 31, required_skills: 'Python, R, SQL, Machine Learning, Data Visualization' },
+            { career_name: 'Cloud Architect', average_salary: 2600000, growth_rate: 26, required_skills: 'AWS, Azure, GCP, Kubernetes, Terraform, Docker' },
+            { career_name: 'UX Designer', average_salary: 1400000, growth_rate: 17, required_skills: 'Figma, User Research, Wireframing, Prototyping, CSS' },
+            { career_name: 'DevOps Engineer', average_salary: 1900000, growth_rate: 24, required_skills: 'CI/CD, Docker, Kubernetes, Linux, Scripting' },
+            { career_name: 'Investment Analyst', average_salary: 1700000, growth_rate: 14, required_skills: 'Excel, Financial Modelling, Bloomberg, Python, SQL' },
+            { career_name: 'Mobile App Developer', average_salary: 1600000, growth_rate: 20, required_skills: 'Flutter, React Native, Swift, Kotlin, Firebase' },
+            { career_name: 'AI Research Scientist', average_salary: 3000000, growth_rate: 42, required_skills: 'Deep Learning, Research Methods, PyTorch, Math, C++' },
+            { career_name: 'Blockchain Developer', average_salary: 2100000, growth_rate: 29, required_skills: 'Solidity, Ethereum, Web3.js, Smart Contracts, Cryptography' },
+        ];
+
+        document.addEventListener('DOMContentLoaded', async () => {
+            const container = document.getElementById('careers-container');
+            const API = (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1' || window.location.protocol === 'file:') ? 'http://localhost:3002' : '';
+            try {
+                const res = await fetch(`${API}/api/careers/details`);
+                if (!res.ok) throw new Error();
+                allCareers = await res.json();
+            } catch {
+                allCareers = sampleCareers;
+            }
+
+            loader.style.display = 'none';
+            container.style.display = 'grid';
+            renderCareers(allCareers);
+        });
+
+        function renderCareers(careers) {
+            const container = document.getElementById('careers-container');
+            container.innerHTML = '';
+
+            if (careers.length === 0) {
+                container.innerHTML = '<p style="color:var(--text-muted);text-align:center;grid-column:1/-1;padding:3rem;">No careers match this filter.</p>';
+                return;
+            }
+
+            careers.forEach((career, i) => {
+                const cfg = getCardConfig(career.career_name);
+                const salary = new Intl.NumberFormat('en-IN', { style: 'currency', currency: 'INR', maximumSignificantDigits: 3 }).format(career.average_salary);
+                const skills = career.required_skills ? career.required_skills.split(', ') : [];
+
+                container.innerHTML += `
+                    <div class="career-card" data-filter="${cfg.filter}" style="animation:fadeInUp 0.5s ease-out ${i * 0.05}s both;">
+                        <div class="career-card-top" style="--card-gradient:${cfg.gradient};">
+                            <div class="career-icon" style="background:${cfg.iconBg};">${cfg.icon}</div>
+                            <div class="career-header">
+                                <div>
+                                    <div class="career-title">${career.career_name}</div>
+                                    <div class="career-domain">Technology & Engineering</div>
+                                </div>
+                                <div class="growth-badge">
+                                    ↑ +${career.growth_rate}%/yr
+                                </div>
+                            </div>
+                            <div class="salary-row">
+                                <span class="salary-icon">₹</span>
+                                <div>
+                                    <div class="salary-label">Avg. Annual Package</div>
+                                    <div class="salary-val">${salary}</div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="career-card-bottom">
+                            <div class="skills-label">🎯 Required Skills</div>
+                            <div class="skills-list">
+                                ${skills.map(s => `<span class="skill-tag">${s}</span>`).join('')}
+                            </div>
+                        </div>
+                    </div>
+                `;
+            });
+        }
+
+        function filterCareers(type, btn) {
+            document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+            if (btn) btn.classList.add('active');
+
+            if (type === 'all') {
+                renderCareers(allCareers);
+            } else {
+                const filtered = allCareers.filter(c => getFilterKey(c.career_name) === type);
+                renderCareers(filtered.length > 0 ? filtered : allCareers);
+            }
+        }
+
+        // Fetch and Render Companies
+        function loadTheme() {
+            const theme = localStorage.getItem('theme') || 'theme-lavender';
+            document.body.className = theme;
+        }
+        loadTheme();
+
+        document.addEventListener('DOMContentLoaded', async () => {
+            const API = (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1' || window.location.protocol === 'file:') ? 'http://localhost:3002' : '';
+            const container = document.getElementById('companies-grid');
+            try {
+                const res = await fetch(`${API}/api/companies`);
+                if (!res.ok) throw new Error('Network error');
+                const companies = await res.json();
+                
+                container.innerHTML = '';
+                companies.forEach((company, i) => {
+                    container.innerHTML += `
+                        <div class="path-card reveal" style="border-color: ${company.bg_color}40; text-align: left; animation: fadeInUp 0.5s ease-out ${i * 0.1}s both;">
+                            <div style="display: flex; align-items: center; gap: 1rem; margin-bottom: 1rem;">
+                                <div style="width: 48px; height: 48px; border-radius: 12px; background: ${company.bg_color}30; color: ${company.bg_color}; display: flex; align-items: center; justify-content: center; font-size: 1.2rem; font-weight: 800;">
+                                    ${company.logo}
+                                </div>
+                                <div>
+                                    <h3 style="margin-bottom: 0;">${company.name}</h3>
+                                    <span style="font-size: 0.8rem; color: var(--text-muted);">${company.industry} · ${company.location}</span>
+                                </div>
+                            </div>
+                            <p style="font-size: 0.85rem;">${company.description}</p>
+                            <a href="signup.html" style="display: inline-block; margin-top: 1rem; font-size: 0.8rem; font-weight: 600; color: ${company.bg_color}; text-decoration: none;">View Roles →</a>
+                        </div>
+                    `;
+                });
+            } catch (err) {
+                console.error("Failed to load companies:", err);
+                container.innerHTML = '<p style="text-align:center; color: var(--text-muted); grid-column: 1/-1;">Could not load companies at this time.</p>';
+            }
+        });
+    </script>
+</body>
+</html>

@@ -1,0 +1,494 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SkillSync | Create Account</title>
+    <meta name="description" content="Join SkillSync — your personalized student career platform powered by a relational database.">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Outfit:wght@700;800;900&display=swap" rel="stylesheet">
+    <style>
+        *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+
+        :root {
+            --primary:   #6366f1;
+            --secondary: #ec4899;
+            --accent:    #06b6d4;
+            --text-dark: #1e1b4b;
+            --text-muted:#64748b;
+            --border:    rgba(99,102,241,0.15);
+            --glass:     rgba(255,255,255,0.72);
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: linear-gradient(135deg, #ede9fe 0%, #fce7f3 40%, #e0f2fe 100%);
+            padding: 2rem;
+            position: relative;
+            overflow-x: hidden;
+        }
+
+        /* Orbs */
+        .bg-orbs { position: fixed; inset: 0; pointer-events: none; z-index: 0; }
+        .orb { position: absolute; border-radius: 50%; filter: blur(80px); opacity: 0.4; animation: orbFloat 8s ease-in-out infinite; }
+        .orb1 { width: 500px; height: 500px; background: radial-gradient(circle,#a78bfa,#6366f1); top:-100px; left:-100px; animation-delay:0s; }
+        .orb2 { width: 380px; height: 380px; background: radial-gradient(circle,#f9a8d4,#ec4899); bottom:-80px; right:-60px; animation-delay:2.5s; }
+        .orb3 { width: 280px; height: 280px; background: radial-gradient(circle,#67e8f9,#06b6d4); top:40%; left:60%; animation-delay:5s; }
+        @keyframes orbFloat { 0%,100%{transform:translateY(0) scale(1);} 50%{transform:translateY(-25px) scale(1.04);} }
+
+        /* Doodles */
+        .doodle-bg { position: fixed; inset: 0; pointer-events: none; z-index: 0; }
+        .doodle-icon { position: absolute; font-size: 1.8rem; opacity: 0.07; animation: doodleDrift 12s ease-in-out infinite; user-select: none; }
+        @keyframes doodleDrift { 0%,100%{transform:translateY(0) rotate(0deg);} 50%{transform:translateY(-15px) rotate(6deg);} }
+
+        /* Card */
+        .auth-card {
+            position: relative; z-index: 1;
+            width: 100%; max-width: 500px;
+            background: var(--glass);
+            backdrop-filter: blur(32px); -webkit-backdrop-filter: blur(32px);
+            border: 1.5px solid rgba(255,255,255,0.8);
+            border-radius: 1.75rem;
+            padding: 2.5rem;
+            box-shadow: 0 20px 60px rgba(99,102,241,0.12), 0 4px 20px rgba(0,0,0,0.06);
+            animation: cardIn 0.5s cubic-bezier(0.34,1.56,0.64,1) both;
+            max-height: 92vh; overflow-y: auto;
+        }
+        .auth-card::-webkit-scrollbar { width: 5px; }
+        .auth-card::-webkit-scrollbar-thumb { background: rgba(99,102,241,0.25); border-radius: 10px; }
+        @keyframes cardIn { from{opacity:0;transform:translateY(24px) scale(0.97);} to{opacity:1;transform:translateY(0) scale(1);} }
+
+        /* Logo */
+        .card-logo { display: flex; align-items: center; gap: 0.6rem; margin-bottom: 1.5rem; }
+        .card-logo-icon {
+            width: 38px; height: 38px; border-radius: 0.7rem;
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            display: flex; align-items: center; justify-content: center;
+            font-family: 'Outfit'; font-weight: 900; color: white; font-size: 1rem;
+        }
+        .card-logo-name { font-family: 'Outfit'; font-weight: 800; font-size: 1.1rem; color: var(--text-dark); }
+
+        .auth-header { margin-bottom: 1.5rem; }
+        .auth-header h1 { font-family: 'Outfit'; font-size: 1.75rem; font-weight: 900; color: var(--text-dark); margin-bottom: 0.25rem; }
+        .auth-header p { font-size: 0.88rem; color: var(--text-muted); }
+
+        /* Connection status */
+        #connection-status {
+            display: none; align-items: center; gap: 0.5rem;
+            padding: 0.4rem 0.9rem; background: rgba(248,113,113,0.1);
+            border: 1px solid rgba(248,113,113,0.2); border-radius: 2rem;
+            margin-bottom: 1rem; font-size: 0.75rem; color: #dc2626;
+        }
+        #status-dot { width: 8px; height: 8px; background: #ef4444; border-radius: 50%; display: block; }
+
+        .back-link {
+            display: inline-flex; align-items: center; gap: 0.4rem;
+            color: var(--primary); text-decoration: none; font-size: 0.82rem;
+            font-weight: 600; margin-bottom: 1.25rem; transition: gap 0.2s;
+        }
+        .back-link:hover { gap: 0.65rem; }
+
+        /* Form fields */
+        .form-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 0 1rem; }
+        .form-group { margin-bottom: 1rem; }
+        .form-group label { display: block; font-size: 0.82rem; font-weight: 700; color: var(--text-dark); margin-bottom: 0.4rem; }
+        .form-group.full { grid-column: 1 / -1; }
+
+        .input-wrap { position: relative; }
+        .input-icon { position: absolute; left: 0.9rem; top: 50%; transform: translateY(-50%); font-size: 0.95rem; pointer-events: none; }
+        .form-control {
+            width: 100%; padding: 0.8rem 1rem 0.8rem 2.5rem;
+            background: rgba(255,255,255,0.6);
+            border: 1.5px solid var(--border); border-radius: 0.875rem;
+            color: var(--text-dark); font-size: 0.93rem; font-family: 'Inter';
+            transition: all 0.25s; outline: none;
+        }
+        .form-control::placeholder { color: #b0bec5; }
+        .form-control:focus { background: rgba(255,255,255,0.9); border-color: var(--primary); box-shadow: 0 0 0 3px rgba(99,102,241,0.1); }
+        select.form-control { padding-left: 2.5rem; cursor: pointer; }
+        select.form-control option { background: white; color: #1e1b4b; }
+
+        /* Password strength */
+        .pw-strength { margin-top: 0.6rem; }
+        .pw-strength-bar {
+            height: 4px; border-radius: 100px; background: rgba(0,0,0,0.08);
+            margin-bottom: 0.5rem; overflow: hidden;
+        }
+        .pw-bar-fill { height: 100%; border-radius: 100px; width: 0%; transition: width 0.3s, background 0.3s; }
+        .pw-criteria { display: grid; grid-template-columns: 1fr 1fr; gap: 0.25rem; }
+        .crit-item { display: flex; align-items: center; gap: 0.3rem; font-size: 0.72rem; color: var(--text-muted); transition: color 0.2s; }
+        .crit-item.valid { color: #10b981; }
+        .crit-item.valid .crit-dot { background: #10b981; }
+        .crit-dot { width: 6px; height: 6px; border-radius: 50%; background: #cbd5e1; flex-shrink: 0; transition: background 0.2s; }
+
+        /* Submit */
+        .btn-submit {
+            width: 100%; padding: 0.95rem;
+            background: linear-gradient(90deg, var(--primary), var(--secondary));
+            border: none; border-radius: 0.875rem;
+            color: white; font-weight: 800; font-size: 0.95rem;
+            cursor: pointer; margin-top: 0.75rem;
+            box-shadow: 0 8px 24px rgba(99,102,241,0.35);
+            transition: transform 0.2s, box-shadow 0.2s, opacity 0.2s;
+            display: flex; align-items: center; justify-content: center; gap: 0.5rem;
+        }
+        .btn-submit:hover:not(:disabled) { transform: translateY(-2px); box-shadow: 0 12px 32px rgba(99,102,241,0.45); }
+        .btn-submit:disabled { opacity: 0.6; cursor: not-allowed; }
+
+        .spinner-sm { width:15px; height:15px; border:2px solid rgba(255,255,255,0.35); border-top-color:white; border-radius:50%; animation:spin 0.7s linear infinite; display:none; }
+        @keyframes spin { to{transform:rotate(360deg);} }
+
+        .error-msg {
+            font-size: 0.82rem; font-weight: 600; color: #dc2626;
+            background: rgba(239,68,68,0.08); border: 1px solid rgba(239,68,68,0.2);
+            border-radius: 0.6rem; padding: 0.6rem 0.9rem;
+            margin-top: 0.75rem; min-height: 0;
+        }
+
+        .auth-footer { text-align: center; margin-top: 1.25rem; font-size: 0.85rem; color: var(--text-muted); }
+        .auth-footer a { color: var(--primary); text-decoration: none; font-weight: 700; }
+        .auth-footer a:hover { text-decoration: underline; }
+
+        /* Success screen */
+        .success-screen { text-align: center; padding: 2rem 0; }
+        .success-emoji { font-size: 4rem; margin-bottom: 1rem; animation: pop 0.5s cubic-bezier(0.34,1.56,0.64,1); }
+        @keyframes pop { from{transform:scale(0);} to{transform:scale(1);} }
+        .success-screen h2 { font-family: 'Outfit'; font-size: 1.75rem; font-weight: 900; color: var(--text-dark); margin-bottom: 0.5rem; }
+        .success-screen p { color: var(--text-muted); margin-bottom: 2rem; }
+
+        /* Section divider */
+        .section-label {
+            font-size: 0.72rem; font-weight: 800; text-transform: uppercase;
+            letter-spacing: 1px; color: var(--primary);
+            margin: 0.75rem 0 0.75rem;
+            display: flex; align-items: center; gap: 0.5rem;
+        }
+        .section-label::before, .section-label::after { content:''; flex:1; height:1px; background:var(--border); }
+
+        .hidden { display: none !important; }
+    </style>
+</head>
+<body>
+
+    <div class="bg-orbs">
+        <div class="orb orb1"></div>
+        <div class="orb orb2"></div>
+        <div class="orb orb3"></div>
+    </div>
+    <div class="doodle-bg">
+        <span class="doodle-icon" style="top:5%;left:5%;animation-delay:0s">🎓</span>
+        <span class="doodle-icon" style="top:15%;right:5%;animation-delay:1s">💡</span>
+        <span class="doodle-icon" style="bottom:10%;left:8%;animation-delay:2s">🚀</span>
+        <span class="doodle-icon" style="bottom:20%;right:10%;animation-delay:3s">⭐</span>
+        <span class="doodle-icon" style="top:50%;left:3%;animation-delay:1.5s">📊</span>
+        <span class="doodle-icon" style="top:70%;right:4%;animation-delay:2.5s">💼</span>
+        <span class="doodle-icon" style="top:35%;left:48%;animation-delay:4s">✨</span>
+    </div>
+
+    <div class="auth-card">
+
+        <div class="card-logo">
+            <div class="card-logo-icon">∞</div>
+            <div class="card-logo-name">SkillSync</div>
+        </div>
+
+        <div id="form-title" class="auth-header">
+            <div id="connection-status">
+                <span id="status-dot"></span>
+                <span id="status-text">Backend Offline — Start: node server.js</span>
+            </div>
+            <h1>Create your account 🚀</h1>
+            <p>Join SkillSync and supercharge your career journey</p>
+        </div>
+
+        <a href="landing.html" class="back-link">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="19" y1="12" x2="5" y2="12"></line><polyline points="12 19 5 12 12 5"></polyline></svg>
+            Back to home
+        </a>
+
+        <form id="signup-form" novalidate>
+            <div class="section-label">Personal Info</div>
+
+            <div class="form-grid">
+                <div class="form-group full">
+                    <label for="name">Full Name</label>
+                    <div class="input-wrap">
+                        <span class="input-icon">👤</span>
+                        <input type="text" id="name" class="form-control" placeholder="e.g. Arjun Kumar" required autocomplete="name">
+                    </div>
+                </div>
+                <div class="form-group full">
+                    <label for="email">Email Address</label>
+                    <div class="input-wrap">
+                        <span class="input-icon">✉️</span>
+                        <input type="email" id="email" class="form-control" placeholder="you@vit.ac.in" required autocomplete="email">
+                    </div>
+                </div>
+                <div class="form-group full">
+                    <label for="password">Password</label>
+                    <div class="input-wrap">
+                        <span class="input-icon">🔒</span>
+                        <input type="password" id="password" class="form-control" placeholder="Create a strong password" required autocomplete="new-password">
+                    </div>
+                    <div class="pw-strength" id="pw-strength-section" style="display:none;">
+                        <div class="pw-strength-bar"><div class="pw-bar-fill" id="pw-bar"></div></div>
+                        <div class="pw-criteria">
+                            <div class="crit-item" id="crit-lower"><div class="crit-dot"></div>Lowercase</div>
+                            <div class="crit-item" id="crit-upper"><div class="crit-dot"></div>Uppercase</div>
+                            <div class="crit-item" id="crit-number"><div class="crit-dot"></div>Number</div>
+                            <div class="crit-item" id="crit-symbol"><div class="crit-dot"></div>Symbol (@$!%*?&)</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="section-label">Academic Profile</div>
+
+            <div class="form-grid">
+                <div class="form-group full">
+                    <label for="role">I am a…</label>
+                    <div class="input-wrap">
+                        <span class="input-icon">🎭</span>
+                        <select id="role" class="form-control" onchange="toggleStudentFields()" required>
+                            <option value="student">🎓 Student</option>
+                            <option value="mentor">🏢 Mentor / Company</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div id="student-fields">
+                    <div class="form-grid">
+                        <div class="form-group full">
+                            <label for="department">Department / Stream</label>
+                            <div class="input-wrap">
+                                <span class="input-icon">🏫</span>
+                                <select id="department" class="form-control" required>
+                                    <option value="" disabled selected>Select your stream</option>
+                                    <option value="Computer Science &amp; Engineering">Computer Science &amp; Engineering</option>
+                                    <option value="CSE (AIML)">CSE (AI &amp; Machine Learning)</option>
+                                    <option value="CSE (AI &amp; Robotics)">CSE (AI &amp; Robotics)</option>
+                                    <option value="CSE (Cyber Security)">CSE (Cyber Security)</option>
+                                    <option value="CSE (Data Science)">CSE (Data Science)</option>
+                                    <option value="CSE (Cyber Physical Systems)">CSE (Cyber Physical Systems)</option>
+                                    <option value="Electronics &amp; Communication Eng.">Electronics &amp; Communication Eng.</option>
+                                    <option value="ECE (VLSI Design &amp; Technology)">ECE (VLSI Design &amp; Technology)</option>
+                                    <option value="Electrical &amp; Electronic Engineering">Electrical &amp; Electronics</option>
+                                    <option value="Electrical &amp; CSE">Electrical &amp; CSE</option>
+                                    <option value="Mechanical Engineering">Mechanical Engineering</option>
+                                    <option value="Mechatronics &amp; Automation">Mechatronics &amp; Automation</option>
+                                    <option value="ME (Electric Vehicles)">ME (Electric Vehicles)</option>
+                                    <option value="Civil Engineering">Civil Engineering</option>
+                                    <option value="Fashion Technology">Fashion Technology</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label for="year">Academic Year</label>
+                            <div class="input-wrap">
+                                <span class="input-icon">📅</span>
+                                <select id="year" class="form-control">
+                                    <option value="1">1st Year</option>
+                                    <option value="2">2nd Year</option>
+                                    <option value="3" selected>3rd Year</option>
+                                    <option value="4">4th Year</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label for="cgpa-init">Starting CGPA</label>
+                            <div class="input-wrap">
+                                <span class="input-icon">📈</span>
+                                <input type="number" id="cgpa-init" class="form-control" placeholder="e.g. 8.5" min="0" max="10" step="0.01">
+                            </div>
+                        </div>
+                    </div>
+                </div><!-- /student-fields -->
+
+                <!-- Mentor / Company fields -->
+                <div id="mentor-fields" style="display:none;">
+                    <div class="form-group full" style="margin-top:0.5rem;">
+                        <label for="organization">Organization / Company Name</label>
+                        <div class="input-wrap">
+                            <span class="input-icon">🏢</span>
+                            <input type="text" id="organization" class="form-control" placeholder="e.g. Google, VIT Chennai (Faculty)">
+                        </div>
+                    </div>
+                </div><!-- /mentor-fields -->
+
+            </div>
+
+            <div class="error-msg" id="error-msg" style="display:none;"></div>
+
+            <button type="submit" class="btn-submit" id="btn-register" disabled>
+                <div class="spinner-sm" id="btn-spinner"></div>
+                <span id="btn-text">Create Account →</span>
+            </button>
+        </form>
+
+        <!-- Success screen -->
+        <div id="step-success" class="success-screen hidden">
+            <div class="success-emoji">🎉</div>
+            <h2>You're in!</h2>
+            <p>Your SkillSync account is ready. Taking you to your dashboard...</p>
+            <a href="login.html" class="btn-submit" style="text-decoration:none;display:inline-flex;width:auto;padding:0.85rem 2rem;">
+                Go to Login →
+            </a>
+        </div>
+
+        <p class="auth-footer" id="footer-link">
+            Already have an account? <a href="login.html">Sign in</a>
+        </p>
+    </div>
+
+    <script>
+        const API_BASE_URL = (window.location.hostname === 'localhost' ||
+                              window.location.hostname === '127.0.0.1' ||
+                              window.location.protocol === 'file:')
+            ? 'http://localhost:3002/api' : '/api';
+
+        // ── Backend status check ─────────────────────────────────────────────
+        fetch(`${API_BASE_URL}/auth/login`, { method:'POST', headers:{'Content-Type':'application/json'}, body:'{}' })
+            .catch(() => { document.getElementById('connection-status').style.display = 'flex'; });
+
+        // ── Toggle student / mentor fields ─────────────────────────────────────
+        function toggleStudentFields() {
+            const role = document.getElementById('role').value;
+            const sf   = document.getElementById('student-fields');
+            const mf   = document.getElementById('mentor-fields');
+            const dept = document.getElementById('department');
+            const org  = document.getElementById('organization');
+            sf.style.display = role === 'student' ? 'block' : 'none';
+            if (mf) mf.style.display = role !== 'student' ? 'block' : 'none';
+            role === 'student' ? dept.setAttribute('required','') : dept.removeAttribute('required');
+            if (org) role !== 'student' ? org.setAttribute('required','') : org.removeAttribute('required');
+        }
+
+        // ── Password strength ────────────────────────────────────────────────
+        const pwInput   = document.getElementById('password');
+        const btnReg    = document.getElementById('btn-register');
+        const criteria  = { lower:/[a-z]/, upper:/[A-Z]/, number:/[0-9]/, symbol:/[@$!%*?&]/ };
+
+        pwInput.addEventListener('input', () => {
+            const pw  = pwInput.value;
+            const sec = document.getElementById('pw-strength-section');
+            sec.style.display = pw.length ? 'block' : 'none';
+
+            let score = 0;
+            if (pw.length >= 8) score++;
+            for (const [key, rx] of Object.entries(criteria)) {
+                const el = document.getElementById(`crit-${key}`);
+                if (rx.test(pw)) { el.classList.add('valid'); score++; }
+                else             { el.classList.remove('valid'); }
+            }
+
+            const bar = document.getElementById('pw-bar');
+            const colors  = ['#ef4444','#f59e0b','#10b981','#6366f1'];
+            const widths  = ['20%','50%','80%','100%'];
+            const si = Math.max(0, Math.min(score - 1, 3));
+            bar.style.width      = widths[si] || '0%';
+            bar.style.background = colors[si] || '#ef4444';
+
+            const allValid = Object.values(criteria).every(r => r.test(pw)) && pw.length >= 8;
+            btnReg.disabled = !allValid;
+        });
+
+        // ── Error helpers ────────────────────────────────────────────────────
+        function showError(msg) {
+            const el = document.getElementById('error-msg');
+            el.textContent = msg; el.style.display = 'block';
+        }
+        function hideError() {
+            document.getElementById('error-msg').style.display = 'none';
+        }
+
+        // ── Form submit ──────────────────────────────────────────────────────
+        document.getElementById('signup-form').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const btn     = document.getElementById('btn-register');
+            const spinner = document.getElementById('btn-spinner');
+            const btnText = document.getElementById('btn-text');
+            if (btn.disabled) return;
+            hideError();
+
+            btnText.textContent = 'Creating account...';
+            spinner.style.display = 'block';
+            btn.disabled = true;
+
+            const cgpaVal = parseFloat(document.getElementById('cgpa-init').value) || 0;
+            const selectedRole = document.getElementById('role').value;
+            const orgEl  = document.getElementById('organization');
+            const payload = {
+                name:         document.getElementById('name').value.trim(),
+                email:        document.getElementById('email').value.trim(),
+                role:         selectedRole,
+                password:     pwInput.value,
+                department:   selectedRole === 'student' ? document.getElementById('department').value.trim() : null,
+                year:         selectedRole === 'student' ? parseInt(document.getElementById('year').value) : null,
+                cgpa:         selectedRole === 'student' ? cgpaVal : null,
+                organization: orgEl ? orgEl.value.trim() : null
+            };
+
+            try {
+                const res  = await fetch(`${API_BASE_URL}/auth/register`, {
+                    method: 'POST', headers: {'Content-Type':'application/json'},
+                    body: JSON.stringify(payload)
+                });
+                const data = await res.json();
+
+                if (!res.ok) {
+                    showError(data.error || 'Registration failed. Please try again.');
+                    return;
+                }
+
+                // Auto-login
+                const loginRes = await fetch(`${API_BASE_URL}/auth/login`, {
+                    method: 'POST', headers: {'Content-Type':'application/json'},
+                    body: JSON.stringify({ email: payload.email, password: payload.password })
+                });
+                if (loginRes.ok) {
+                    const ld = await loginRes.json();
+                    const newId  = String(ld.user.id || ld.user.user_id || '');
+                    const prevId = localStorage.getItem('lastUserId') || '';
+                    // Always clear stale profile for a brand-new account
+                    if (newId !== prevId) {
+                        localStorage.removeItem('studentProfile');
+                        localStorage.removeItem('studentProfile_userId');
+                        localStorage.removeItem('profileCompletion');
+                    }
+                    localStorage.setItem('lastUserId', newId);
+                    localStorage.setItem('token', ld.token);
+                    localStorage.setItem('user', JSON.stringify(ld.user));
+                }
+
+                // Show success screen
+                document.getElementById('signup-form').classList.add('hidden');
+                document.getElementById('form-title').classList.add('hidden');
+                document.getElementById('step-success').classList.remove('hidden');
+                document.getElementById('footer-link').classList.add('hidden');
+
+                // Role-based redirect after sign-up
+                const newRole = ld?.user?.role || payload.role || 'student';
+                setTimeout(() => {
+                    if (newRole === 'mentor' || newRole === 'company') {
+                        window.location.href = 'company-dashboard.html';
+                    } else {
+                        window.location.href = `index.html?studentId=${ld?.user?.id||''}`;
+                    }
+                }, 2000);
+
+            } catch (err) {
+                showError('Network error. Make sure the backend is running (node server.js).');
+            } finally {
+                if (!document.getElementById('step-success').classList.contains('hidden')) return;
+                btnText.textContent = 'Create Account →';
+                spinner.style.display = 'none';
+                btn.disabled = false;
+            }
+        });
+    </script>
+</body>
+</html>

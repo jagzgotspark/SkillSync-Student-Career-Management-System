@@ -1,0 +1,57 @@
+[
+  {
+    "career_id": 1,
+    "career_name": "Software Development Engineer",
+    "department": "Computer Science & Engineering",
+    "required_skills": [
+      { "skill_name": "JavaScript", "level": 3 },
+      { "skill_name": "Python", "level": 3 },
+      { "skill_name": "Data Structures", "level": 4 },
+      { "skill_name": "System Design", "level": 3 }
+    ]
+  },
+  {
+    "career_id": 2,
+    "career_name": "Frontend Engineer",
+    "department": "Computer Science & Engineering",
+    "required_skills": [
+      { "skill_name": "HTML/CSS", "level": 4 },
+      { "skill_name": "JavaScript", "level": 4 },
+      { "skill_name": "React", "level": 3 },
+      { "skill_name": "UI/UX", "level": 2 }
+    ]
+  },
+  {
+    "career_id": 3,
+    "career_name": "Data Scientist",
+    "department": "Computer Science & Engineering",
+    "required_skills": [
+      { "skill_name": "Python", "level": 4 },
+      { "skill_name": "Machine Learning", "level": 3 },
+      { "skill_name": "SQL", "level": 3 },
+      { "skill_name": "Data Visualization", "level": 3 }
+    ]
+  },
+  {
+    "career_id": 4,
+    "career_name": "Embedded Systems Engineer",
+    "department": "Electrical & CSE",
+    "required_skills": [
+      { "skill_name": "C", "level": 4 },
+      { "skill_name": "C++", "level": 3 },
+      { "skill_name": "Microcontrollers", "level": 3 },
+      { "skill_name": "IoT protocols", "level": 2 }
+    ]
+  },
+  {
+    "career_id": 5,
+    "career_name": "Cybersecurity Analyst",
+    "department": "Information Technology",
+    "required_skills": [
+      { "skill_name": "Network Security", "level": 4 },
+      { "skill_name": "Linux", "level": 3 },
+      { "skill_name": "Cryptography", "level": 3 },
+      { "skill_name": "Penetration Testing", "level": 2 }
+    ]
+  }
+]

@@ -1,0 +1,795 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SkillSync | Advanced Analytics</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Outfit:wght@700;800;900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="../src/style.css">
+    <style>
+        /* ── Analytics-specific styles ── */
+        .analytics-hero {
+            background: linear-gradient(135deg, #6366f1 0%, #8b5cf6 50%, #ec4899 100%);
+            border-radius: var(--radius-xl); padding: 2rem 2.5rem;
+            color: white; margin-bottom: 2rem;
+        }
+        .analytics-hero h1 { font-family:'Outfit'; font-size:1.75rem; font-weight:900; margin-bottom:0.3rem; }
+        .analytics-hero p  { opacity:0.88; font-size:0.9rem; }
+
+        .analytics-tabs {
+            display: flex; gap: 0.5rem; flex-wrap: wrap;
+            margin-bottom: 1.75rem;
+        }
+        .atab {
+            padding: 0.55rem 1.2rem; border-radius: 2rem;
+            border: 1.5px solid var(--border); background: var(--bg-card);
+            color: var(--text-muted); font-size: 0.85rem; font-weight: 600;
+            cursor: pointer; transition: all 0.2s; white-space: nowrap;
+        }
+        .atab.active, .atab:hover {
+            background: var(--primary); color: white; border-color: var(--primary);
+        }
+
+        .panel { display: none; }
+        .panel.active { display: block; }
+
+        /* Cards */
+        .acard {
+            background: var(--bg-card); border: 1px solid var(--border);
+            border-radius: var(--radius-xl); padding: 1.5rem;
+            margin-bottom: 1.5rem; box-shadow: var(--shadow-sm);
+        }
+        .acard h3 {
+            font-family:'Outfit'; font-size:1rem; font-weight:800;
+            color: var(--text-dark); margin-bottom: 1rem;
+            display:flex; align-items:center; gap:0.6rem;
+        }
+        .acard h3 .badge {
+            font-size:0.68rem; font-weight:700; padding:0.2rem 0.5rem;
+            border-radius:2rem; background:rgba(99,102,241,0.15); color:var(--primary);
+            letter-spacing:0.5px; text-transform:uppercase;
+        }
+
+        .grid-2 { display:grid; grid-template-columns:1fr 1fr; gap:1.25rem; }
+        .grid-3 { display:grid; grid-template-columns:repeat(3,1fr); gap:1rem; }
+        .grid-4 { display:grid; grid-template-columns:repeat(4,1fr); gap:1rem; }
+
+        /* Stat boxes */
+        .stat-box {
+            background: linear-gradient(135deg, var(--bg-card), rgba(99,102,241,0.04));
+            border: 1.5px solid var(--border); border-radius: var(--radius-lg);
+            padding: 1.25rem; text-align:center;
+        }
+        .stat-box .val { font-family:'Outfit'; font-size:2rem; font-weight:900; color:var(--primary); }
+        .stat-box .lbl { font-size:0.78rem; color:var(--text-muted); margin-top:0.2rem; font-weight:600; }
+
+        /* Match meter */
+        .match-meter { position:relative; margin: 1rem 0; }
+        .match-ring {
+            width:120px; height:120px; border-radius:50%;
+            background: conic-gradient(var(--primary) calc(var(--pct)*3.6deg), rgba(99,102,241,0.1) 0);
+            display:grid; place-items:center; margin:0 auto;
+        }
+        .match-ring-inner {
+            width:88px; height:88px; border-radius:50%;
+            background: var(--bg-card); display:grid; place-items:center;
+        }
+        .match-pct { font-family:'Outfit'; font-size:1.4rem; font-weight:900; color:var(--text-dark); }
+
+        /* Skill pill */
+        .skill-pill {
+            display:inline-flex; align-items:center; gap:0.3rem;
+            padding: 0.25rem 0.7rem; border-radius:2rem; font-size:0.75rem; font-weight:600;
+            margin: 0.2rem;
+        }
+        .pill-miss { background:rgba(239,68,68,0.1); color:#dc2626; border:1px solid rgba(239,68,68,0.2); }
+        .pill-have { background:rgba(16,185,129,0.1); color:#059669; border:1px solid rgba(16,185,129,0.2); }
+        .pill-info { background:rgba(99,102,241,0.1); color:#6366f1; border:1px solid rgba(99,102,241,0.2); }
+
+        /* Priority bar */
+        .priority-row {
+            display:flex; align-items:center; gap:0.75rem;
+            padding: 0.65rem 0; border-bottom:1px solid var(--border);
+        }
+        .priority-row:last-child { border-bottom:none; }
+        .priority-rank { width:24px; height:24px; border-radius:50%; background:var(--primary); color:white; font-size:0.72rem; font-weight:800; display:grid; place-items:center; flex-shrink:0; }
+        .priority-bar-wrap { flex:1; height:6px; background:rgba(0,0,0,0.07); border-radius:100px; }
+        .priority-bar { height:100%; border-radius:100px; background:linear-gradient(90deg,var(--primary),var(--secondary)); transition:width 0.8s ease; }
+
+        /* Company table */
+        .company-table { width:100%; border-collapse:collapse; font-size:0.84rem; }
+        .company-table th { text-align:left; padding:0.6rem 0.75rem; color:var(--text-muted); font-size:0.75rem; font-weight:700; text-transform:uppercase; letter-spacing:0.5px; border-bottom:2px solid var(--border); }
+        .company-table td { padding:0.75rem; border-bottom:1px solid var(--border); color:var(--text-dark); }
+        .company-table tr:hover td { background:rgba(99,102,241,0.04); }
+
+        /* Career card */
+        .career-card {
+            border: 1.5px solid var(--border); border-radius: var(--radius-lg);
+            padding: 1.1rem; transition:all 0.2s; cursor:default;
+        }
+        .career-card:hover { border-color:var(--primary); transform:translateY(-2px); }
+        .career-card .career-name { font-weight:800; color:var(--text-dark); margin-bottom:0.3rem; font-size:0.95rem; }
+        .career-match-bar { height:6px; border-radius:100px; background:rgba(0,0,0,0.07); margin:0.5rem 0; }
+        .career-match-fill { height:100%; border-radius:100px; transition:width 1s ease; }
+
+        /* CGPA history timeline */
+        .timeline { position:relative; padding-left:1.5rem; }
+        .timeline::before { content:''; position:absolute; left:6px; top:0; bottom:0; width:2px; background:var(--border); }
+        .tl-item { position:relative; margin-bottom:1rem; }
+        .tl-dot { position:absolute; left:-1.5rem; top:2px; width:12px; height:12px; border-radius:50%; border:2px solid var(--primary); background:white; }
+        .tl-item.up .tl-dot { background:#10b981; border-color:#10b981; }
+        .tl-item.down .tl-dot { background:#ef4444; border-color:#ef4444; }
+        .tl-time { font-size:0.72rem; color:var(--text-muted); margin-bottom:0.1rem; }
+        .tl-val  { font-weight:700; color:var(--text-dark); }
+        .tl-change { font-size:0.75rem; font-weight:600; }
+        .tl-change.up   { color:#10b981; }
+        .tl-change.down { color:#ef4444; }
+
+        /* Placement bar */
+        .placement-row { display:flex; align-items:center; gap:1rem; padding:0.6rem 0; border-bottom:1px solid var(--border); }
+        .placement-row:last-child { border-bottom:none; }
+        .pl-dept { width:180px; font-size:0.84rem; font-weight:600; color:var(--text-dark); flex-shrink:0; }
+        .pl-bar-wrap { flex:1; height:8px; background:rgba(0,0,0,0.07); border-radius:100px; }
+        .pl-bar { height:100%; border-radius:100px; background:linear-gradient(90deg,#10b981,#06b6d4); transition:width 1s ease; }
+        .pl-rate { width:50px; text-align:right; font-size:0.82rem; font-weight:800; color:var(--primary); }
+        .pl-stat { font-size:0.75rem; color:var(--text-muted); width:80px; text-align:right; }
+
+        /* Controls */
+        .filter-row { display:flex; gap:0.75rem; align-items:center; flex-wrap:wrap; margin-bottom:1rem; }
+        .sel-input {
+            padding:0.5rem 0.9rem; border:1.5px solid var(--border); border-radius:0.6rem;
+            color:var(--text-dark); font-size:0.85rem; background:var(--bg-card); font-family:'Inter';
+        }
+        .sel-input:focus { outline:none; border-color:var(--primary); }
+        .btn-load {
+            padding:0.5rem 1.2rem; background:var(--primary); color:white;
+            border:none; border-radius:0.6rem; font-weight:700; font-size:0.85rem;
+            cursor:pointer; transition:all 0.2s;
+        }
+        .btn-load:hover { background:#4f46e5; transform:translateY(-1px); }
+
+        /* Activity log */
+        .act-row {
+            display:flex; align-items:center; gap:0.75rem;
+            padding:0.65rem 0; border-bottom:1px solid var(--border);
+        }
+        .act-row:last-child { border-bottom:none; }
+        .act-icon { width:32px; height:32px; border-radius:0.5rem; display:grid; place-items:center; font-size:1rem; flex-shrink:0; }
+        .act-title { font-weight:600; font-size:0.85rem; color:var(--text-dark); }
+        .act-time  { font-size:0.72rem; color:var(--text-muted); margin-top:1px; }
+        .act-pts   { margin-left:auto; font-weight:800; font-size:0.9rem; color:var(--primary); flex-shrink:0; }
+
+        /* Loading shimmer */
+        .shimmer { background:linear-gradient(90deg,rgba(0,0,0,0.05) 25%,rgba(0,0,0,0.08) 50%,rgba(0,0,0,0.05) 75%); background-size:200% 100%; animation:shimmer 1.4s infinite; border-radius:0.4rem; height:1rem; }
+        @keyframes shimmer { to{background-position:-200% 0;} }
+
+        @media(max-width:768px) {
+            .grid-2, .grid-3, .grid-4 { grid-template-columns:1fr; }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Sidebar Navigation -->
+    <nav class="sidebar">
+        <div class="logo-container">
+            <div class="logo-icon">∞</div>
+            <h2>SkillSync</h2>
+        </div>
+        <ul class="nav-links">
+            <li onclick="window.location.href='index.html'">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="7" height="7"></rect><rect x="14" y="3" width="7" height="7"></rect><rect x="14" y="14" width="7" height="7"></rect><rect x="3" y="14" width="7" height="7"></rect></svg>
+                Dashboard
+            </li>
+            <li onclick="window.location.href='students.html'">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path><circle cx="9" cy="7" r="4"></circle><path d="M23 21v-2a4 4 0 0 0-3-3.87"></path><path d="M16 3.13a4 4 0 0 1 0 7.75"></path></svg>
+                Candidate Directory
+            </li>
+            <li onclick="window.location.href='profile.html'">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path><circle cx="12" cy="7" r="4"></circle></svg>
+                My Profile
+            </li>
+            <li onclick="window.location.href='applications.html'">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline></svg>
+                My Applications
+            </li>
+            <li onclick="window.location.href='skill-gap.html'">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 12h-4l-3 9L9 3l-3 9H2"></path></svg>
+                Skill Gap Analyzer
+            </li>
+            <li onclick="window.location.href='leaderboard.html'">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="23 6 13.5 15.5 8.5 10.5 1 18"></polyline><polyline points="17 6 23 6 23 12"></polyline></svg>
+                Leaderboard
+            </li>
+            <li onclick="window.location.href='resume-score.html'">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="9 11 12 14 22 4"></polyline><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"></path></svg>
+                Resume Score
+            </li>
+            <li onclick="window.location.href='hackathons.html'">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"></polygon></svg>
+                Hackathons
+            </li>
+            <li class="active" onclick="window.location.href='analytics.html'">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 12h-4l-3 9L9 3l-3 9H2"></path></svg>
+                Analytics
+            </li>
+            <li onclick="window.location.href='dashboard-careers.html'">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"></path><path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"></path></svg>
+                Careers
+            </li>
+            <li onclick="window.location.href='settings.html'">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"></circle><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"></path></svg>
+                Settings
+            </li>
+        </ul>
+        <div class="nav-footer">
+            <div class="admin-profile">
+                <div class="avatar" style="background:var(--primary);color:white;display:flex;align-items:center;justify-content:center;font-weight:bold;font-size:1.2rem;width:40px;height:40px;border-radius:50%;" id="sidebar-avatar">S</div>
+                <div class="admin-info">
+                    <span class="admin-name" id="sidebar-name">Student</span>
+                    <span class="admin-role">Analytics</span>
+                </div>
+            </div>
+            <button onclick="logout()" style="margin-top:0.75rem; width:100%; padding:0.5rem; background:rgba(239,68,68,0.12); border:1px solid rgba(239,68,68,0.2); border-radius:8px; color:#f87171; font-size:0.82rem; cursor:pointer; font-weight:600;">Sign Out</button>
+            <button onclick="toggleDark()" id="dark-toggle" style="margin-top:0.5rem; width:100%; padding:0.5rem; background:rgba(255,255,255,0.06); border:1px solid rgba(255,255,255,0.1); border-radius:8px; color:rgba(255,255,255,0.6); font-size:0.82rem; cursor:pointer; font-weight:600;">🌙 Dark Mode</button>
+        </div>
+    </nav>
+
+    <main class="main-content">
+        <div class="analytics-hero">
+            <h1>📈 Advanced Analytics</h1>
+            <p>AI-powered insights using CTEs, Window Functions, Triggers &amp; Materialized Tables</p>
+        </div>
+
+        <!-- Tab Nav -->
+        <div class="analytics-tabs">
+            <button class="atab active" onclick="switchPanel('placement',this)">🏢 Placement Stats</button>
+            <button class="atab" onclick="switchPanel('hiring',this)">📊 Hiring Trends</button>
+            <button class="atab" onclick="switchPanel('career-pred',this)">🔮 Career Predictor</button>
+            <button class="atab" onclick="switchPanel('skill-rec',this)">⭐ Skill Engine</button>
+            <button class="atab" onclick="switchPanel('job-match',this)">🎯 Job Match</button>
+            <button class="atab" onclick="switchPanel('top-skills',this)">🔥 Top Skills</button>
+            <button class="atab" onclick="switchPanel('cgpa-hist',this)">📈 CGPA History</button>
+            <button class="atab" onclick="switchPanel('activity',this)">⚡ Activity Log</button>
+        </div>
+
+        <!-- ── PANEL 1: Placement Stats (Materialized Table) ── -->
+        <div id="panel-placement" class="panel active">
+            <div class="acard">
+                <h3>🏢 Placement Statistics <span class="badge">Materialized Table + Trigger</span></h3>
+                <div class="grid-4" id="placement-totals"></div>
+            </div>
+            <div class="acard">
+                <h3>📊 Department-wise Placement Rate</h3>
+                <div id="placement-bars">
+                    <div class="shimmer" style="height:2rem;margin-bottom:0.5rem;"></div>
+                    <div class="shimmer" style="height:2rem;margin-bottom:0.5rem;"></div>
+                    <div class="shimmer" style="height:2rem;"></div>
+                </div>
+            </div>
+        </div>
+
+        <!-- ── PANEL 2: Hiring Trends ── -->
+        <div id="panel-hiring" class="panel">
+            <div class="grid-2">
+                <div class="acard">
+                    <h3>🔥 Top Demanded Skills <span class="badge">CTE + RANK()</span></h3>
+                    <div id="hiring-skills"></div>
+                </div>
+                <div class="acard">
+                    <h3>🏭 By Industry</h3>
+                    <div id="hiring-industry"></div>
+                </div>
+            </div>
+            <div class="acard">
+                <h3>🏢 Company Hiring Activity <span class="badge">Multi-JOIN + GROUP BY</span></h3>
+                <div style="overflow-x:auto;">
+                <table class="company-table">
+                    <thead>
+                        <tr>
+                            <th>#</th><th>Company</th><th>Industry</th>
+                            <th>Applications</th><th>Selection Rate</th>
+                            <th>Avg CGPA</th><th>Placements</th>
+                        </tr>
+                    </thead>
+                    <tbody id="company-tbody"></tbody>
+                </table>
+                </div>
+            </div>
+        </div>
+
+        <!-- ── PANEL 3: Career Predictor ── -->
+        <div id="panel-career-pred" class="panel">
+            <div class="acard">
+                <h3>🔮 Career Path Predictor <span class="badge">JOIN + RANK() OVER</span></h3>
+                <p style="font-size:0.84rem;color:var(--text-muted);margin-bottom:1rem;">Based on your current skills — matched against career skill requirements</p>
+                <div id="your-skills-row" style="margin-bottom:1.25rem;"></div>
+            </div>
+            <div class="grid-2" id="career-cards"></div>
+        </div>
+
+        <!-- ── PANEL 4: Skill Recommendation Engine ── -->
+        <div id="panel-skill-rec" class="panel">
+            <div class="acard">
+                <h3>⭐ Skill Recommendation Engine <span class="badge">CTE + Window Function</span></h3>
+                <div class="filter-row">
+                    <label style="font-size:0.84rem;font-weight:600;">Select Job Role:</label>
+                    <select id="srec-role-select" class="sel-input">
+                        <option value="">Loading roles...</option>
+                    </select>
+                    <button class="btn-load" onclick="loadSkillRecommendations()">Analyze →</button>
+                </div>
+                <div id="srec-already" style="margin-bottom:1rem;"></div>
+                <div id="srec-results"></div>
+            </div>
+        </div>
+
+        <!-- ── PANEL 5: Job Match Score ── -->
+        <div id="panel-job-match" class="panel">
+            <div class="acard">
+                <h3>🎯 Job Match Score Calculator <span class="badge">JOIN + COUNT + Ratio</span></h3>
+                <div class="filter-row">
+                    <label style="font-size:0.84rem;font-weight:600;">Select Role:</label>
+                    <select id="jmatch-role-select" class="sel-input">
+                        <option value="">Loading roles...</option>
+                    </select>
+                    <button class="btn-load" onclick="loadJobMatch()">Calculate Match →</button>
+                </div>
+            </div>
+            <div id="match-result"></div>
+        </div>
+
+        <!-- ── PANEL 6: Top Skills by Department ── -->
+        <div id="panel-top-skills" class="panel">
+            <div class="acard">
+                <h3>🔥 Top Skills by Department <span class="badge">GROUP BY + RANK()</span></h3>
+                <div class="filter-row">
+                    <select id="dept-select" class="sel-input" onchange="loadTopSkills()">
+                        <option value="all">All Departments</option>
+                    </select>
+                </div>
+                <div id="top-skills-list"></div>
+            </div>
+        </div>
+
+        <!-- ── PANEL 7: CGPA History ── -->
+        <div id="panel-cgpa-hist" class="panel">
+            <div class="acard">
+                <h3>📈 CGPA History <span class="badge">Temporal Table + Trigger</span></h3>
+                <p style="font-size:0.84rem;color:var(--text-muted);margin-bottom:1rem;">Every CGPA update is automatically recorded by trigger <code style="background:rgba(99,102,241,0.1);padding:0.1rem 0.4rem;border-radius:4px;">trg_track_cgpa</code></p>
+                <div id="cgpa-current" style="margin-bottom:1rem;"></div>
+                <div class="timeline" id="cgpa-timeline">
+                    <p style="color:var(--text-muted);font-size:0.84rem;">No CGPA updates recorded yet. Update your CGPA in Profile to see history.</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- ── PANEL 8: Activity Log ── -->
+        <div id="panel-activity" class="panel">
+            <div id="activity-summary" class="grid-4" style="margin-bottom:1.5rem;"></div>
+            <div class="acard">
+                <h3>⚡ Activity Log <span class="badge">StudentPoints Table</span></h3>
+                <p style="font-size:0.84rem;color:var(--text-muted);margin-bottom:1rem;">Points are auto-awarded by database triggers on every activity</p>
+                <div id="activity-list"></div>
+            </div>
+        </div>
+
+    </main>
+</div>
+
+<script>
+    const API_BASE_URL = (window.location.hostname==='localhost'||window.location.hostname==='127.0.0.1'||window.location.protocol==='file:')
+        ? 'http://localhost:3002/api' : '/api';
+
+    const userStr = localStorage.getItem('user');
+    if (!userStr) window.location.href = 'login.html';
+    const user = JSON.parse(userStr);
+
+    if (user.role && user.role !== 'student') {
+        if (user.role === 'mentor' || user.role === 'company') {
+            window.location.href = 'company-dashboard.html';
+            return;
+        } else if (user.role === 'admin') {
+            window.location.href = 'students.html';
+            return;
+        }
+    }
+    const studentId = user.id || user.user_id || user.student_id;
+
+    document.getElementById('sidebar-name').textContent = user.name || 'Student';
+    document.getElementById('sidebar-avatar').textContent = (user.name||'S').charAt(0).toUpperCase();
+    function logout() { localStorage.removeItem('token'); localStorage.removeItem('user'); window.location.href='login.html'; }
+
+    // ── Theme ──
+    function toggleDark() {
+        const isDark = document.body.classList.toggle('theme-dark');
+        document.body.classList.toggle('theme-lavender', !isDark);
+        localStorage.setItem('theme', isDark ? 'theme-dark' : 'theme-lavender');
+        if(document.getElementById('dark-toggle')){
+            document.getElementById('dark-toggle').textContent = isDark ? '☀️ Light Mode' : '🌙 Dark Mode';
+        }
+    }
+    function loadTheme() {
+        const theme = localStorage.getItem('theme') || 'theme-lavender';
+        document.body.className = theme;
+        if(document.getElementById('dark-toggle')){
+            document.getElementById('dark-toggle').textContent = theme === 'theme-dark' ? '☀️ Light Mode' : '🌙 Dark Mode';
+        }
+    }
+    loadTheme();
+
+    // ── Panel switching ──
+    function switchPanel(id, btn) {
+        document.querySelectorAll('.panel').forEach(p => p.classList.remove('active'));
+        document.querySelectorAll('.atab').forEach(b => b.classList.remove('active'));
+        document.getElementById('panel-' + id).classList.add('active');
+        btn.classList.add('active');
+    }
+
+    // ─── HELPERS ───────────────────────────────────────────────────────────────
+    function colorForPct(pct) {
+        if (pct >= 70) return '#10b981';
+        if (pct >= 40) return '#f59e0b';
+        return '#ef4444';
+    }
+    function fmt(n) { return n != null ? n : '—'; }
+
+    // ─── PANEL 1: Placement Stats ───────────────────────────────────────────────
+    async function loadPlacementStats() {
+        try {
+            const data = await fetch(`${API_BASE_URL}/analytics/placement-stats`).then(r=>r.json());
+            if (data.totals) {
+                document.getElementById('placement-totals').innerHTML = `
+                    <div class="stat-box"><div class="val">${data.totals.grand_total||0}</div><div class="lbl">Total Students</div></div>
+                    <div class="stat-box"><div class="val">${data.totals.grand_placed||0}</div><div class="lbl">Placed</div></div>
+                    <div class="stat-box"><div class="val">${data.totals.avg_rate||0}%</div><div class="lbl">Avg Rate</div></div>
+                    <div class="stat-box"><div class="val">${data.totals.overall_cgpa||0}</div><div class="lbl">Avg CGPA</div></div>
+                `;
+            }
+            if (data.stats && data.stats.length) {
+                document.getElementById('placement-bars').innerHTML = data.stats.map(s => `
+                    <div class="placement-row">
+                        <div class="pl-dept">${s.department}</div>
+                        <div class="pl-bar-wrap"><div class="pl-bar" style="width:${s.placement_rate||0}%"></div></div>
+                        <div class="pl-rate">${s.placement_rate||0}%</div>
+                        <div class="pl-stat">${s.placed_students||0}/${s.total_students||0} placed</div>
+                        <div class="pl-stat">CGPA: ${s.avg_cgpa||'—'}</div>
+                    </div>`).join('');
+            } else {
+                document.getElementById('placement-bars').innerHTML = '<p style="color:var(--text-muted);font-size:0.85rem;">No placement data yet. Applications with status "Selected" populate this table.</p>';
+            }
+        } catch(e) {
+            document.getElementById('placement-bars').innerHTML = '<p style="color:var(--text-muted)">Backend offline — start with node server.js</p>';
+        }
+    }
+
+    // ─── PANEL 2: Hiring Trends ─────────────────────────────────────────────────
+    async function loadHiringTrends() {
+        try {
+            const d = await fetch(`${API_BASE_URL}/analytics/hiring-trends`).then(r=>r.json());
+
+            // Top skills
+            if (d.topSkills?.length) {
+                const max = d.topSkills[0].demand_count || 1;
+                document.getElementById('hiring-skills').innerHTML = d.topSkills.map((s,i) => `
+                    <div class="priority-row">
+                        <div class="priority-rank">${i+1}</div>
+                        <div style="min-width:110px;font-size:0.84rem;font-weight:600;">${s.skill_name}</div>
+                        <div class="priority-bar-wrap"><div class="priority-bar" style="width:${Math.round(s.demand_count/max*100)}%"></div></div>
+                        <div style="font-size:0.8rem;font-weight:700;color:var(--primary);width:30px;text-align:right;">${s.demand_count}</div>
+                    </div>`).join('');
+            }
+
+            // Industry
+            if (d.industries?.length) {
+                const maxI = Math.max(...d.industries.map(i=>i.applications||0), 1);
+                document.getElementById('hiring-industry').innerHTML = d.industries.map(ind => `
+                    <div class="priority-row">
+                        <div style="min-width:110px;font-size:0.84rem;font-weight:600;">${ind.industry||'General'}</div>
+                        <div class="priority-bar-wrap" style="background:rgba(236,72,153,0.1)"><div class="priority-bar" style="width:${Math.round((ind.applications||0)/maxI*100)}%;background:linear-gradient(90deg,#ec4899,#f472b6)"></div></div>
+                        <div style="font-size:0.8rem;font-weight:700;color:#ec4899;">${ind.applications||0}</div>
+                    </div>`).join('');
+            }
+
+            // Companies table
+            const tbody = document.getElementById('company-tbody');
+            if (d.companies?.length) {
+                tbody.innerHTML = d.companies.map((c,i) => `
+                    <tr>
+                        <td><strong>${i+1}</strong></td>
+                        <td><strong>${c.company_name}</strong></td>
+                        <td><span class="skill-pill pill-info">${c.industry||'—'}</span></td>
+                        <td>${c.total_applications||0}</td>
+                        <td><span style="color:${colorForPct(c.selection_rate||0)};font-weight:700;">${c.selection_rate||0}%</span></td>
+                        <td>${c.avg_applicant_cgpa||'—'}</td>
+                        <td><strong style="color:#10b981">${c.placements||0}</strong></td>
+                    </tr>`).join('');
+            } else {
+                tbody.innerHTML = '<tr><td colspan="7" style="text-align:center;color:var(--text-muted);padding:2rem;">No hiring data yet</td></tr>';
+            }
+        } catch(e) {
+            console.error(e);
+        }
+    }
+
+    // ─── PANEL 3: Career Predictor ──────────────────────────────────────────────
+    async function loadCareerPredictor() {
+        try {
+            const d = await fetch(`${API}/analytics/career-predictor/${studentId}`).then(r=>r.json());
+
+            // Student skills
+            if (d.student_skills?.length) {
+                document.getElementById('your-skills-row').innerHTML =
+                    '<div style="font-size:0.8rem;font-weight:700;color:var(--text-muted);margin-bottom:0.4rem;">YOUR SKILLS</div>' +
+                    d.student_skills.map(s => `<span class="skill-pill pill-have">✓ ${s}</span>`).join('');
+            }
+
+            // Career cards
+            const colors = ['#6366f1','#8b5cf6','#ec4899','#06b6d4','#10b981','#f59e0b','#ef4444','#64748b'];
+            const container = document.getElementById('career-cards');
+            if (d.predictions?.length) {
+                container.innerHTML = d.predictions.map((c,i) => {
+                    const pct = c.match_pct || 0;
+                    const col = colors[i % colors.length];
+                    return `<div class="career-card">
+                        <div style="display:flex;justify-content:space-between;align-items:start;">
+                            <div>
+                                <div class="career-name">${c.career_name}</div>
+                                <div style="font-size:0.77rem;color:var(--text-muted);">${c.matched_skills||0}/${c.total_skills_needed||0} skills matched</div>
+                            </div>
+                            <div style="font-family:'Outfit';font-size:1.3rem;font-weight:900;color:${col}">${pct}%</div>
+                        </div>
+                        <div class="career-match-bar"><div class="career-match-fill" style="width:${pct}%;background:${col}"></div></div>
+                        <div style="display:flex;gap:1rem;font-size:0.75rem;color:var(--text-muted);">
+                            ${c.average_salary ? `<span>💰 ${c.average_salary}</span>` : ''}
+                            ${c.growth_rate ? `<span>📈 ${c.growth_rate}</span>` : ''}
+                        </div>
+                    </div>`;
+                }).join('');
+            } else {
+                container.innerHTML = '<p style="color:var(--text-muted);font-size:0.85rem;grid-column:1/-1">Add skills to your profile to see career predictions.</p>';
+            }
+        } catch(e) {
+            console.error(e);
+        }
+    }
+
+    // ─── PANEL 4: Skill Recommendations ────────────────────────────────────────
+    let jobRoles = [];
+    async function loadJobRoles() {
+        try {
+            const roles = await fetch(`${API}/companies`).then(r=>r.json());
+            // companies endpoint returns companies with their roles
+            jobRoles = [];
+            if (Array.isArray(roles)) {
+                roles.forEach(c => (c.roles||[]).forEach(r => jobRoles.push({...r, company_name: c.company_name})));
+            }
+        } catch(e) {}
+
+        // Fallback: get roles from careers endpoint
+        if (!jobRoles.length) {
+            try {
+                const r2 = await fetch(`${API}/analytics/hiring-trends`).then(r=>r.json());
+                // synthetic options
+                jobRoles = [{role_id: 1, role_name: 'Software Engineer'}, {role_id:2, role_name:'Data Scientist'}, {role_id:3, role_name:'DevOps Engineer'}];
+            } catch(e) {}
+        }
+
+        const optHtml = jobRoles.length
+            ? jobRoles.map(r => `<option value="${r.role_id}">${r.role_name}${r.company_name?' — '+r.company_name:''}</option>`).join('')
+            : '<option value="1">Software Engineer</option><option value="2">Data Scientist</option>';
+
+        document.getElementById('srec-role-select').innerHTML = optHtml;
+        document.getElementById('jmatch-role-select').innerHTML = optHtml;
+    }
+
+    async function loadSkillRecommendations() {
+        const roleId = document.getElementById('srec-role-select').value;
+        if (!roleId) return;
+        document.getElementById('srec-results').innerHTML = '<div class="shimmer" style="height:4rem;"></div>';
+        try {
+            const d = await fetch(`${API_BASE_URL}/analytics/skill-recommendations/${studentId}/${roleId}`).then(r=>r.json());
+
+            // Already have
+            if (d.already_have?.length) {
+                document.getElementById('srec-already').innerHTML =
+                    '<div style="font-size:0.8rem;font-weight:700;color:var(--text-muted);margin-bottom:0.4rem;">✅ SKILLS YOU ALREADY HAVE</div>' +
+                    d.already_have.map(s => `<span class="skill-pill pill-have">✓ ${s}</span>`).join('');
+            } else {
+                document.getElementById('srec-already').innerHTML = '';
+            }
+
+            if (d.recommendations?.length) {
+                const max = Math.max(...d.recommendations.map(r => r.job_demand||1));
+                document.getElementById('srec-results').innerHTML = `
+                    <div style="font-size:0.8rem;font-weight:700;color:var(--text-muted);margin-bottom:0.75rem;">🎯 TOP MISSING SKILLS — RANKED BY IMPORTANCE (CTE + RANK())</div>
+                    ${d.recommendations.map((r,i) => `
+                        <div class="priority-row">
+                            <div class="priority-rank">#${i+1}</div>
+                            <div style="min-width:130px;">
+                                <div style="font-weight:700;font-size:0.88rem;">${r.skill_name}</div>
+                                <div style="font-size:0.72rem;color:var(--text-muted);">${r.category||'General'} · Importance: ${r.importance_for_role||3}/5</div>
+                            </div>
+                            <div class="priority-bar-wrap">
+                                <div class="priority-bar" style="width:${Math.round((r.job_demand||1)/max*100)}%"></div>
+                            </div>
+                            <div style="font-size:0.78rem;font-weight:700;color:var(--primary);white-space:nowrap;">
+                                ${r.job_demand} jobs · ${r.students_with_skill} students have it
+                            </div>
+                        </div>`).join('')}`;
+            } else {
+                document.getElementById('srec-results').innerHTML =
+                    '<div class="skill-pill pill-have" style="font-size:0.84rem;padding:0.5rem 1rem;">🎉 You already have all required skills for this role!</div>';
+            }
+        } catch(e) {
+            document.getElementById('srec-results').innerHTML = '<p style="color:var(--text-muted);font-size:0.84rem">Backend offline or no JobRoleSkills data yet. Run: node scripts/migrate-db.js</p>';
+        }
+    }
+
+    // ─── PANEL 5: Job Match Score ────────────────────────────────────────────────
+    async function loadJobMatch() {
+        const roleId = document.getElementById('jmatch-role-select').value;
+        if (!roleId) return;
+        const container = document.getElementById('match-result');
+        container.innerHTML = '<div class="shimmer" style="height:8rem;border-radius:1rem;"></div>';
+        try {
+            const d = await fetch(`${API_BASE_URL}/analytics/job-match/${studentId}/${roleId}`).then(r=>r.json());
+            const gradeColors = {Excellent:'#10b981',Good:'#6366f1',Fair:'#f59e0b',Low:'#ef4444'};
+            const col = gradeColors[d.grade] || '#6366f1';
+            container.innerHTML = `
+                <div class="acard">
+                    <h3>🎯 Match Score: <strong>${d.role_name}</strong> @ <em>${d.company_name}</em></h3>
+                    <div class="grid-2" style="align-items:center;">
+                        <div style="text-align:center;">
+                            <div class="match-ring" style="--pct:${d.overall_match}">
+                                <div class="match-ring-inner">
+                                    <div>
+                                        <div class="match-pct" style="color:${col}">${d.overall_match}%</div>
+                                        <div style="font-size:0.7rem;color:var(--text-muted);font-weight:700;">${d.grade}</div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div style="font-size:0.82rem;color:var(--text-muted);margin-top:0.5rem;">Overall Match</div>
+                        </div>
+                        <div>
+                            <div style="margin-bottom:1rem;">
+                                <div style="display:flex;justify-content:space-between;font-size:0.82rem;margin-bottom:0.3rem;">
+                                    <span style="font-weight:600;">Skills Match (70%)</span>
+                                    <span style="font-weight:800;color:var(--primary)">${d.skill_match_pct}%</span>
+                                </div>
+                                <div style="height:8px;background:rgba(0,0,0,0.07);border-radius:100px;">
+                                    <div style="height:100%;border-radius:100px;background:var(--primary);width:${d.skill_match_pct}%;transition:width 1s;"></div>
+                                </div>
+                                <div style="font-size:0.75rem;color:var(--text-muted);margin-top:0.2rem;">${d.skills_matched}/${d.skills_total} skills matched</div>
+                            </div>
+                            <div style="display:flex;gap:0.5rem;flex-wrap:wrap;">
+                                <span class="skill-pill ${d.cgpa_ok?'pill-have':'pill-miss'}">
+                                    ${d.cgpa_ok?'✓':'✗'} CGPA ${d.cgpa_student||'?'} / Required: ${d.cgpa_required||'—'}
+                                </span>
+                            </div>
+                        </div>
+                    </div>
+                </div>`;
+        } catch(e) {
+            container.innerHTML = '<p style="color:var(--text-muted)">Error calculating match score.</p>';
+        }
+    }
+
+    // ─── PANEL 6: Top Skills ────────────────────────────────────────────────────
+    async function loadTopSkills(dept) {
+        const d = dept || document.getElementById('dept-select').value || 'all';
+        const container = document.getElementById('top-skills-list');
+        container.innerHTML = '<div class="shimmer" style="height:2rem;margin-bottom:0.5rem;"></div>'.repeat(5);
+        try {
+            const data = await fetch(`${API_BASE_URL}/analytics/top-skills/${encodeURIComponent(d)}`).then(r=>r.json());
+
+            // Populate dept select
+            if (data.departments?.length) {
+                const sel = document.getElementById('dept-select');
+                if (sel.children.length === 1) {
+                    data.departments.forEach(dep => {
+                        const o = document.createElement('option');
+                        o.value = dep; o.textContent = dep;
+                        sel.appendChild(o);
+                    });
+                }
+            }
+
+            if (data.skills?.length) {
+                const max = data.skills[0].usage_count || 1;
+                container.innerHTML = data.skills.map((s,i) => `
+                    <div class="priority-row">
+                        <div class="priority-rank">${i+1}</div>
+                        <div style="min-width:130px;">
+                            <div style="font-weight:700;font-size:0.88rem;">${s.skill_name}</div>
+                            <div style="font-size:0.72rem;color:var(--text-muted);">${s.category||''}</div>
+                        </div>
+                        <div class="priority-bar-wrap">
+                            <div class="priority-bar" style="width:${Math.round(s.usage_count/max*100)}%;background:linear-gradient(90deg,#06b6d4,#8b5cf6)"></div>
+                        </div>
+                        <div style="font-size:0.8rem;font-weight:700;color:#06b6d4;width:80px;text-align:right;">${s.usage_count} students</div>
+                    </div>`).join('');
+            } else {
+                container.innerHTML = '<p style="color:var(--text-muted);font-size:0.85rem;">No skill data for this department.</p>';
+            }
+        } catch(e) {
+            container.innerHTML = '<p style="color:var(--text-muted)">Backend offline.</p>';
+        }
+    }
+
+    // ─── PANEL 7: CGPA History ──────────────────────────────────────────────────
+    async function loadCGPAHistory() {
+        try {
+            const d = await fetch(`${API_BASE_URL}/analytics/cgpa-history/${studentId}`).then(r=>r.json());
+            if (d.student) {
+                document.getElementById('cgpa-current').innerHTML = `
+                    <div class="stat-box" style="display:inline-block;padding:0.75rem 1.5rem;">
+                        <div class="val">${d.student.cgpa}</div>
+                        <div class="lbl">Current CGPA — ${d.student.name||''}</div>
+                    </div>`;
+            }
+            if (d.history?.length) {
+                document.getElementById('cgpa-timeline').innerHTML = d.history.map(h => {
+                    const up = (h.change_amount||0) >= 0;
+                    return `<div class="tl-item ${up?'up':'down'}">
+                        <div class="tl-dot"></div>
+                        <div class="tl-time">${new Date(h.updated_at).toLocaleString()}</div>
+                        <div class="tl-val">${h.old_cgpa} → ${h.new_cgpa}</div>
+                        <div class="tl-change ${up?'up':'down'}">${up?'▲':'▼'} ${Math.abs(h.change_amount||0)}</div>
+                    </div>`;
+                }).join('');
+            }
+        } catch(e) { console.error(e); }
+    }
+
+    // ─── PANEL 8: Activity Log ──────────────────────────────────────────────────
+    const actIcons = { PROJECT:'🗂️', CERTIFICATE:'🏆', SKILL:'⚡', JOB_APPLY:'📨', HACKATHON:'🔥' };
+    const actColors= { PROJECT:'rgba(99,102,241,0.1)', CERTIFICATE:'rgba(236,72,153,0.1)', SKILL:'rgba(6,182,212,0.1)', JOB_APPLY:'rgba(16,185,129,0.1)', HACKATHON:'rgba(245,158,11,0.1)' };
+
+    async function loadActivityLog() {
+        try {
+            const d = await fetch(`${API_BASE_URL}/analytics/activity-log/${studentId}`).then(r=>r.json());
+            const s = d.summary || {};
+
+            document.getElementById('activity-summary').innerHTML = `
+                <div class="stat-box"><div class="val" style="color:#6366f1">${s.project_pts||0}</div><div class="lbl">🗂️ Project pts</div></div>
+                <div class="stat-box"><div class="val" style="color:#ec4899">${s.cert_pts||0}</div><div class="lbl">🏆 Cert pts</div></div>
+                <div class="stat-box"><div class="val" style="color:#06b6d4">${s.skill_pts||0}</div><div class="lbl">⚡ Skill pts</div></div>
+                <div class="stat-box"><div class="val" style="color:#10b981">${s.apply_pts||0}</div><div class="lbl">📨 Apply pts</div></div>
+            `;
+
+            if (d.activities?.length) {
+                document.getElementById('activity-list').innerHTML = d.activities.map(a => `
+                    <div class="act-row">
+                        <div class="act-icon" style="background:${actColors[a.activity_type]||'rgba(99,102,241,0.1)'}">
+                            ${actIcons[a.activity_type]||'✨'}
+                        </div>
+                        <div>
+                            <div class="act-title">${a.description||a.activity_type}</div>
+                            <div class="act-time">${new Date(a.timestamp).toLocaleString()} &nbsp;·&nbsp; Running total: ${a.running_total||a.points} pts</div>
+                        </div>
+                        <div class="act-pts">+${a.points}</div>
+                    </div>`).join('');
+            } else {
+                document.getElementById('activity-list').innerHTML =
+                    '<p style="color:var(--text-muted);font-size:0.85rem;text-align:center;padding:2rem;">No activity yet. Add projects, skills, and certificates to earn points!</p>';
+            }
+        } catch(e) { console.error(e); }
+    }
+
+    // ─── INIT ───────────────────────────────────────────────────────────────────
+    (async function init() {
+        await Promise.allSettled([
+            loadPlacementStats(),
+            loadHiringTrends(),
+            loadCareerPredictor(),
+            loadJobRoles(),
+            loadTopSkills('all'),
+            loadCGPAHistory(),
+            loadActivityLog()
+        ]);
+    })();
+</script>
+</body>
+</html>

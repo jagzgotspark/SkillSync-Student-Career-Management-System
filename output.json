@@ -1,0 +1,20 @@
+[
+    {
+        "id": "1",
+        "name": "Alice Smith",
+        "department": "Engineering",
+        "role": "Developer"
+    },
+    {
+        "id": "2",
+        "name": "Bob Jones",
+        "department": "Marketing",
+        "role": "Manager"
+    },
+    {
+        "id": "3",
+        "name": "Charlie Brown",
+        "department": "Sales",
+        "role": "Associate"
+    }
+]

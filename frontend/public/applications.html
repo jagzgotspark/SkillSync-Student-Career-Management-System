@@ -1,0 +1,250 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SkillSync | My Applications</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Outfit:wght@700;800;900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="../src/style.css">
+    <style>
+        body { background: linear-gradient(135deg, #ede9fe 0%, #fce7f3 50%, #e0f2fe 100%); }
+        .page-main { padding: 2rem 3rem; position: relative; z-index: 1; }
+
+        /* Stats row */
+        .status-stats { display: grid; grid-template-columns: repeat(4,1fr); gap: 1.25rem; margin-bottom: 2rem; }
+        .stat-pill {
+            border-radius: 1.25rem; padding: 1.5rem; text-align: center;
+            backdrop-filter: blur(20px); border: 1.5px solid rgba(255,255,255,0.7);
+            background: rgba(255,255,255,0.5); box-shadow: 0 4px 20px rgba(0,0,0,0.06);
+            transition: transform 0.25s;
+        }
+        .stat-pill:hover { transform: translateY(-4px); }
+        .stat-pill .sp-num { font-size: 2.5rem; font-weight: 900; font-family: 'Outfit'; line-height: 1; }
+        .stat-pill .sp-lbl { font-size: 0.78rem; font-weight: 700; text-transform: uppercase; letter-spacing: 1px; margin-top: 0.35rem; color: #6b7280; }
+        .sp-applied     { border-color: rgba(99,102,241,0.35); }  .sp-applied .sp-num  { color: #6366f1; }
+        .sp-shortlisted { border-color: rgba(245,158,11,0.35); }  .sp-shortlisted .sp-num { color: #f59e0b; }
+        .sp-selected    { border-color: rgba(16,185,129,0.35); }  .sp-selected .sp-num  { color: #10b981; }
+        .sp-rejected    { border-color: rgba(239,68,68,0.35); }   .sp-rejected .sp-num  { color: #ef4444; }
+
+        /* Kanban */
+        .kanban { display: grid; grid-template-columns: repeat(4,1fr); gap: 1.25rem; }
+        @media(max-width:900px){ .kanban { grid-template-columns: 1fr 1fr; } }
+        @media(max-width:600px){ .kanban { grid-template-columns: 1fr; } }
+
+        .kanban-col {
+            border-radius: 1.25rem; padding: 1.25rem;
+            background: rgba(255,255,255,0.45); border: 1.5px solid rgba(255,255,255,0.7);
+            backdrop-filter: blur(16px); min-height: 300px;
+        }
+        .col-header { display: flex; align-items: center; gap: 0.5rem; margin-bottom: 1rem; }
+        .col-dot { width: 10px; height: 10px; border-radius: 50%; flex-shrink:0; }
+        .col-title { font-weight: 800; font-size: 0.9rem; color: #1e1b4b; }
+        .col-count { margin-left:auto; background:rgba(0,0,0,0.06); border-radius:100px; padding:0.15rem 0.5rem; font-size:0.75rem; font-weight:700; }
+
+        /* App card */
+        .app-card {
+            background: rgba(255,255,255,0.7); border-radius: 1rem;
+            border: 1px solid rgba(255,255,255,0.8);
+            padding: 1rem 1.1rem; margin-bottom: 0.75rem;
+            box-shadow: 0 2px 12px rgba(0,0,0,0.05);
+            transition: transform 0.2s, box-shadow 0.2s;
+            cursor: pointer;
+        }
+        .app-card:hover { transform: translateY(-2px); box-shadow: 0 8px 24px rgba(99,102,241,0.12); }
+        .app-card .company { font-size: 0.75rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px; color: #6b7280; }
+        .app-card .role    { font-weight: 800; color: #1e1b4b; font-size: 0.92rem; margin: 0.2rem 0; }
+        .app-card .meta    { font-size: 0.78rem; color: #9ca3af; margin-top: 0.35rem; }
+        .app-card .salary  { display:inline-block; background:rgba(16,185,129,0.1); color:#059669; font-size:0.72rem; font-weight:700; padding:0.15rem 0.5rem; border-radius:100px; margin-top:0.35rem; }
+
+        .empty-col { text-align: center; padding: 2rem 1rem; color: #9ca3af; font-size: 0.85rem; }
+
+        /* Shimmer */
+        .shimmer-card { height:90px; border-radius:1rem; background:linear-gradient(90deg,rgba(99,102,241,0.07) 25%,rgba(99,102,241,0.15) 50%,rgba(99,102,241,0.07) 75%); background-size:200% 100%; animation:shimmer 1.4s infinite; margin-bottom:0.75rem; }
+        @keyframes shimmer{0%{background-position:200% 0}100%{background-position:-200% 0}}
+    </style>
+</head>
+<body>
+    <!-- Doodle background — Purple/Blue career theme -->
+    <div class="doodle-bg">
+        <span class="doodle-icon" style="top:5%;left:4%">💼</span>
+        <span class="doodle-icon" style="top:15%;right:6%">📨</span>
+        <span class="doodle-icon" style="top:30%;left:7%">🤝</span>
+        <span class="doodle-icon" style="top:48%;right:4%">📋</span>
+        <span class="doodle-icon" style="top:62%;left:84%">✅</span>
+        <span class="doodle-icon" style="bottom:22%;left:5%">🕐</span>
+        <span class="doodle-icon" style="bottom:10%;right:9%">🚀</span>
+        <span class="doodle-icon" style="top:75%;left:48%">🎯</span>
+        <span class="doodle-icon" style="top:8%;left:55%">📊</span>
+        <span class="doodle-icon" style="bottom:40%;right:20%">🏢</span>
+    </div>
+
+    <nav class="sidebar">
+        <div class="logo-container"><div class="logo-icon">∞</div><h2>SkillSync</h2></div>
+        <ul class="nav-links">
+            <li onclick="window.location.href='index.html'"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7"></rect><rect x="14" y="3" width="7" height="7"></rect><rect x="14" y="14" width="7" height="7"></rect><rect x="3" y="14" width="7" height="7"></rect></svg>Dashboard</li>
+            <li onclick="window.location.href='profile.html'"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path><circle cx="12" cy="7" r="4"></circle></svg>My Profile</li>
+            <li class="active" onclick="window.location.href='applications.html'"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline></svg>My Applications</li>
+            <li onclick="window.location.href='skill-gap.html'"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 12h-4l-3 9L9 3l-3 9H2"></path></svg>Skill Gap Analyzer</li>
+            <li onclick="window.location.href='leaderboard.html'"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="23 6 13.5 15.5 8.5 10.5 1 18"></polyline><polyline points="17 6 23 6 23 12"></polyline></svg>Leaderboard</li>
+            <li onclick="window.location.href='resume-score.html'"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="9 11 12 14 22 4"></polyline><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"></path></svg>Resume Score</li>
+            <li onclick="window.location.href='analytics.html'"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 12h-4l-3 9L9 3l-3 9H2"></path></svg>Analytics</li>
+            <li onclick="window.location.href='dashboard-careers.html'"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"></path><path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"></path></svg>Careers</li>
+        </ul>
+        <div class="nav-footer">
+            <div class="admin-profile">
+                <div id="sidebar-avatar" style="background:linear-gradient(135deg,#6366f1,#ec4899);color:white;display:flex;align-items:center;justify-content:center;font-weight:bold;font-size:1.1rem;width:40px;height:40px;border-radius:50%;flex-shrink:0;">U</div>
+                <div class="admin-info"><span class="admin-name" id="user-name-sidebar">Loading...</span><span class="admin-role">Student</span></div>
+            </div>
+            <button onclick="logout()" style="margin-top:0.75rem;width:100%;padding:0.5rem;background:rgba(239,68,68,0.12);border:1px solid rgba(239,68,68,0.2);border-radius:8px;color:#f87171;font-size:0.82rem;cursor:pointer;font-weight:600;">Sign Out</button>
+        </div>
+    </nav>
+
+    <main class="main-content page-main">
+        <header class="top-header anim-fade-up" style="margin-bottom:1.5rem;">
+            <div>
+                <h1 style="background:linear-gradient(120deg,#4f46e5,#ec4899);-webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent;">📨 My Applications</h1>
+                <p class="subtitle">Track every job application you've submitted — powered by SQL Transactions.</p>
+            </div>
+            <a href="dashboard-careers.html" style="padding:0.65rem 1.5rem;background:linear-gradient(90deg,#6366f1,#ec4899);color:white;border-radius:0.875rem;font-weight:700;font-size:0.88rem;text-decoration:none;box-shadow:0 4px 20px rgba(99,102,241,0.3);display:flex;align-items:center;gap:0.5rem;white-space:nowrap;">
+                + Browse Jobs
+            </a>
+        </header>
+
+        <!-- Stats Row -->
+        <div class="status-stats anim-fade-up anim-delay-1" id="stats-row">
+            <div class="stat-pill sp-applied">    <div class="sp-num" id="cnt-applied">—</div>     <div class="sp-lbl">Applied</div></div>
+            <div class="stat-pill sp-shortlisted"><div class="sp-num" id="cnt-shortlisted">—</div>  <div class="sp-lbl">Shortlisted</div></div>
+            <div class="stat-pill sp-selected">   <div class="sp-num" id="cnt-selected">—</div>    <div class="sp-lbl">Selected</div></div>
+            <div class="stat-pill sp-rejected">   <div class="sp-num" id="cnt-rejected">—</div>    <div class="sp-lbl">Rejected</div></div>
+        </div>
+
+        <!-- Kanban Board -->
+        <div class="kanban anim-fade-up anim-delay-2" id="kanban">
+            <div class="kanban-col">
+                <div class="col-header"><div class="col-dot" style="background:#6366f1;"></div><div class="col-title">Applied</div><div class="col-count" id="k-cnt-applied">0</div></div>
+                <div id="col-applied"><div class="shimmer-card"></div><div class="shimmer-card"></div></div>
+            </div>
+            <div class="kanban-col">
+                <div class="col-header"><div class="col-dot" style="background:#f59e0b;"></div><div class="col-title">Shortlisted</div><div class="col-count" id="k-cnt-shortlisted">0</div></div>
+                <div id="col-shortlisted"><div class="empty-col">🌟 Keep applying!</div></div>
+            </div>
+            <div class="kanban-col">
+                <div class="col-header"><div class="col-dot" style="background:#10b981;"></div><div class="col-title">Selected</div><div class="col-count" id="k-cnt-selected">0</div></div>
+                <div id="col-selected"><div class="empty-col">🏆 Your offers will appear here</div></div>
+            </div>
+            <div class="kanban-col">
+                <div class="col-header"><div class="col-dot" style="background:#ef4444;"></div><div class="col-title">Rejected</div><div class="col-count" id="k-cnt-rejected">0</div></div>
+                <div id="col-rejected"><div class="empty-col">Keep going! Every no is closer to a yes.</div></div>
+            </div>
+        </div>
+    </main>
+
+    <script src="../src/toast.js"></script>
+    <script>
+        const API_BASE_URL = (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1' || window.location.protocol === 'file:') ? 'http://localhost:3002/api' : '/api';
+        function loadTheme(){ document.body.className = localStorage.getItem('theme')||'theme-lavender'; }
+        loadTheme();
+        function logout(){ localStorage.clear(); window.location.href='login.html'; }
+
+        function timeAgo(dateStr) {
+            if(!dateStr) return '';
+            const diff = Date.now() - new Date(dateStr).getTime();
+            const d = Math.floor(diff/86400000);
+            if(d===0) return 'Today';
+            if(d===1) return 'Yesterday';
+            return `${d} days ago`;
+        }
+
+        function makeCard(a) {
+            return `
+                <div class="app-card">
+                    <div class="company">${a.company_name||'Company'} · ${a.industry||''}</div>
+                    <div class="role">${a.role_name||'Role'}</div>
+                    <div class="meta">${a.location||'Remote'} · Applied ${timeAgo(a.applied_date)}</div>
+                    ${a.salary_range ? `<span class="salary">💰 ${a.salary_range}</span>` : ''}
+                </div>`;
+        }
+
+        async function init() {
+            const u = localStorage.getItem('user');
+            if(!u) return window.location.href='login.html';
+            const user = JSON.parse(u);
+
+            if (user.role && user.role !== 'student') {
+                if (user.role === 'mentor' || user.role === 'company') {
+                    window.location.href = 'company-dashboard.html';
+                    return;
+                } else if (user.role === 'admin') {
+                    window.location.href = 'students.html';
+                    return;
+                }
+            }
+            document.getElementById('user-name-sidebar').textContent = user.name||'Student';
+            document.getElementById('sidebar-avatar').textContent   = (user.name||'U')[0].toUpperCase();
+
+            try {
+                const res = await fetch(`${API_BASE_URL}/applications/student/${user.id || user.user_id}`);
+                const apps = await res.json();
+                if(!Array.isArray(apps)) throw new Error();
+
+                const byStatus = { Applied:[], Shortlisted:[], Selected:[], Rejected:[] };
+                apps.forEach(a => { if(byStatus[a.status]) byStatus[a.status].push(a); else byStatus['Applied'].push(a); });
+
+                // Stats
+                document.getElementById('cnt-applied').textContent     = byStatus.Applied.length;
+                document.getElementById('cnt-shortlisted').textContent = byStatus.Shortlisted.length;
+                document.getElementById('cnt-selected').textContent    = byStatus.Selected.length;
+                document.getElementById('cnt-rejected').textContent    = byStatus.Rejected.length;
+
+                // Kanban cols
+                const fill = (id, cntId, cards) => {
+                    document.getElementById(cntId).textContent = cards.length;
+                    document.getElementById(id).innerHTML = cards.length
+                        ? cards.map(makeCard).join('')
+                        : `<div class="empty-col">No applications here yet.</div>`;
+                };
+                fill('col-applied',     'k-cnt-applied',     byStatus.Applied);
+                fill('col-shortlisted', 'k-cnt-shortlisted', byStatus.Shortlisted);
+                fill('col-selected',    'k-cnt-selected',    byStatus.Selected);
+                fill('col-rejected',    'k-cnt-rejected',    byStatus.Rejected);
+
+                if(!apps.length) {
+                    toast('No applications yet! Browse careers and hit Apply.', 'info', 5000);
+                }
+            } catch(e) {
+                console.error("Offline or fetch error:", e);
+                // Offline fallback
+                const offlineApps = [
+                    { status: 'Applied', company_name: 'Tech Solutions', industry: 'Software', role_name: 'Frontend Developer', location: 'Remote', applied_date: new Date().toISOString(), salary_range: '$80k - $100k' },
+                    { status: 'Shortlisted', company_name: 'InnovateX', industry: 'AI', role_name: 'Machine Learning Intern', location: 'Bangalore', applied_date: new Date(Date.now() - 86400000).toISOString(), salary_range: '₹40k/mo' },
+                    { status: 'Selected', company_name: 'Global Finance', industry: 'Fintech', role_name: 'SDE-1', location: 'Mumbai', applied_date: new Date(Date.now() - 5*86400000).toISOString(), salary_range: '12 LPA' }
+                ];
+                
+                const byStatus = { Applied:[], Shortlisted:[], Selected:[], Rejected:[] };
+                offlineApps.forEach(a => { if(byStatus[a.status]) byStatus[a.status].push(a); else byStatus['Applied'].push(a); });
+
+                document.getElementById('cnt-applied').textContent     = byStatus.Applied.length;
+                document.getElementById('cnt-shortlisted').textContent = byStatus.Shortlisted.length;
+                document.getElementById('cnt-selected').textContent    = byStatus.Selected.length;
+                document.getElementById('cnt-rejected').textContent    = byStatus.Rejected.length;
+
+                const fill = (id, cntId, cards) => {
+                    document.getElementById(cntId).textContent = cards.length;
+                    document.getElementById(id).innerHTML = cards.length
+                        ? cards.map(makeCard).join('')
+                        : `<div class="empty-col">No applications here yet.</div>`;
+                };
+                
+                fill('col-applied',     'k-cnt-applied',     byStatus.Applied);
+                fill('col-shortlisted', 'k-cnt-shortlisted', byStatus.Shortlisted);
+                fill('col-selected',    'k-cnt-selected',    byStatus.Selected);
+                fill('col-rejected',    'k-cnt-rejected',    byStatus.Rejected);
+
+                toast('Running in offline mode (Mock Data).', 'info');
+            }
+        }
+        init();
+    </script>
+</body>
+</html>

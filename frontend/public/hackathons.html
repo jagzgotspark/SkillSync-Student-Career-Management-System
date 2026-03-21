@@ -1,0 +1,685 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SkillSync | Hackathons</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Outfit:wght@600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="../src/style.css">
+    <style>
+        /* ── HERO BANNER ── */
+        .hackathon-hero {
+            background: linear-gradient(135deg, #0f172a 0%, #1e1b4b 50%, #0f172a 100%);
+            border-radius: var(--radius-xl);
+            padding: 2.5rem;
+            margin-bottom: 2rem;
+            position: relative;
+            overflow: hidden;
+            color: white;
+        }
+        .hackathon-hero::before {
+            content: '';
+            position: absolute;
+            inset: 0;
+            background:
+                radial-gradient(circle at 20% 50%, rgba(99,102,241,0.4) 0%, transparent 40%),
+                radial-gradient(circle at 80% 20%, rgba(236,72,153,0.35) 0%, transparent 35%),
+                radial-gradient(circle at 60% 80%, rgba(6,182,212,0.25) 0%, transparent 40%);
+        }
+        .hero-content { position: relative; z-index: 1; }
+        .hero-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            padding: 0.35rem 1rem;
+            background: rgba(255,255,255,0.12);
+            border: 1px solid rgba(255,255,255,0.2);
+            border-radius: 100px;
+            font-size: 0.78rem;
+            font-weight: 700;
+            letter-spacing: 1px;
+            text-transform: uppercase;
+            margin-bottom: 1rem;
+        }
+        .hero-badge .dot { width: 8px; height: 8px; border-radius: 50%; background: #4ade80; animation: pulse-dot 1.5s ease-in-out infinite; }
+        @keyframes pulse-dot { 0%, 100% { opacity: 1; transform: scale(1); } 50% { opacity: 0.7; transform: scale(1.3); } }
+
+        .hackathon-hero h1 {
+            font-family: 'Outfit', sans-serif;
+            font-size: 2.5rem;
+            font-weight: 800;
+            margin-bottom: 0.5rem;
+            line-height: 1.1;
+        }
+        .hackathon-hero p { font-size: 1rem; opacity: 0.75; max-width: 560px; }
+
+        .hero-stats {
+            display: flex;
+            gap: 2rem;
+            margin-top: 1.5rem;
+            flex-wrap: wrap;
+        }
+        .hero-stat { text-align: center; }
+        .hero-stat-num { font-size: 1.8rem; font-weight: 800; font-family: 'Outfit', sans-serif; }
+        .hero-stat-label { font-size: 0.75rem; opacity: 0.7; text-transform: uppercase; letter-spacing: 1px; }
+
+        /* ── SEARCH AND FILTERS ── */
+        .controls-bar {
+            display: flex;
+            gap: 1rem;
+            margin-bottom: 1.5rem;
+            flex-wrap: wrap;
+            align-items: center;
+        }
+        .search-box {
+            position: relative;
+            flex: 1;
+            min-width: 200px;
+        }
+        .search-box input {
+            width: 100%;
+            padding: 0.7rem 1rem 0.7rem 2.75rem;
+            border: 1.5px solid var(--border);
+            border-radius: var(--radius-md);
+            background: white;
+            font-size: 0.9rem;
+            color: var(--text-dark);
+            transition: border-color 0.2s, box-shadow 0.2s;
+        }
+        .search-box input:focus { outline: none; border-color: var(--primary); box-shadow: 0 0 0 3px rgba(99,102,241,0.1); }
+        .search-icon { position: absolute; left: 0.85rem; top: 50%; transform: translateY(-50%); color: var(--text-muted); pointer-events: none; }
+
+        /* ── DOMAIN FILTER PILLS ── */
+        .domain-filters {
+            display: flex;
+            gap: 0.5rem;
+            flex-wrap: nowrap;
+            overflow-x: auto;
+            padding-bottom: 0.5rem;
+            margin-bottom: 1.5rem;
+            scrollbar-width: none;
+        }
+        .domain-filters::-webkit-scrollbar { display: none; }
+
+        .filter-pill {
+            padding: 0.45rem 1.2rem;
+            border-radius: 100px;
+            border: 1.5px solid var(--border);
+            background: white;
+            color: var(--text-muted);
+            font-size: 0.82rem;
+            font-weight: 600;
+            cursor: pointer;
+            white-space: nowrap;
+            transition: all 0.2s;
+        }
+        .filter-pill:hover { border-color: var(--primary); color: var(--primary); }
+        .filter-pill.active { background: var(--primary); color: white; border-color: var(--primary); box-shadow: 0 4px 12px rgba(99,102,241,0.3); }
+
+        /* ── HACKATHON CARDS GRID ── */
+        .hackathons-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(340px, 1fr));
+            gap: 1.5rem;
+        }
+
+        .hack-card {
+            background: var(--bg-card);
+            border: 1.5px solid var(--border);
+            border-radius: var(--radius-xl);
+            overflow: hidden;
+            transition: transform 0.25s, box-shadow 0.25s, border-color 0.25s;
+            position: relative;
+        }
+        .hack-card:hover { transform: translateY(-6px); box-shadow: 0 20px 50px rgba(0,0,0,0.1); border-color: var(--primary-light); }
+
+        .hack-card-accent { height: 5px; width: 100%; }
+
+        .hack-card-body { padding: 1.5rem; }
+
+        .hack-card-top {
+            display: flex;
+            align-items: flex-start;
+            justify-content: space-between;
+            gap: 0.75rem;
+            margin-bottom: 0.75rem;
+        }
+
+        .hack-logo {
+            width: 52px;
+            height: 52px;
+            border-radius: var(--radius-md);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5rem;
+            flex-shrink: 0;
+        }
+
+        .hack-badges { display: flex; flex-wrap: wrap; gap: 0.4rem; }
+        .hack-badge {
+            padding: 0.2rem 0.65rem;
+            border-radius: 100px;
+            font-size: 0.72rem;
+            font-weight: 700;
+            border: 1px solid transparent;
+        }
+        .badge-ai { background: rgba(99,102,241,0.1); color: #6366f1; border-color: rgba(99,102,241,0.2); }
+        .badge-web { background: rgba(6,182,212,0.1); color: #0891b2; border-color: rgba(6,182,212,0.2); }
+        .badge-cybersec { background: rgba(239,68,68,0.1); color: #dc2626; border-color: rgba(239,68,68,0.2); }
+        .badge-mobile { background: rgba(245,158,11,0.1); color: #d97706; border-color: rgba(245,158,11,0.2); }
+        .badge-open { background: rgba(16,185,129,0.1); color: #059669; border-color: rgba(16,185,129,0.2); }
+        .badge-blockchain { background: rgba(168,85,247,0.1); color: #7c3aed; border-color: rgba(168,85,247,0.2); }
+        .badge-iot { background: rgba(236,72,153,0.1); color: #db2777; border-color: rgba(236,72,153,0.2); }
+        .badge-fintech { background: rgba(20,184,166,0.1); color: #0f766e; border-color: rgba(20,184,166,0.2); }
+        .badge-general { background: rgba(100,116,139,0.1); color: #475569; border-color: rgba(100,116,139,0.2); }
+
+        .hack-name { font-family: 'Outfit', sans-serif; font-size: 1.1rem; font-weight: 700; color: var(--text-dark); margin-bottom: 0.2rem; }
+        .hack-org { font-size: 0.82rem; color: var(--text-muted); font-weight: 500; }
+
+        .hack-desc { font-size: 0.86rem; color: var(--text-muted); line-height: 1.6; margin: 0.75rem 0 1rem; }
+
+        .hack-meta {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 0.6rem;
+            margin-bottom: 1.25rem;
+        }
+        .hack-meta-item {
+            display: flex;
+            align-items: center;
+            gap: 0.4rem;
+            font-size: 0.8rem;
+        }
+        .hack-meta-item .icon { font-size: 0.85rem; }
+        .hack-meta-item .val { font-weight: 600; color: var(--text-dark); }
+        .hack-meta-item .lbl { color: var(--text-muted); font-size: 0.73rem; }
+
+        .hack-footer {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 0.75rem;
+            border-top: 1px solid var(--border);
+            padding-top: 1rem;
+        }
+
+        .deadline-pill {
+            display: flex;
+            align-items: center;
+            gap: 0.4rem;
+            font-size: 0.78rem;
+            font-weight: 700;
+            padding: 0.3rem 0.75rem;
+            border-radius: 100px;
+        }
+        .deadline-soon { background: rgba(239,68,68,0.1); color: #dc2626; }
+        .deadline-open { background: rgba(16,185,129,0.1); color: #059669; }
+        .deadline-upcoming { background: rgba(245,158,11,0.1); color: #d97706; }
+
+        .btn-register {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            padding: 0.55rem 1.25rem;
+            border-radius: var(--radius-md);
+            text-decoration: none;
+            font-weight: 700;
+            font-size: 0.85rem;
+            color: white;
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+        .btn-register:hover { transform: scale(1.05); box-shadow: 0 6px 16px rgba(0,0,0,0.2); }
+
+        /* ── EMPTY STATE ── */
+        .empty-state {
+            grid-column: 1 / -1;
+            text-align: center;
+            padding: 4rem 2rem;
+            color: var(--text-muted);
+        }
+        .empty-state .empty-icon { font-size: 3rem; margin-bottom: 1rem; }
+        .empty-state h3 { font-size: 1.2rem; font-weight: 700; color: var(--text-dark); margin-bottom: 0.5rem; }
+
+        @media (max-width: 768px) {
+            .hackathons-grid { grid-template-columns: 1fr; }
+            .hackathon-hero h1 { font-size: 1.8rem; }
+        }
+    </style>
+</head>
+<body>
+    <!-- Sidebar -->
+    <nav class="sidebar">
+        <div class="logo-container">
+            <div class="logo-icon">∞</div>
+            <h2>SkillSync</h2>
+        </div>
+        <ul class="nav-links">
+            <li onclick="window.location.href='index.html'">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="7" height="7"></rect><rect x="14" y="3" width="7" height="7"></rect><rect x="14" y="14" width="7" height="7"></rect><rect x="3" y="14" width="7" height="7"></rect></svg>
+                Dashboard
+            </li>
+            <li onclick="window.location.href='students.html'">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path><circle cx="9" cy="7" r="4"></circle><path d="M23 21v-2a4 4 0 0 0-3-3.87"></path><path d="M16 3.13a4 4 0 0 1 0 7.75"></path></svg>
+                Candidate Directory
+            </li>
+            <li onclick="window.location.href='profile.html'">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path><circle cx="12" cy="7" r="4"></circle></svg>
+                My Profile
+            </li>
+            <li class="active" onclick="window.location.href='hackathons.html'">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"></polygon></svg>
+                Hackathons
+            </li>
+            <li onclick="window.location.href='analytics.html'">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 12h-4l-3 9L9 3l-3 9H2"></path></svg>
+                Analytics
+            </li>
+            <li onclick="window.location.href='dashboard-careers.html'">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"></path><path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"></path></svg>
+                Careers
+            </li>
+            <li onclick="window.location.href='settings.html'">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"></circle><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"></path></svg>
+                Settings
+            </li>
+        </ul>
+        <div class="nav-footer">
+            <div class="admin-profile">
+                <!-- Avatar fallback -->
+                <div class="avatar" style="background:var(--primary);color:white;display:flex;align-items:center;justify-content:center;font-weight:bold;font-size:1.2rem;width:40px;height:40px;border-radius:50%;">U</div>
+                <div class="admin-info">
+                    <span class="admin-name" id="sidebar-name">Loading...</span>
+                    <span class="admin-role">Student</span>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <main class="main-content">
+        <!-- Hero Banner -->
+        <div class="hackathon-hero">
+            <div class="hero-content">
+                <div class="hero-badge"><span class="dot"></span> Live Hackathon Feed</div>
+                <h1>⚡ Hackathon Arena</h1>
+                <p>Discover the hottest hackathons across AI, Web Dev, Cybersecurity, and more. Click any card to register directly.</p>
+                <div class="hero-stats">
+                    <div class="hero-stat">
+                        <div class="hero-stat-num" id="total-count">24</div>
+                        <div class="hero-stat-label">Active Hackathons</div>
+                    </div>
+                    <div class="hero-stat">
+                        <div class="hero-stat-num">₹2.5Cr+</div>
+                        <div class="hero-stat-label">Prize Pool</div>
+                    </div>
+                    <div class="hero-stat">
+                        <div class="hero-stat-num">7</div>
+                        <div class="hero-stat-label">Domains</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Controls -->
+        <div class="controls-bar">
+            <div class="search-box">
+                <svg class="search-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
+                <input type="text" id="search-input" placeholder="Search hackathons…" oninput="filterCards()">
+            </div>
+            <select id="sort-select" style="padding:0.65rem 1rem;border:1.5px solid var(--border);border-radius:var(--radius-md);background:white;color:var(--text-dark);font-size:0.88rem;cursor:pointer;" onchange="filterCards()">
+                <option value="default">Sort: Featured</option>
+                <option value="deadline">Sort: Deadline (Soonest)</option>
+                <option value="prize">Sort: Prize (Highest)</option>
+            </select>
+        </div>
+
+        <!-- Domain Filter Pills -->
+        <div class="domain-filters">
+            <button class="filter-pill active" data-domain="all" onclick="setDomain(this)">🌐 All</button>
+            <button class="filter-pill" data-domain="AI/ML" onclick="setDomain(this)">🤖 AI / ML</button>
+            <button class="filter-pill" data-domain="Web Dev" onclick="setDomain(this)">💻 Web Dev</button>
+            <button class="filter-pill" data-domain="Cybersecurity" onclick="setDomain(this)">🛡️ Cybersecurity</button>
+            <button class="filter-pill" data-domain="Mobile" onclick="setDomain(this)">📱 Mobile Dev</button>
+            <button class="filter-pill" data-domain="Blockchain" onclick="setDomain(this)">🔗 Blockchain</button>
+            <button class="filter-pill" data-domain="Open Source" onclick="setDomain(this)">🌱 Open Source</button>
+            <button class="filter-pill" data-domain="IoT" onclick="setDomain(this)">📡 IoT & Hardware</button>
+            <button class="filter-pill" data-domain="Fintech" onclick="setDomain(this)">💰 Fintech</button>
+            <button class="filter-pill" data-domain="General" onclick="setDomain(this)">🏆 General</button>
+        </div>
+
+        <!-- Cards Grid -->
+        <div class="hackathons-grid" id="hackathons-grid">
+            <!-- Injected by JS -->
+        </div>
+    </main>
+
+    <script>
+        function loadTheme() {
+            const theme = localStorage.getItem('theme') || 'theme-lavender';
+            document.body.className = theme;
+        }
+        loadTheme();
+
+        // Auth
+        const userStr = localStorage.getItem('user');
+        if (userStr) {
+            const u = JSON.parse(userStr);
+            const sidebarName = document.getElementById('sidebar-name');
+            if (sidebarName) sidebarName.textContent = u.name || 'Student';
+            
+            const sidebarAvatar = document.querySelector('.admin-profile .avatar');
+            if (sidebarAvatar) {
+                sidebarAvatar.textContent = (u.name || 'S').charAt(0).toUpperCase();
+            }
+        }
+
+        // ── HACKATHON DATABASE ── (curated, real events with official links)
+        const HACKATHONS = [
+            {
+                id: 1, name: "Smart India Hackathon (SIH) 2025", org: "Ministry of Education, Govt. of India",
+                desc: "India's biggest open innovation model, bringing students and government problem solvers together to develop cutting-edge solutions.",
+                domain: ["AI/ML","Web Dev","General","IoT"],
+                tags: [["General","badge-general"],["AI/ML","badge-ai"],["IoT","badge-iot"]],
+                prize: "₹1 Lakh per team", deadline: "2025-08-15", status: "upcoming",
+                mode: "Online + Offline", teamSize: "Upto 6", url: "https://www.sih.gov.in/",
+                emoji: "🇮🇳", color: "linear-gradient(135deg,#f59e0b,#ef4444)"
+            },
+            {
+                id: 2, name: "HackerEarth FutureForward", org: "HackerEarth",
+                desc: "AI and data science challenge where participants build impactful ML models and compete for global recognition.",
+                domain: ["AI/ML"],
+                tags: [["AI/ML","badge-ai"]],
+                prize: "$5,000 in prizes", deadline: "2025-04-20", status: "open",
+                mode: "Online", teamSize: "1–3", url: "https://www.hackerearth.com/challenges/hackathon/",
+                emoji: "🤖", color: "linear-gradient(135deg,#6366f1,#8b5cf6)"
+            },
+            {
+                id: 3, name: "Google Solution Challenge 2025", org: "Google Developer Student Clubs",
+                desc: "Build a solution using one or more Google technologies that addresses one of the United Nations' 17 Sustainable Development Goals.",
+                domain: ["AI/ML","Web Dev","Mobile"],
+                tags: [["AI/ML","badge-ai"],["Mobile","badge-mobile"]],
+                prize: "Internship + $3,000", deadline: "2025-03-28", status: "soon",
+                mode: "Online", teamSize: "2–4", url: "https://developers.google.com/community/gdsc-solution-challenge",
+                emoji: "🌍", color: "linear-gradient(135deg,#4285f4,#34a853)"
+            },
+            {
+                id: 4, name: "ETHIndia 2025", org: "ETHIndia / Devfolio",
+                desc: "India's biggest Ethereum hackathon. Build the future of Web3 — DeFi, NFTs, DAOs, and more.",
+                domain: ["Blockchain","Web Dev"],
+                tags: [["Blockchain","badge-blockchain"],["Web Dev","badge-web"]],
+                prize: "₹30 Lakhs+ in prizes", deadline: "2025-09-01", status: "upcoming",
+                mode: "Offline (Bangalore)", teamSize: "2–5", url: "https://ethindia.co/",
+                emoji: "🔗", color: "linear-gradient(135deg,#7c3aed,#a78bfa)"
+            },
+            {
+                id: 5, name: "Hack The Boo 2025", org: "HackTheBox",
+                desc: "Annual CTF (Capture The Flag) cybersecurity competition. Beginner to expert tracks included.",
+                domain: ["Cybersecurity"],
+                tags: [["Cybersecurity","badge-cybersec"]],
+                prize: "$10,000 in cash & swag", deadline: "2025-10-31", status: "upcoming",
+                mode: "Online", teamSize: "1–4", url: "https://ctf.hackthebox.com/",
+                emoji: "🛡️", color: "linear-gradient(135deg,#ef4444,#f97316)"
+            },
+            {
+                id: 6, name: "AngelHack Global", org: "AngelHack",
+                desc: "The world's largest hackathon series with city-wide events. Build startups, get mentored, and demo to investors.",
+                domain: ["Web Dev","AI/ML","Fintech","General"],
+                tags: [["Fintech","badge-fintech"],["AI/ML","badge-ai"]],
+                prize: "Incubation + $25,000", deadline: "2025-05-30", status: "open",
+                mode: "Hybrid", teamSize: "2–5", url: "https://angelhack.com/",
+                emoji: "💼", color: "linear-gradient(135deg,#0ea5e9,#6366f1)"
+            },
+            {
+                id: 7, name: "MLH Global Hackathon Series", org: "Major League Hacking (MLH)",
+                desc: "Join thousands of hackers at weekend-long hackathons — build projects and learn new tech with peers worldwide.",
+                domain: ["Web Dev","AI/ML","Mobile","Open Source"],
+                tags: [["Open Source","badge-open"],["Web Dev","badge-web"]],
+                prize: "Prizes + swag + internship leads", deadline: "Recurring", status: "open",
+                mode: "Online & Offline", teamSize: "1–4", url: "https://mlh.io/",
+                emoji: "🏆", color: "linear-gradient(135deg,#10b981,#06b6d4)"
+            },
+            {
+                id: 8, name: "Flipkart Grid 6.0", org: "Flipkart",
+                desc: "National level technology competition open to engineering students across India. Focus on supply chain, e-commerce tech, and AI.",
+                domain: ["AI/ML","General","Web Dev"],
+                tags: [["General","badge-general"],["AI/ML","badge-ai"]],
+                prize: "₹5 Lakh + PPO opportunity", deadline: "2025-07-31", status: "upcoming",
+                mode: "Online + Offline Finals", teamSize: "2–3", url: "https://unstop.com/hackathons/flipkart-grid-6",
+                emoji: "🛒", color: "linear-gradient(135deg,#f59e0b,#fbbf24)"
+            },
+            {
+                id: 9, name: "Hack With Interns – Internshala", org: "Internshala",
+                desc: "Open to all students. Build innovative products and projects in a 24-hour sprint with guidance from industry mentors.",
+                domain: ["Web Dev","General","Mobile"],
+                tags: [["General","badge-general"],["Mobile","badge-mobile"]],
+                prize: "₹1.5 Lakh + internship offer", deadline: "2025-06-10", status: "upcoming",
+                mode: "Online", teamSize: "1–4", url: "https://internshala.com/",
+                emoji: "🌟", color: "linear-gradient(135deg,#ec4899,#f43f5e)"
+            },
+            {
+                id: 10, name: "LinkedIn RAISE Hackathon", org: "LinkedIn / Microsoft",
+                desc: "Focus on responsible AI. Participants build GenAI solutions that reduce bias and improve employment outcomes.",
+                domain: ["AI/ML","General"],
+                tags: [["AI/ML","badge-ai"],["Fintech","badge-fintech"]],
+                prize: "$10,000 + LinkedIn features", deadline: "2025-05-01", status: "open",
+                mode: "Online", teamSize: "1–5", url: "https://opportunity.linkedin.com/en-us/hackathon",
+                emoji: "🔵", color: "linear-gradient(135deg,#0077b5,#00a0dc)"
+            },
+            {
+                id: 11, name: "HackAI by TechGig", org: "TechGig",
+                desc: "India's top AI hackathon. Build AI-powered solutions for real-world problems and showcase to leading companies.",
+                domain: ["AI/ML"],
+                tags: [["AI/ML","badge-ai"]],
+                prize: "₹3 Lakh + internship", deadline: "2025-07-15", status: "upcoming",
+                mode: "Online", teamSize: "1–3", url: "https://www.techgig.com/hackathon",
+                emoji: "🧠", color: "linear-gradient(135deg,#6366f1,#3b82f6)"
+            },
+            {
+                id: 12, name: "AWS Build On India", org: "Amazon Web Services",
+                desc: "Students build cloud-native solutions on AWS spanning healthcare, education, and sustainability challenges.",
+                domain: ["Web Dev","AI/ML","IoT","General"],
+                tags: [["AI/ML","badge-ai"],["IoT","badge-iot"]],
+                prize: "AWS credits + cash prizes + job fast-track", deadline: "2025-08-30", status: "upcoming",
+                mode: "Offline (Multiple cities)", teamSize: "2–4", url: "https://aws.amazon.com/events/",
+                emoji: "☁️", color: "linear-gradient(135deg,#f59e0b,#FF9900)"
+            },
+            {
+                id: 13, name: "Devfolio Fellowship Hackathon", org: "Devfolio",
+                desc: "India's premier hackathon platform hosts themed hacks in Web3, Open Source, and Social Impact throughout the year.",
+                domain: ["Web Dev","Blockchain","Open Source"],
+                tags: [["Blockchain","badge-blockchain"],["Open Source","badge-open"]],
+                prize: "$20,000 pool", deadline: "Recurring", status: "open",
+                mode: "Online", teamSize: "1–4", url: "https://devfolio.co/hackathons",
+                emoji: "🚀", color: "linear-gradient(135deg,#3b82f6,#6366f1)"
+            },
+            {
+                id: 14, name: "Hardware Hustle – Hackster.io", org: "Hackster / Arduino",
+                desc: "IoT and embedded systems hackathon. Build smart devices, use microcontrollers, and compete internationally.",
+                domain: ["IoT"],
+                tags: [["IoT","badge-iot"]],
+                prize: "Hardware kits + $5,000", deadline: "2025-09-15", status: "upcoming",
+                mode: "Online", teamSize: "1–3", url: "https://www.hackster.io/contests",
+                emoji: "📡", color: "linear-gradient(135deg,#ec4899,#a855f7)"
+            },
+            {
+                id: 15, name: "FinHack by Razorpay", org: "Razorpay",
+                desc: "Fintech hackathon where you build the next big financial product — payments, lending, insurance, and more.",
+                domain: ["Fintech","Web Dev","Mobile"],
+                tags: [["Fintech","badge-fintech"],["Web Dev","badge-web"]],
+                prize: "₹10 Lakh + PPO", deadline: "2025-06-30", status: "upcoming",
+                mode: "Offline (Bangalore)", teamSize: "2–4", url: "https://razorpay.com/",
+                emoji: "💳", color: "linear-gradient(135deg,#15803d,#14b8a6)"
+            },
+            {
+                id: 16, name: "PicoCTF (Carnegie Mellon)", org: "Carnegie Mellon University",
+                desc: "Free, year-round cybersecurity competition designed for middle and high school students but open to all learners.",
+                domain: ["Cybersecurity"],
+                tags: [["Cybersecurity","badge-cybersec"]],
+                prize: "Certificates + academic recognition", deadline: "2025-03-25", status: "soon",
+                mode: "Online", teamSize: "Solo or team", url: "https://picoctf.org/",
+                emoji: "🎯", color: "linear-gradient(135deg,#dc2626,#f97316)"
+            },
+            {
+                id: 17, name: "Microsoft Imagine Cup 2025", org: "Microsoft",
+                desc: "The world's premier student tech competition. Build AI solutions using Microsoft Azure and compete globally.",
+                domain: ["AI/ML","Web Dev","Mobile","General"],
+                tags: [["AI/ML","badge-ai"],["General","badge-general"]],
+                prize: "$100,000 + Azure credits + mentorship", deadline: "2025-02-28", status: "soon",
+                mode: "Online Semifinals + Offline Finals (Seattle)", teamSize: "1–3", url: "https://imaginecup.microsoft.com/",
+                emoji: "💡", color: "linear-gradient(135deg,#0078d4,#50e6ff)"
+            },
+            {
+                id: 18, name: "Open Source Fiesta – FOSSASIA", org: "FOSSASIA",
+                desc: "Contribute to open source projects in this global sprint. Perfect for beginners and experienced OSS developers alike.",
+                domain: ["Open Source"],
+                tags: [["Open Source","badge-open"]],
+                prize: "Swag + recognition + GSoC leads", deadline: "Annual Sprint", status: "open",
+                mode: "Remote", teamSize: "Solo", url: "https://fossasia.org/",
+                emoji: "🌱", color: "linear-gradient(135deg,#16a34a,#65a30d)"
+            },
+            {
+                id: 19, name: "Myntra HackerRamp", org: "Myntra (Walmart India)",
+                desc: "Fashion-tech hackathon merging AI, data science, and UI/UX to build the future of online fashion retail.",
+                domain: ["AI/ML","Web Dev","Mobile"],
+                tags: [["AI/ML","badge-ai"],["Web Dev","badge-web"]],
+                prize: "₹5 Lakh + internship offers", deadline: "2025-07-01", status: "upcoming",
+                mode: "Online + Offline Finals (Bangalore)", teamSize: "2–4", url: "https://unstop.com/",
+                emoji: "👗", color: "linear-gradient(135deg,#f43f5e,#fb923c)"
+            },
+            {
+                id: 20, name: "IIT Bombay Techfest HackIT", org: "IIT Bombay",
+                desc: "Prestigious hackathon hosted at Asia's largest science & technology festival. Wide problem domain covering social and tech challenges.",
+                domain: ["General","AI/ML","Web Dev","IoT"],
+                tags: [["General","badge-general"],["AI/ML","badge-ai"]],
+                prize: "₹2 Lakh + goodies", deadline: "2025-12-20", status: "upcoming",
+                mode: "Offline (Mumbai)", teamSize: "2–4", url: "https://techfest.org/",
+                emoji: "🎓", color: "linear-gradient(135deg,#7c3aed,#ec4899)"
+            },
+            {
+                id: 21, name: "Walmart Converge Hackathon", org: "Walmart Global Tech India",
+                desc: "Solve retail tech challenges — supply chain AI, customer experience innovation, and sustainable store management.",
+                domain: ["AI/ML","Fintech","General"],
+                tags: [["Fintech","badge-fintech"],["AI/ML","badge-ai"]],
+                prize: "₹2.5 Lakh + PPO consideration", deadline: "2025-09-20", status: "upcoming",
+                mode: "Online + Offline Finals", teamSize: "2–3", url: "https://unstop.com/",
+                emoji: "🛍️", color: "linear-gradient(135deg,#0ea5e9,#0284c7)"
+            },
+            {
+                id: 22, name: "Hackveda — Mobile App Sprint", org: "Hackveda",
+                desc: "48-hour mobile app hackathon. Build iOS or Android apps on accessibility, health, and education themes.",
+                domain: ["Mobile"],
+                tags: [["Mobile","badge-mobile"]],
+                prize: "$3,000 + publishing credits", deadline: "2025-05-15", status: "open",
+                mode: "Online", teamSize: "1–3", url: "https://devpost.com/",
+                emoji: "📱", color: "linear-gradient(135deg,#f59e0b,#10b981)"
+            },
+            {
+                id: 23, name: "NASA Space Apps Challenge 2025", org: "NASA",
+                desc: "The world's largest global hackathon. Use NASA's open data to explore space problems and build solutions for Earth.",
+                domain: ["AI/ML","IoT","General","Web Dev"],
+                tags: [["General","badge-general"],["AI/ML","badge-ai"],["IoT","badge-iot"]],
+                prize: "Global recognition + NASA HQ visit", deadline: "2025-10-04", status: "upcoming",
+                mode: "Hybrid (worldwide events)", teamSize: "1–6", url: "https://www.spaceappschallenge.org/",
+                emoji: "🚀", color: "linear-gradient(135deg,#0f172a,#334155)"
+            },
+            {
+                id: 24, name: "HackBVIT Open Hackathon", org: "BVIT — Navi Mumbai",
+                desc: "Student-organized 36-hour hackathon open to engineers across India. Domains include IoT, AI, sustainability, and more.",
+                domain: ["General","IoT","AI/ML"],
+                tags: [["General","badge-general"],["IoT","badge-iot"]],
+                prize: "₹75,000 + certificates", deadline: "2025-04-05", status: "soon",
+                mode: "Offline (Navi Mumbai)", teamSize: "2–4", url: "https://unstop.com/",
+                emoji: "🎪", color: "linear-gradient(135deg,#6366f1,#a78bfa)"
+            }
+        ];
+
+        let currentDomain = 'all';
+
+        function setDomain(btn) {
+            document.querySelectorAll('.filter-pill').forEach(p => p.classList.remove('active'));
+            btn.classList.add('active');
+            currentDomain = btn.dataset.domain;
+            filterCards();
+        }
+
+        function getDeadlineStatus(deadline, status) {
+            if (status === 'open') return { cls: 'deadline-open', label: '🟢 Open Now' };
+            if (status === 'soon') return { cls: 'deadline-soon', label: '🔴 Closing Soon' };
+            return { cls: 'deadline-upcoming', label: `📅 ${deadline}` };
+        }
+
+        function filterCards() {
+            const query = document.getElementById('search-input').value.toLowerCase();
+            let filtered = HACKATHONS.filter(h => {
+                const domainMatch = currentDomain === 'all' || h.domain.includes(currentDomain);
+                const textMatch = h.name.toLowerCase().includes(query) ||
+                    h.org.toLowerCase().includes(query) ||
+                    h.desc.toLowerCase().includes(query) ||
+                    h.domain.some(d => d.toLowerCase().includes(query));
+                return domainMatch && textMatch;
+            });
+
+            const sort = document.getElementById('sort-select').value;
+            if (sort === 'prize') {
+                filtered.sort((a, b) => b.prize.localeCompare(a.prize));
+            } else if (sort === 'deadline') {
+                const order = { soon: 0, open: 1, upcoming: 2 };
+                filtered.sort((a, b) => (order[a.status] ?? 3) - (order[b.status] ?? 3));
+            }
+
+            document.getElementById('total-count').textContent = filtered.length;
+            renderCards(filtered);
+        }
+
+        function renderCards(list) {
+            const grid = document.getElementById('hackathons-grid');
+            if (list.length === 0) {
+                grid.innerHTML = `<div class="empty-state"><div class="empty-icon">🔍</div><h3>No hackathons found</h3><p>Try a different domain or search term.</p></div>`;
+                return;
+            }
+
+            grid.innerHTML = list.map(h => {
+                const dl = getDeadlineStatus(h.deadline, h.status);
+                const badgeHtml = h.tags.map(([label, cls]) => `<span class="hack-badge ${cls}">${label}</span>`).join('');
+                return `
+                <div class="hack-card" data-domain="${h.domain.join(',')}" data-id="${h.id}">
+                    <div class="hack-card-accent" style="background:${h.color};"></div>
+                    <div class="hack-card-body">
+                        <div class="hack-card-top">
+                            <div class="hack-logo" style="background:${h.color}20;">${h.emoji}</div>
+                            <div class="hack-badges">${badgeHtml}</div>
+                        </div>
+                        <div class="hack-name">${h.name}</div>
+                        <div class="hack-org">${h.org}</div>
+                        <div class="hack-desc">${h.desc}</div>
+                        <div class="hack-meta">
+                            <div class="hack-meta-item">
+                                <span class="icon">🏆</span>
+                                <div><div class="val">${h.prize}</div><div class="lbl">Prize</div></div>
+                            </div>
+                            <div class="hack-meta-item">
+                                <span class="icon">👥</span>
+                                <div><div class="val">${h.teamSize}</div><div class="lbl">Team Size</div></div>
+                            </div>
+                            <div class="hack-meta-item">
+                                <span class="icon">🌐</span>
+                                <div><div class="val">${h.mode}</div><div class="lbl">Mode</div></div>
+                            </div>
+                        </div>
+                        <div class="hack-footer">
+                            <div class="deadline-pill ${dl.cls}">${dl.label}</div>
+                            <a href="${h.url}" target="_blank" rel="noopener noreferrer" class="btn-register" style="background:${h.color};">
+                                Register Now →
+                            </a>
+                        </div>
+                    </div>
+                </div>`;
+            }).join('');
+        }
+
+        // Initial render
+        filterCards();
+    </script>
+</body>
+</html>

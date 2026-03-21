@@ -1,0 +1,21 @@
+services:
+  - type: web
+    name: skillsync-platform
+    env: node
+    plan: free
+    rootDir: backend
+    buildCommand: npm install
+    startCommand: node server.js
+    disk:
+      name: sqlite-data
+      mountPath: /opt/render/project/src/backend/data
+      sizeGB: 1
+    envVars:
+      - key: NODE_VERSION
+        value: 18.0.0
+      - key: JWT_SECRET
+        generateValue: true
+      - key: PORT
+        value: 10000
+      - key: DB_PATH
+        value: /opt/render/project/src/backend/data/database.sqlite

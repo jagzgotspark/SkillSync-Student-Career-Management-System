@@ -1,0 +1,1208 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SkillSync | My Profile</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Outfit:wght@600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="../src/style.css">
+    <style>
+        .profile-page-main { background: var(--bg-main); }
+
+        /* ── Profile completion banner ── */
+        .completion-banner {
+            background: linear-gradient(135deg, #6366f1, #ec4899);
+            border-radius: var(--radius-xl);
+            padding: 1.5rem 2rem;
+            display: flex;
+            align-items: center;
+            gap: 2rem;
+            margin-bottom: 2rem;
+            color: white;
+            box-shadow: 0 8px 32px rgba(99,102,241,0.35);
+        }
+        .completion-circle {
+            position: relative;
+            width: 80px;
+            height: 80px;
+            flex-shrink: 0;
+        }
+        .completion-circle svg { transform: rotate(-90deg); }
+        .completion-circle .track { fill: none; stroke: rgba(255,255,255,0.25); stroke-width: 6; }
+        .completion-circle .fill { fill: none; stroke: white; stroke-width: 6; stroke-linecap: round; transition: stroke-dashoffset 0.8s ease; }
+        .completion-pct {
+            position: absolute;
+            inset: 0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1rem;
+            font-weight: 800;
+        }
+        .completion-text h3 { font-size: 1.25rem; font-weight: 700; margin-bottom: 0.25rem; }
+        .completion-text p { font-size: 0.88rem; opacity: 0.85; }
+
+        /* ── Section nav tabs ── */
+        .profile-tabs {
+            display: flex;
+            gap: 0.5rem;
+            margin-bottom: 1.5rem;
+            border-bottom: 2px solid var(--border);
+            overflow-x: auto;
+            padding-bottom: 0;
+            scrollbar-width: none;
+        }
+        .profile-tabs::-webkit-scrollbar { display: none; }
+        .tab-btn {
+            padding: 0.6rem 1.25rem;
+            border: none;
+            background: transparent;
+            color: var(--text-muted);
+            font-size: 0.88rem;
+            font-weight: 600;
+            cursor: pointer;
+            border-bottom: 2px solid transparent;
+            margin-bottom: -2px;
+            white-space: nowrap;
+            transition: all 0.2s;
+        }
+        .tab-btn.active { color: var(--primary); border-bottom-color: var(--primary); }
+        .tab-btn:hover { color: var(--text-dark); }
+
+        /* ── Form sections ── */
+        .profile-section { display: none; padding-bottom: 5rem; }
+        .profile-section.active { display: block; }
+
+        .section-card {
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: var(--radius-xl);
+            padding: 1.75rem;
+            margin-bottom: 1.5rem;
+            box-shadow: var(--shadow-sm);
+        }
+        .section-card h3 {
+            font-family: 'Outfit', sans-serif;
+            font-size: 1.1rem;
+            font-weight: 700;
+            color: var(--text-dark);
+            margin-bottom: 1.25rem;
+            display: flex;
+            align-items: center;
+            gap: 0.6rem;
+        }
+
+        .form-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 1.2rem; }
+        .form-grid.three { grid-template-columns: 1fr 1fr 1fr; }
+        .form-grid.full { grid-template-columns: 1fr; }
+
+        .field-group { display: flex; flex-direction: column; gap: 0.4rem; }
+        .field-group.full { grid-column: 1 / -1; }
+
+        .field-label {
+            font-size: 0.78rem;
+            font-weight: 700;
+            color: var(--text-muted);
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+        .field-label .req { color: #ef4444; margin-left: 2px; }
+
+        .field-input {
+            padding: 0.7rem 1rem;
+            background: #f8fafc;
+            border: 1.5px solid var(--border);
+            border-radius: var(--radius-md);
+            color: var(--text-dark);
+            font-size: 0.92rem;
+            transition: border-color 0.2s, box-shadow 0.2s;
+            font-family: 'Inter', sans-serif;
+        }
+        .field-input:focus { outline: none; border-color: var(--primary); box-shadow: 0 0 0 3px rgba(99,102,241,0.1); background: white; }
+
+        select.field-input { cursor: pointer; }
+
+        /* Branch scrolling select */
+        select[size] {
+            padding: 0;
+            height: 140px;
+            overflow-y: auto;
+        }
+        select[size] option { padding: 0.5rem 1rem; cursor: pointer; }
+        select[size] option:checked { background: var(--primary); color: white; }
+
+        /* ── Checkboxes ── */
+        .checkbox-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); gap: 0.75rem; }
+        .checkbox-item {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            padding: 0.8rem 1rem;
+            background: #f8fafc;
+            border: 1.5px solid var(--border);
+            border-radius: var(--radius-md);
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        .checkbox-item:hover { border-color: var(--primary); background: rgba(99,102,241,0.04); }
+        .checkbox-item input[type="checkbox"] { width: 16px; height: 16px; accent-color: var(--primary); cursor: pointer; flex-shrink: 0; }
+        .checkbox-item label { font-size: 0.88rem; font-weight: 500; color: var(--text-dark); cursor: pointer; line-height: 1.3; }
+
+        /* ── Resume Upload ── */
+        .resume-upload-zone {
+            border: 2px dashed var(--border-strong);
+            border-radius: var(--radius-xl);
+            padding: 2.5rem;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.2s;
+            background: linear-gradient(135deg, rgba(99,102,241,0.03), rgba(236,72,153,0.02));
+        }
+        .resume-upload-zone:hover { border-color: var(--primary); background: rgba(99,102,241,0.06); }
+        .resume-upload-zone.has-file { border-color: var(--accent); background: rgba(16,185,129,0.04); }
+        .resume-upload-icon { font-size: 2.5rem; margin-bottom: 0.75rem; }
+        .resume-upload-zone h4 { font-size: 1rem; font-weight: 700; color: var(--text-dark); margin-bottom: 0.35rem; }
+        .resume-upload-zone p { font-size: 0.82rem; color: var(--text-muted); }
+        #resume-file-input { display: none; }
+
+        .resume-preview {
+            display: none;
+            margin-top: 1rem;
+            padding: 1rem 1.25rem;
+            background: rgba(16,185,129,0.08);
+            border: 1.5px solid rgba(16,185,129,0.3);
+            border-radius: var(--radius-md);
+            display: none;
+            align-items: center;
+            gap: 0.75rem;
+        }
+        .resume-preview.visible { display: flex; }
+        .resume-preview-icon { font-size: 1.5rem; }
+        .resume-preview-name { font-weight: 600; font-size: 0.9rem; color: var(--accent); flex: 1; }
+        .resume-remove-btn { background: none; border: none; cursor: pointer; color: var(--text-muted); font-size: 1.2rem; }
+
+        /* ── Tech Skills ── */
+        .skill-chips-container {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.5rem;
+            min-height: 50px;
+            padding: 0.75rem;
+            background: #f8fafc;
+            border: 1.5px solid var(--border);
+            border-radius: var(--radius-md);
+            cursor: text;
+        }
+        .skill-chip-input {
+            border: none;
+            background: transparent;
+            font-size: 0.88rem;
+            color: var(--text-dark);
+            min-width: 120px;
+            flex: 1;
+            outline: none;
+        }
+        .chip-tag {
+            display: flex;
+            align-items: center;
+            gap: 0.4rem;
+            padding: 0.3rem 0.75rem;
+            background: rgba(99,102,241,0.1);
+            color: var(--primary-dark);
+            border-radius: 100px;
+            font-size: 0.8rem;
+            font-weight: 600;
+            border: 1px solid rgba(99,102,241,0.2);
+        }
+        .chip-remove { cursor: pointer; font-size: 0.75rem; opacity: 0.6; }
+        .chip-remove:hover { opacity: 1; }
+
+        /* ── Save buttons ── */
+        .save-bar {
+            position: sticky;
+            bottom: 0;
+            background: rgba(240,244,255,0.95);
+            backdrop-filter: blur(12px);
+            border-top: 1px solid var(--border);
+            padding: 1rem 2rem;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 1rem;
+            margin: 0 -2rem -3rem;
+            z-index: 10;
+        }
+        .save-hint { font-size: 0.82rem; color: var(--text-muted); }
+        .save-actions { display: flex; gap: 0.75rem; }
+        .btn-save {
+            padding: 0.65rem 2rem;
+            background: linear-gradient(90deg, var(--primary), var(--secondary));
+            border: none;
+            border-radius: var(--radius-md);
+            color: white;
+            font-weight: 700;
+            font-size: 0.92rem;
+            cursor: pointer;
+            transition: transform 0.2s, box-shadow 0.2s;
+            box-shadow: 0 4px 16px rgba(99,102,241,0.3);
+        }
+        .btn-save:hover { transform: translateY(-2px); box-shadow: 0 8px 24px rgba(99,102,241,0.4); }
+        .btn-secondary {
+            padding: 0.65rem 1.5rem;
+            background: white;
+            border: 1.5px solid var(--border);
+            border-radius: var(--radius-md);
+            color: var(--text-dark);
+            font-weight: 600;
+            font-size: 0.92rem;
+            cursor: pointer;
+        }
+
+        /* ── Success toast ── */
+        .toast {
+            position: fixed;
+            top: 1.5rem;
+            right: 1.5rem;
+            padding: 1rem 1.5rem;
+            background: #065f46;
+            color: white;
+            border-radius: var(--radius-md);
+            font-weight: 600;
+            box-shadow: var(--shadow-lg);
+            z-index: 9999;
+            opacity: 0;
+            transform: translateY(-20px);
+            transition: all 0.3s;
+        }
+        .toast.show { opacity: 1; transform: translateY(0); }
+
+        @media (max-width: 768px) {
+            .form-grid, .form-grid.three { grid-template-columns: 1fr; }
+        }
+    </style>
+</head>
+<body>
+    <!-- Sidebar -->
+    <nav class="sidebar">
+        <div class="logo-container">
+            <div class="logo-icon">∞</div>
+            <h2>SkillSync</h2>
+        </div>
+        <ul class="nav-links">
+            <li onclick="window.location.href='index.html'">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="7" height="7"></rect><rect x="14" y="3" width="7" height="7"></rect><rect x="14" y="14" width="7" height="7"></rect><rect x="3" y="14" width="7" height="7"></rect></svg>
+                Dashboard
+            </li>
+            <li onclick="window.location.href='students.html'">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path><circle cx="9" cy="7" r="4"></circle><path d="M23 21v-2a4 4 0 0 0-3-3.87"></path><path d="M16 3.13a4 4 0 0 1 0 7.75"></path></svg>
+                Candidate Directory
+            </li>
+            <li class="active" onclick="window.location.href='profile.html'">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path><circle cx="12" cy="7" r="4"></circle></svg>
+                My Profile
+            </li>
+            <li onclick="window.location.href='hackathons.html'">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"></polygon></svg>
+                Hackathons
+            </li>
+            <li onclick="window.location.href='analytics.html'">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 12h-4l-3 9L9 3l-3 9H2"></path></svg>
+                Analytics
+            </li>
+            <li onclick="window.location.href='dashboard-careers.html'">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"></path><path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"></path></svg>
+                Careers
+            </li>
+            <li onclick="window.location.href='settings.html'">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"></circle><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"></path></svg>
+                Settings
+            </li>
+        </ul>
+        <div class="nav-footer">
+            <div class="admin-profile">
+                <div class="avatar" style="background:var(--primary);color:white;display:flex;align-items:center;justify-content:center;font-weight:bold;font-size:1.2rem;width:40px;height:40px;border-radius:50%;">U</div>
+                <div class="admin-info">
+                    <span class="admin-name" id="sidebar-name">Loading...</span>
+                    <span class="admin-role">Student</span>
+                </div>
+            </div>
+            <button onclick="logout()" style="margin-top:0.75rem;width:100%;padding:0.5rem;background:rgba(239,68,68,0.12);border:1px solid rgba(239,68,68,0.2);border-radius:8px;color:#f87171;font-size:0.82rem;cursor:pointer;font-weight:600;">Sign Out</button>
+        </div>
+    </nav>
+
+    <!-- Main Content -->
+    <main class="main-content profile-page-main">
+        <!-- Header -->
+        <header class="top-header">
+            <div>
+                <h1>📋 My Profile</h1>
+                <p class="subtitle">Fill in your details to unlock personalized career matches and make your profile visible to recruiters.</p>
+            </div>
+            <a href="index.html" style="padding:0.6rem 1.25rem;background:white;border:1.5px solid var(--border);border-radius:var(--radius-md);color:var(--text-dark);font-weight:600;text-decoration:none;font-size:0.88rem;">← Back to Dashboard</a>
+        </header>
+
+        <!-- Completion Banner -->
+        <div class="completion-banner">
+            <div class="completion-circle">
+                <svg viewBox="0 0 80 80" width="80" height="80">
+                    <circle class="track" cx="40" cy="40" r="32"/>
+                    <circle class="fill" id="completion-ring" cx="40" cy="40" r="32"
+                        stroke-dasharray="201"
+                        stroke-dashoffset="201"/>
+                </svg>
+                <div class="completion-pct" id="completion-pct-text">0%</div>
+            </div>
+            <div class="completion-text">
+                <h3>Profile Completion</h3>
+                <p id="completion-hint">Complete your profile to get noticed by top recruiters and unlock your personalized dashboard analytics.</p>
+            </div>
+        </div>
+
+        <!-- Section Tabs -->
+        <div class="profile-tabs">
+            <button class="tab-btn active" onclick="switchTab('personal')">👤 Personal</button>
+            <button class="tab-btn" onclick="switchTab('academic')">🎓 Academic</button>
+            <button class="tab-btn" onclick="switchTab('skills')">⚡ Skills & Tech</button>
+            <button class="tab-btn" onclick="switchTab('resume')">📄 Resume</button>
+            <button class="tab-btn" onclick="switchTab('preferences')">⚙️ Preferences</button>
+        </div>
+
+        <!-- ── TAB 1: Personal Info ── -->
+        <div id="tab-personal" class="profile-section active">
+            <div class="section-card">
+                <h3>👤 Personal Information</h3>
+                <div class="form-grid">
+                    <div class="field-group full" style="display:flex; align-items:center; gap:1.5rem; margin-bottom: 0.5rem; padding: 1rem; background: rgba(99,102,241,0.05); border-radius: var(--radius-md); border: 1px dashed var(--border-strong);">
+                        <img id="profile-img-preview" src="https://ui-avatars.com/api/?name=Student&background=6366f1&color=fff" style="width: 80px; height: 80px; border-radius: 50%; object-fit: cover; border: 3px solid white; box-shadow: var(--shadow-sm);">
+                        <div style="flex:1;">
+                            <label class="field-label" style="margin-bottom: 0.5rem; display:block;">Profile Image (Max 20MB)</label>
+                            <input id="p-image" type="file" accept="image/*" class="field-input" style="padding: 0.4rem; width:100%; max-width: 300px; background:white;" onchange="previewProfileImage(event)">
+                            <p style="font-size: 0.75rem; color: var(--text-muted); margin-top: 0.4rem;">Square images work best. Supported formats: JPG, PNG, WebP.</p>
+                        </div>
+                    </div>
+                    <div class="field-group">
+                        <label class="field-label">Full Name <span class="req">*</span></label>
+                        <input id="p-name" type="text" class="field-input" placeholder="e.g., Shreyash Chaudhari">
+                    </div>
+                    <div class="field-group">
+                        <label class="field-label">Email Address <span class="req">*</span></label>
+                        <input id="p-email" type="email" class="field-input" placeholder="you@email.com">
+                    </div>
+                    <div class="field-group">
+                        <label class="field-label">Phone Number <span class="req">*</span></label>
+                        <input id="p-phone" type="tel" class="field-input" placeholder="+91 98765 43210">
+                    </div>
+                    <div class="field-group">
+                        <label class="field-label">Date of Birth</label>
+                        <input id="p-dob" type="date" class="field-input">
+                    </div>
+                    <div class="field-group">
+                        <label class="field-label">Gender</label>
+                        <select id="p-gender" class="field-input">
+                            <option value="">-- Select --</option>
+                            <option>Male</option>
+                            <option>Female</option>
+                            <option>Non-binary</option>
+                            <option>Prefer not to say</option>
+                        </select>
+                    </div>
+                    <div class="field-group">
+                        <label class="field-label">Nationality</label>
+                        <input id="p-nationality" type="text" class="field-input" placeholder="e.g., Indian">
+                    </div>
+                </div>
+            </div>
+
+            <div class="section-card">
+                <h3>📍 Address Details</h3>
+                <div class="form-grid">
+                    <div class="field-group">
+                        <label class="field-label">City <span class="req">*</span></label>
+                        <input id="p-city" type="text" class="field-input" placeholder="e.g., Chennai">
+                    </div>
+                    <div class="field-group">
+                        <label class="field-label">State <span class="req">*</span></label>
+                        <select id="p-state" class="field-input">
+                            <option value="">-- Select State --</option>
+                            <option>Andhra Pradesh</option><option>Arunachal Pradesh</option>
+                            <option>Assam</option><option>Bihar</option><option>Chhattisgarh</option>
+                            <option>Goa</option><option>Gujarat</option><option>Haryana</option>
+                            <option>Himachal Pradesh</option><option>Jharkhand</option>
+                            <option>Karnataka</option><option>Kerala</option>
+                            <option>Madhya Pradesh</option><option>Maharashtra</option>
+                            <option>Manipur</option><option>Meghalaya</option><option>Mizoram</option>
+                            <option>Nagaland</option><option>Odisha</option><option>Punjab</option>
+                            <option>Rajasthan</option><option>Sikkim</option><option>Tamil Nadu</option>
+                            <option>Telangana</option><option>Tripura</option>
+                            <option>Uttar Pradesh</option><option>Uttarakhand</option>
+                            <option>West Bengal</option><option>Delhi</option>
+                        </select>
+                    </div>
+                    <div class="field-group">
+                        <label class="field-label">PIN Code <span class="req">*</span></label>
+                        <input id="p-pincode" type="text" class="field-input" maxlength="6" placeholder="e.g., 600127">
+                    </div>
+                    <div class="field-group">
+                        <label class="field-label">Permanent Address</label>
+                        <input id="p-address" type="text" class="field-input" placeholder="Street, Area">
+                    </div>
+                </div>
+            </div>
+
+            <div class="section-card">
+                <h3>🔗 Online Presence</h3>
+                <div class="form-grid">
+                    <div class="field-group">
+                        <label class="field-label">LinkedIn URL</label>
+                        <input id="p-linkedin" type="url" class="field-input" placeholder="https://linkedin.com/in/yourname">
+                    </div>
+                    <div class="field-group">
+                        <label class="field-label">GitHub URL</label>
+                        <input id="p-github" type="url" class="field-input" placeholder="https://github.com/yourname">
+                    </div>
+                    <div class="field-group">
+                        <label class="field-label">Portfolio / Website</label>
+                        <input id="p-portfolio" type="url" class="field-input" placeholder="https://yoursite.com">
+                    </div>
+                    <div class="field-group">
+                        <label class="field-label">Leetcode / Codeforces handle</label>
+                        <input id="p-coding" type="text" class="field-input" placeholder="e.g., shreyash_dev">
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- ── TAB 2: Academic Info ── -->
+        <div id="tab-academic" class="profile-section">
+            <div class="section-card">
+                <h3>🏫 College Details</h3>
+                <div class="form-grid">
+                    <div class="field-group full">
+                        <label class="field-label">College / University Name <span class="req">*</span></label>
+                        <input id="a-college" type="text" class="field-input" placeholder="e.g., Vellore Institute of Technology, Chennai">
+                    </div>
+                    <div class="field-group">
+                        <label class="field-label">Student ID / Roll Number <span class="req">*</span></label>
+                        <input id="a-rollno" type="text" class="field-input" placeholder="e.g., 22BCE1234">
+                    </div>
+                    <div class="field-group">
+                        <label class="field-label">College City</label>
+                        <input id="a-clg-city" type="text" class="field-input" placeholder="e.g., Chennai">
+                    </div>
+                </div>
+            </div>
+
+            <div class="section-card">
+                <h3>📚 Branch & Programme</h3>
+                <div class="form-grid">
+                    <div class="field-group">
+                        <label class="field-label">Branch / Department <span class="req">*</span> <span style="color:var(--text-muted);font-size:0.72rem;font-weight:400;text-transform:none;">(scroll to select)</span></label>
+                        <select id="a-branch" class="field-input" size="7">
+                            <option value="CSE">Computer Science &amp; Engineering (CSE)</option>
+                            <option value="CSBS">CS &amp; Business Systems (CSBS)</option>
+                            <option value="CSE-AI">CSE – Artificial Intelligence (CSE-AI)</option>
+                            <option value="CSE-DS">CSE – Data Science (CSE-DS)</option>
+                            <option value="CSE-Cyber">CSE – Cybersecurity</option>
+                            <option value="IT">Information Technology (IT)</option>
+                            <option value="ECE">Electronics &amp; Communication (ECE)</option>
+                            <option value="EEE">Electrical &amp; Electronics (EEE)</option>
+                            <option value="EI">Electronics &amp; Instrumentation (EI)</option>
+                            <option value="VLSI">VLSI Design</option>
+                            <option value="Mech">Mechanical Engineering</option>
+                            <option value="Aero">Aeronautical Engineering</option>
+                            <option value="Auto">Automobile Engineering</option>
+                            <option value="Prod">Production Engineering</option>
+                            <option value="Civil">Civil Engineering</option>
+                            <option value="Env">Environmental Engineering</option>
+                            <option value="Chem">Chemical Engineering</option>
+                            <option value="Bio">Biotechnology</option>
+                            <option value="BioMed">Biomedical Engineering</option>
+                            <option value="Marine">Marine Engineering</option>
+                            <option value="Mining">Mining Engineering</option>
+                            <option value="Metal">Metallurgical Engineering</option>
+                            <option value="Rubber">Rubber &amp; Plastics Technology</option>
+                            <option value="Textile">Textile Engineering</option>
+                            <option value="Food">Food Technology</option>
+                            <option value="Other">Other</option>
+                        </select>
+                    </div>
+                    <div class="field-group" style="display:flex;flex-direction:column;gap:1rem;">
+                        <div class="field-group">
+                            <label class="field-label">Specialization / Elective</label>
+                            <input id="a-spec" type="text" class="field-input" placeholder="e.g., Machine Learning, VLSI">
+                        </div>
+                        <div class="field-group">
+                            <label class="field-label">Degree</label>
+                            <select id="a-degree" class="field-input">
+                                <option>B.Tech</option><option>B.E.</option>
+                                <option>M.Tech</option><option>M.E.</option>
+                                <option>Integrated B.Tech + M.Tech</option>
+                                <option>B.Sc Engineering</option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="section-card">
+                <h3>📊 Academic Performance</h3>
+                <div class="form-grid three">
+                    <div class="field-group">
+                        <label class="field-label">Current CGPA <span class="req">*</span></label>
+                        <input id="a-cgpa" type="number" class="field-input" min="0" max="10" step="0.01" placeholder="e.g., 8.75">
+                    </div>
+                    <div class="field-group">
+                        <label class="field-label">Current Year <span class="req">*</span></label>
+                        <select id="a-year" class="field-input">
+                            <option value="1">1st Year</option>
+                            <option value="2">2nd Year</option>
+                            <option value="3">3rd Year</option>
+                            <option value="4">4th Year</option>
+                        </select>
+                    </div>
+                    <div class="field-group">
+                        <label class="field-label">Expected Graduation</label>
+                        <input id="a-grad" type="month" class="field-input">
+                    </div>
+                    <div class="field-group">
+                        <label class="field-label">12th / HSC Score (%)</label>
+                        <input id="a-12th" type="number" class="field-input" min="0" max="100" step="0.01" placeholder="e.g., 91.5">
+                    </div>
+                    <div class="field-group">
+                        <label class="field-label">10th / SSC Score (%)</label>
+                        <input id="a-10th" type="number" class="field-input" min="0" max="100" step="0.01" placeholder="e.g., 95.0">
+                    </div>
+                    <div class="field-group">
+                        <label class="field-label">Active Backlogs</label>
+                        <input id="a-backlogs" type="number" class="field-input" min="0" placeholder="e.g., 0" value="0">
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- ── TAB 3: Skills & Tech ── -->
+        <div id="tab-skills" class="profile-section">
+            <div class="section-card">
+                <h3>⚡ Technical Skills <span style="font-size:0.78rem;color:var(--text-muted);font-weight:400;">Type skill name and press Enter</span></h3>
+                <div class="skill-chips-container" id="skills-chip-container" onclick="document.getElementById('skill-chip-input').focus()">
+                    <input id="skill-chip-input" class="skill-chip-input" type="text" placeholder="Type a skill and press Enter…">
+                </div>
+            </div>
+
+            <div class="section-card">
+                <h3>🛠️ Tools &amp; Technologies</h3>
+                <div class="checkbox-grid" id="tools-grid">
+                    <!-- Injected via JS -->
+                </div>
+            </div>
+
+            <div class="section-card">
+                <h3>🌐 Domains of Interest</h3>
+                <div class="checkbox-grid" id="domains-grid">
+                    <!-- Injected via JS -->
+                </div>
+            </div>
+
+            <div class="section-card">
+                <h3>🏆 Achievements &amp; Projects</h3>
+                <div class="form-grid full">
+                    <div class="field-group">
+                        <label class="field-label">Notable Projects (one per line)</label>
+                        <textarea id="s-projects" class="field-input" rows="4" placeholder="• E-commerce website using React + Node.js&#10;• CNN image classifier (92% accuracy)&#10;• Smart parking IoT prototype"></textarea>
+                    </div>
+                    <div class="field-group">
+                        <label class="field-label">Certifications</label>
+                        <textarea id="s-certs" class="field-input" rows="3" placeholder="• AWS Cloud Practitioner (2024)&#10;• Google Data Analytics Certificate"></textarea>
+                    </div>
+                    <div class="field-group">
+                        <label class="field-label">Hackathons / Competitions</label>
+                        <textarea id="s-hackathons" class="field-input" rows="3" placeholder="• Smart India Hackathon 2024 – Finalist&#10;• HackerEarth ML Challenge – Rank 45"></textarea>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- ── TAB 4: Resume ── -->
+        <div id="tab-resume" class="profile-section">
+            <div class="section-card">
+                <h3>📄 Upload Your Resume</h3>
+                <p style="font-size:0.88rem;color:var(--text-muted);margin-bottom:1.5rem;">Your resume will be visible to recruiters browsing the Candidate Directory. Supported: PDF (max 5 MB)</p>
+
+                <div class="resume-upload-zone" id="resume-drop-zone" onclick="document.getElementById('resume-file-input').click()" ondragover="event.preventDefault()" ondrop="handleResumeDrop(event)">
+                    <div class="resume-upload-icon">📁</div>
+                    <h4>Drag &amp; drop your resume here</h4>
+                    <p>or click to browse files · PDF only · Max 5 MB</p>
+                </div>
+                <input type="file" id="resume-file-input" accept=".pdf" onchange="handleResumeSelect(event)">
+
+                <div class="resume-preview" id="resume-preview">
+                    <span class="resume-preview-icon">📄</span>
+                    <span class="resume-preview-name" id="resume-file-name">resume.pdf</span>
+                    <button class="resume-remove-btn" onclick="removeResume()">✕</button>
+                </div>
+                
+                <div style="margin-top: 2rem; padding: 1.5rem; background: rgba(99,102,241,0.05); border: 1px solid var(--border-strong); border-radius: var(--radius-lg); text-align: center;">
+                    <h4 style="font-family: 'Outfit'; font-size: 1.1rem; margin-bottom: 0.5rem;">✨ Automated Resume Builder</h4>
+                    <p style="font-size: 0.82rem; color: var(--text-muted); margin-bottom: 1.25rem;">Generate a professional, recruiter-ready resume instantly based on your SkillSync profile data.</p>
+                    <button class="btn-save" onclick="generateResume()" style="background: linear-gradient(135deg, var(--primary-dark), var(--primary)); color: white; padding: 0.8rem 2rem; box-shadow: var(--shadow-md);">🚀 Generate Resume from Profile</button>
+                </div>
+            </div>
+
+            <!-- Resume Preview Modal -->
+            <div id="resume-modal" style="display:none; position:fixed; inset:0; background:rgba(0,0,0,0.8); z-index:10000; padding:2rem; overflow-y:auto;">
+                <div style="max-width:800px; margin:0 auto; background:white; border-radius:var(--radius-xl); position:relative; padding:0; box-shadow:0 25px 50px -12px rgba(0,0,0,0.5);">
+                    <div style="padding:1rem 2rem; border-bottom:1px solid #e2e8f0; display:flex; justify-content:space-between; align-items:center; position:sticky; top:0; background:white; border-radius:var(--radius-xl) var(--radius-xl) 0 0; z-index:11;">
+                        <h3 style="color:var(--text-dark); font-family:'Outfit';">Professional Resume Preview</h3>
+                        <div style="display:flex; gap:0.5rem;">
+                            <button onclick="window.print()" style="padding:0.5rem 1rem; background:var(--primary); color:white; border:none; border-radius:8px; font-weight:600; cursor:pointer;">🖨️ Print / Save PDF</button>
+                            <button onclick="document.getElementById('resume-modal').style.display='none'" style="padding:0.5rem 1rem; background:#f1f5f9; color:var(--text-dark); border:none; border-radius:8px; font-weight:600; cursor:pointer;">Close</button>
+                        </div>
+                    </div>
+                    <div id="resume-content" style="padding:3rem; color:#1e293b; font-family:'Inter', sans-serif;">
+                        <!-- Injected via JS -->
+                    </div>
+                </div>
+            </div>
+            </div>
+
+
+        </div>
+
+        <!-- ── TAB 5: Preferences ── -->
+        <div id="tab-preferences" class="profile-section">
+            <div class="section-card">
+                <h3>🎯 Career Objective</h3>
+                <div class="form-grid full">
+                    <div class="field-group">
+                        <label class="field-label">Career Goal (short statement)</label>
+                        <textarea id="pr-goal" class="field-input" rows="2" placeholder="e.g., Aspiring data scientist looking to leverage ML skills in fintech startup…"></textarea>
+                    </div>
+                </div>
+            </div>
+
+            <div class="section-card">
+                <h3>✅ Placement Preferences <span style="font-size:0.78rem;color:var(--text-muted);font-weight:400;">Select all that apply</span></h3>
+                <div class="checkbox-grid">
+                    <div class="checkbox-item"><input type="checkbox" id="pref-intern" name="pref"><label for="pref-intern">🎓 Open to Internships</label></div>
+                    <div class="checkbox-item"><input type="checkbox" id="pref-fte" name="pref"><label for="pref-fte">💼 Open to Full-Time (FTE)</label></div>
+                    <div class="checkbox-item"><input type="checkbox" id="pref-ppo" name="pref"><label for="pref-ppo">🔄 Seeking Pre-Placement Offer (PPO)</label></div>
+                    <div class="checkbox-item"><input type="checkbox" id="pref-remote" name="pref"><label for="pref-remote">🌐 Open to Remote Work</label></div>
+                    <div class="checkbox-item"><input type="checkbox" id="pref-reloc" name="pref"><label for="pref-reloc">✈️ Willing to Relocate</label></div>
+                    <div class="checkbox-item"><input type="checkbox" id="pref-startup" name="pref"><label for="pref-startup">🚀 Interested in Startups</label></div>
+                    <div class="checkbox-item"><input type="checkbox" id="pref-research" name="pref"><label for="pref-research">🔬 Open to Research Roles</label></div>
+                    <div class="checkbox-item"><input type="checkbox" id="pref-govt" name="pref"><label for="pref-govt">🏛️ Open to Govt/PSU jobs</label></div>
+                </div>
+            </div>
+
+            <div class="section-card">
+                <h3>💰 Expected Stipend / CTC</h3>
+                <div class="form-grid three">
+                    <div class="field-group">
+                        <label class="field-label">Internship Stipend (₹/month)</label>
+                        <input id="pr-stipend" type="number" class="field-input" placeholder="e.g., 25000">
+                    </div>
+                    <div class="field-group">
+                        <label class="field-label">Expected CTC (₹ LPA)</label>
+                        <input id="pr-ctc" type="number" class="field-input" placeholder="e.g., 12">
+                    </div>
+                    <div class="field-group">
+                        <label class="field-label">Preferred Work Location</label>
+                        <input id="pr-location" type="text" class="field-input" placeholder="e.g., Bangalore, Hyderabad">
+                    </div>
+                </div>
+            </div>
+
+            <div class="section-card">
+                <h3>📝 Additional Info for Recruiters</h3>
+                <div class="form-grid full">
+                    <div class="field-group">
+                        <label class="field-label">Languages Known</label>
+                        <input id="pr-langs" type="text" class="field-input" placeholder="e.g., English, Hindi, Tamil">
+                    </div>
+                    <div class="field-group">
+                        <label class="field-label">Extra-curricular Activities</label>
+                        <textarea id="pr-extra" class="field-input" rows="3" placeholder="• NSS Volunteer&#10;• Member, Tech Club&#10;• State-level Chess player"></textarea>
+                    </div>
+                    <div class="field-group">
+                        <label class="field-label">Anything else you'd like recruiters to know?</label>
+                        <textarea id="pr-other" class="field-input" rows="3" placeholder="Additional context, special achievements, etc."></textarea>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Sticky Save Bar -->
+        <div class="save-bar">
+            <span class="save-hint" id="save-hint-text">All changes are saved locally until you click Save.</span>
+            <div class="save-actions">
+                <button class="btn-secondary" onclick="loadProfileFromStorage()">↺ Reset</button>
+                <button class="btn-save" onclick="saveProfile()">💾 Save Profile</button>
+            </div>
+        </div>
+    </main>
+
+    <!-- Success toast -->
+    <div class="toast" id="toast">✅ Profile saved successfully!</div>
+
+    <script>
+        function loadTheme() {
+            const theme = localStorage.getItem('theme') || 'theme-lavender';
+            document.body.className = theme;
+        }
+        loadTheme();
+
+        const API = (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1' || window.location.protocol === 'file:')
+            ? 'http://localhost:3002/api' : '/api';
+
+        // ── Auth guard ──
+        const userStr = localStorage.getItem('user');
+        if (!userStr) { window.location.href = 'login.html'; }
+        const currentUser = JSON.parse(userStr);
+        
+        if (currentUser.role && currentUser.role !== 'student') {
+            if (currentUser.role === 'mentor' || currentUser.role === 'company') {
+                window.location.href = 'company-dashboard.html';
+            } else if (currentUser.role === 'admin') {
+                window.location.href = 'students.html';
+            }
+        }
+        document.getElementById('sidebar-name').textContent = currentUser.name || 'Student';
+        
+        // Update sidebar avatar initials
+        const sidebarAvatar = document.querySelector('.admin-profile .avatar');
+        if (sidebarAvatar) {
+            sidebarAvatar.textContent = (currentUser.name || 'S').charAt(0).toUpperCase();
+        }
+
+        function logout() { localStorage.removeItem('token'); localStorage.removeItem('user'); window.location.href = 'login.html'; }
+
+        // ── Tab Switching ──
+        function switchTab(tab) {
+            document.querySelectorAll('.profile-section').forEach(s => s.classList.remove('active'));
+            document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+            document.getElementById('tab-' + tab).classList.add('active');
+            event.target.classList.add('active');
+        }
+
+        // ── Tools & Domains Injection ──
+        const TOOLS = ['VS Code','Git/GitHub','Docker','Linux','Figma','Postman','Jupyter Notebook','Excel','Power BI','Tableau','MATLAB','Arduino','AWS','Azure','GCP','Firebase','MongoDB','MySQL','PostgreSQL','Redis'];
+        const DOMAINS = ['Artificial Intelligence','Machine Learning','Web Development','Mobile App Dev','Cybersecurity','Cloud Computing','Data Science','DevOps','IoT','Blockchain','Embedded Systems','AR/VR','Game Development','UI/UX Design','Robotics','Bioinformatics'];
+
+        function injectCheckboxGrid(containerId, items, prefix) {
+            const container = document.getElementById(containerId);
+            items.forEach(item => {
+                const id = prefix + item.replace(/[^a-z0-9]/gi,'');
+                container.innerHTML += `
+                    <div class="checkbox-item">
+                        <input type="checkbox" id="${id}" name="${prefix}">
+                        <label for="${id}">${item}</label>
+                    </div>`;
+            });
+        }
+        injectCheckboxGrid('tools-grid', TOOLS, 'tool-');
+        injectCheckboxGrid('domains-grid', DOMAINS, 'dom-');
+
+        // ── Skill Chips Input ──
+        const chipInput = document.getElementById('skill-chip-input');
+        const chipContainer = document.getElementById('skills-chip-container');
+
+        chipInput.addEventListener('keydown', (e) => {
+            if ((e.key === 'Enter' || e.key === ',') && chipInput.value.trim()) {
+                e.preventDefault();
+                addChip(chipInput.value.trim().replace(',',''));
+                chipInput.value = '';
+                updateCompletion();
+            }
+        });
+
+        function addChip(text) {
+            const chip = document.createElement('span');
+            chip.className = 'chip-tag';
+            chip.innerHTML = `${text} <span class="chip-remove" onclick="this.parentElement.remove();updateCompletion()">✕</span>`;
+            chipContainer.insertBefore(chip, chipInput);
+        }
+
+        function getChips() {
+            return Array.from(chipContainer.querySelectorAll('.chip-tag')).map(c => c.textContent.replace('✕','').trim());
+        }
+
+        // ── Resume Upload ──
+        let resumeFile = null;
+        let resumeLink = null;
+
+        function handleResumeSelect(event) {
+            const file = event.target.files[0];
+            if (file) setResumeFile(file);
+        }
+
+        function handleResumeDrop(event) {
+            event.preventDefault();
+            const file = event.dataTransfer.files[0];
+            if (file && file.type === 'application/pdf') setResumeFile(file);
+        }
+
+        function setResumeFile(file) {
+            if (file.size > 5 * 1024 * 1024) { alert('File too large. Maximum 5 MB allowed.'); return; }
+            resumeFile = file;
+            document.getElementById('resume-file-name').textContent = file.name;
+            document.getElementById('resume-preview').classList.add('visible');
+            document.getElementById('resume-drop-zone').classList.add('has-file');
+            updateCompletion();
+        }
+
+        function removeResume() {
+            resumeFile = null;
+            document.getElementById('resume-preview').classList.remove('visible');
+            document.getElementById('resume-drop-zone').classList.remove('has-file');
+            document.getElementById('resume-file-input').value = '';
+            updateCompletion();
+        }
+
+        // ── Completion Meter ──
+        const requiredFields = ['p-name','p-email','p-phone','p-city','p-state','p-pincode','a-college','a-rollno','a-branch','a-cgpa','a-year'];
+        const bonusFields = ['p-linkedin','p-github','a-spec','s-projects','pr-goal'];
+
+        function updateCompletion() {
+            let filled = 0;
+            const total = requiredFields.length + bonusFields.length + 3; // +resume +skills +pref
+
+            requiredFields.forEach(id => {
+                const el = document.getElementById(id);
+                if (el && el.value.trim()) filled++;
+            });
+            bonusFields.forEach(id => {
+                const el = document.getElementById(id);
+                if (el && el.value.trim()) filled++;
+            });
+            if (getChips().length > 0) filled++;
+            if (resumeFile || document.getElementById('r-link').value.trim()) filled++;
+            if (document.querySelector('input[name="pref"]:checked')) filled++;
+
+            const pct = Math.min(100, Math.round((filled / total) * 100));
+            const circumference = 201;
+            const offset = circumference - (pct / 100) * circumference;
+            document.getElementById('completion-ring').style.strokeDashoffset = offset;
+            document.getElementById('completion-pct-text').textContent = pct + '%';
+
+            const hint = pct < 40 ? 'Add your personal info and academic details to get started.' :
+                         pct < 70 ? 'Great progress! Add skills and resume to unlock full analytics.' :
+                         pct < 90 ? 'Almost there! Fill preferences to complete your profile.' :
+                         '🎉 Profile complete! You are visible to top recruiters.';
+            document.getElementById('completion-hint').textContent = hint;
+
+            // Save to localStorage
+            localStorage.setItem('profileCompletion', pct);
+        }
+
+        // ── Image Preview ──
+        function previewProfileImage(event) {
+            const file = event.target.files[0];
+            if (file) {
+                if (file.size > 20 * 1024 * 1024) {
+                    alert('File is too large. Maximum size is 20MB.');
+                    event.target.value = '';
+                    return;
+                }
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    document.getElementById('profile-img-preview').src = e.target.result;
+                };
+                reader.readAsDataURL(file);
+            }
+        }
+
+        // Attach live update listeners
+        document.querySelectorAll('.field-input').forEach(el => el.addEventListener('input', updateCompletion));
+        document.querySelectorAll('input[type="checkbox"]').forEach(el => el.addEventListener('change', updateCompletion));
+
+        // ── Save / Load ──
+        function saveProfile() {
+            const profileData = {
+                personal: {
+                    name: document.getElementById('p-name').value,
+                    email: document.getElementById('p-email').value,
+                    phone: document.getElementById('p-phone').value,
+                    dob: document.getElementById('p-dob').value,
+                    gender: document.getElementById('p-gender').value,
+                    city: document.getElementById('p-city').value,
+                    state: document.getElementById('p-state').value,
+                    pincode: document.getElementById('p-pincode').value,
+                    address: document.getElementById('p-address').value,
+                    linkedin: document.getElementById('p-linkedin').value,
+                    github: document.getElementById('p-github').value,
+                    portfolio: document.getElementById('p-portfolio').value,
+                    coding: document.getElementById('p-coding').value,
+                },
+                academic: {
+                    college: document.getElementById('a-college').value,
+                    rollno: document.getElementById('a-rollno').value,
+                    clgCity: document.getElementById('a-clg-city').value,
+                    branch: document.getElementById('a-branch').value,
+                    specialization: document.getElementById('a-spec').value,
+                    degree: document.getElementById('a-degree').value,
+                    cgpa: document.getElementById('a-cgpa').value,
+                    year: document.getElementById('a-year').value,
+                    grad: document.getElementById('a-grad').value,
+                    pct12th: document.getElementById('a-12th').value,
+                    pct10th: document.getElementById('a-10th').value,
+                    backlogs: document.getElementById('a-backlogs').value,
+                },
+                skills: {
+                    techSkills: getChips(),
+                    tools: Array.from(document.querySelectorAll('input[name="tool-"]:checked, [name^="tool-"]:checked')).map(e => e.id.replace('tool-','')),
+                    domains: Array.from(document.querySelectorAll('[name^="dom-"]:checked')).map(e => e.id.replace('dom-','')),
+                    projects: document.getElementById('s-projects').value,
+                    certs: document.getElementById('s-certs').value,
+                    hackathons: document.getElementById('s-hackathons').value,
+                },
+                resume: {
+                    hasFile: !!resumeFile,
+                    fileName: resumeFile ? resumeFile.name : null,
+                    link: document.getElementById('r-link')?.value || '',
+                    version: document.getElementById('r-version')?.value || '',
+                },
+                preferences: {
+                    goal: document.getElementById('pr-goal').value,
+                    openIntern: document.getElementById('pref-intern').checked,
+                    openFTE: document.getElementById('pref-fte').checked,
+                    openPPO: document.getElementById('pref-ppo').checked,
+                    openRemote: document.getElementById('pref-remote').checked,
+                    willingReloc: document.getElementById('pref-reloc').checked,
+                    startup: document.getElementById('pref-startup').checked,
+                    research: document.getElementById('pref-research').checked,
+                    govt: document.getElementById('pref-govt').checked,
+                    stipend: document.getElementById('pr-stipend').value,
+                    ctc: document.getElementById('pr-ctc').value,
+                    prefLocation: document.getElementById('pr-location').value,
+                    langs: document.getElementById('pr-langs').value,
+                    extra: document.getElementById('pr-extra').value,
+                },
+                completion: parseInt(localStorage.getItem('profileCompletion') || 0),
+                savedAt: new Date().toISOString()
+            };
+
+            localStorage.setItem('studentProfile', JSON.stringify(profileData));
+            // Tag the saved profile with the current user's ID so we can validate
+            // ownership when a different user logs in on the same browser.
+            const _uid = String(currentUser.id || currentUser.user_id || '');
+            localStorage.setItem('studentProfile_userId', _uid);
+
+            // Also update current user
+            currentUser.department = profileData.academic.branch;
+            currentUser.year = parseInt(profileData.academic.year);
+            currentUser.cgpa = parseFloat(profileData.academic.cgpa) || 0;
+            currentUser.college = profileData.academic.college;
+            currentUser.city = profileData.personal.city;
+            localStorage.setItem('user', JSON.stringify(currentUser));
+
+            // Send data to backend with image via FormData
+                const studentId = currentUser.id || currentUser.user_id;
+                // Use proficiency_id (1: Beginner, 2: Intermediate, 3: Expert)
+                const skillPayload = profileData.skills.techSkills.map(s => ({ skill_name: s, proficiency_id: 2 }));
+                if (studentId) {
+                    const formData = new FormData();
+                    formData.append('department', profileData.academic.branch);
+                    formData.append('year', parseInt(profileData.academic.year));
+                    formData.append('cgpa', parseFloat(profileData.academic.cgpa) || 0);
+                    formData.append('career_goal', profileData.preferences.goal);
+                    formData.append('skills', JSON.stringify(skillPayload));
+                    formData.append('full_profile', JSON.stringify(profileData));
+
+                    const imageInput = document.getElementById('p-image');
+                    if (imageInput && imageInput.files[0]) {
+                        formData.append('profile_image', imageInput.files[0]);
+                    }
+
+                // Fire-and-forget for instant UI response
+                fetch(`${API}/students/${studentId}/profile`, {
+                    method: 'POST',
+                    body: formData
+                })
+                .then(res => res.json())
+                .then(data => {
+                    if (data.profile_image) {
+                        currentUser.profile_image = data.profile_image;
+                        localStorage.setItem('user', JSON.stringify(currentUser));
+                        document.getElementById('profile-img-preview').src = `${API.replace('/api', '')}${data.profile_image}`;
+                        
+                        // Update sidebar immediately
+                        const sidebarAvatar = document.querySelector('.admin-profile .avatar');
+                        if (sidebarAvatar) sidebarAvatar.src = `${API.replace('/api','')}${data.profile_image}`;
+                    }
+                })
+                .catch(e => console.error('Backend sync error:', e));
+            }
+
+            // Trigger dashboard update if open
+            window.dispatchEvent(new Event('storage'));
+
+            showToast('✅ Profile saved successfully!');
+        }
+
+        async function loadProfileFromStorage() {
+            // Load user avatar securely
+            if (currentUser && currentUser.profile_image) {
+                document.getElementById('profile-img-preview').src = `${API.replace('/api','')}${currentUser.profile_image}`;
+                const sidebarAvatar = document.querySelector('.admin-profile .avatar');
+                if (sidebarAvatar) sidebarAvatar.src = `${API.replace('/api','')}${currentUser.profile_image}`;
+            }
+
+            let profileJsonObj = null;
+
+            // Try to fetch from backend first
+            const studentId = currentUser.id || currentUser.user_id;
+            if (studentId) {
+                try {
+                    const res = await fetch(`${API}/students/${studentId}/profile`);
+                    if (res.ok) {
+                        const data = await res.json();
+                        if (data.full_profile) {
+                            try {
+                                profileJsonObj = JSON.parse(data.full_profile);
+                                // Override localstorage with truthy backend state
+                                localStorage.setItem('studentProfile', data.full_profile);
+                            } catch(e) {}
+                        }
+                    }
+                } catch(e) { console.error('Failed to sync profile from backend:', e); }
+            }
+
+            // Fallback to localStorage only if it belongs to the CURRENT user
+            if (!profileJsonObj) {
+                const saved   = localStorage.getItem('studentProfile');
+                const savedUid = localStorage.getItem('studentProfile_userId') || '';
+                const currUid  = String(currentUser.id || currentUser.user_id || '');
+                if (!saved) return;
+                // If the cached profile is for a different user, discard it cleanly
+                if (savedUid && currUid && savedUid !== currUid) {
+                    localStorage.removeItem('studentProfile');
+                    localStorage.removeItem('studentProfile_userId');
+                    localStorage.removeItem('profileCompletion');
+                    return;
+                }
+                try {
+                    profileJsonObj = JSON.parse(saved);
+                } catch(e) { return; }
+            }
+
+            const d = profileJsonObj;
+            try {
+                if (d.personal) {
+                    Object.entries(d.personal).forEach(([k, v]) => {
+                        const el = document.getElementById('p-' + k);
+                        if (el && v) el.value = v;
+                    });
+                }
+                if (d.academic) {
+                    const map = { college:'a-college', rollno:'a-rollno', clgCity:'a-clg-city', branch:'a-branch', specialization:'a-spec', degree:'a-degree', cgpa:'a-cgpa', year:'a-year', grad:'a-grad', pct12th:'a-12th', pct10th:'a-10th', backlogs:'a-backlogs' };
+                    Object.entries(map).forEach(([k, id]) => {
+                        const el = document.getElementById(id);
+                        if (el && d.academic[k]) el.value = d.academic[k];
+                    });
+                }
+                if (d.skills) {
+                    // Re-add skill chips
+                    chipContainer.querySelectorAll('.chip-tag').forEach(c => c.remove());
+                    (d.skills.techSkills || []).forEach(s => addChip(s));
+                    if (d.skills.projects) document.getElementById('s-projects').value = d.skills.projects;
+                    if (d.skills.certs) document.getElementById('s-certs').value = d.skills.certs;
+                    if (d.skills.hackathons) document.getElementById('s-hackathons').value = d.skills.hackathons;
+                }
+                if (d.preferences) {
+                    if (d.preferences.goal) document.getElementById('pr-goal').value = d.preferences.goal;
+                    const prefMap = { openIntern:'pref-intern', openFTE:'pref-fte', openPPO:'pref-ppo', openRemote:'pref-remote', willingReloc:'pref-reloc', startup:'pref-startup', research:'pref-research', govt:'pref-govt' };
+                    Object.entries(prefMap).forEach(([k, id]) => {
+                        const el = document.getElementById(id);
+                        if (el) el.checked = !!d.preferences[k];
+                    });
+                    if (d.preferences.stipend) document.getElementById('pr-stipend').value = d.preferences.stipend;
+                    if (d.preferences.ctc) document.getElementById('pr-ctc').value = d.preferences.ctc;
+                    if (d.preferences.prefLocation) document.getElementById('pr-location').value = d.preferences.prefLocation;
+                    if (d.preferences.langs) document.getElementById('pr-langs').value = d.preferences.langs;
+                    if (d.preferences.extra) document.getElementById('pr-extra').value = d.preferences.extra;
+                }
+                if (d.resume && d.resume.link && document.getElementById('r-link')) document.getElementById('r-link').value = d.resume.link;
+            } catch(e) { console.error(e); }
+            updateCompletion();
+        }
+
+        function showToast(msg) {
+            const t = document.getElementById('toast');
+            t.textContent = msg;
+            t.classList.add('show');
+            setTimeout(() => t.classList.remove('show'), 3000);
+        }
+
+        // Auto-fill user info from auth storage
+        if (currentUser.name) document.getElementById('p-name').value = currentUser.name;
+        if (currentUser.email) document.getElementById('p-email').value = currentUser.email;
+        if (currentUser.department) document.getElementById('a-branch').value = currentUser.department;
+        if (currentUser.year) document.getElementById('a-year').value = String(currentUser.year);
+        if (currentUser.cgpa) document.getElementById('a-cgpa').value = currentUser.cgpa;
+
+        async function generateResume() {
+            const studentId = currentUser.id || currentUser.user_id;
+            if (!studentId) return;
+
+            try {
+                const res = await fetch(`${API}/students/${studentId}/resume`);
+                if (!res.ok) throw new Error("Failed to fetch resume data");
+                const data = await res.json();
+                
+                if (!data || data.length === 0) {
+                    alert("No profile data found. Please save your profile first.");
+                    return;
+                }
+
+                const s = data[0]; // Take first entry from view
+                const modal = document.getElementById('resume-modal');
+                const content = document.getElementById('resume-content');
+
+                content.innerHTML = `
+                    <div style="text-align:center; border-bottom:2px solid #1e293b; padding-bottom:1.5rem; margin-bottom:1.5rem;">
+                        <h1 style="font-size:2.5rem; margin-bottom:0.5rem; text-transform:uppercase; letter-spacing:2px;">${s.name}</h1>
+                        <p style="font-size:1.1rem; color:#475569;">${s.department} · Year ${s.year} · CGPA: ${s.cgpa}</p>
+                        <p style="margin-top:0.5rem; font-weight:600;">📍 ${s.city || 'India'} | ✉️ ${s.email} | 📞 ${s.phone || 'N/A'}</p>
+                    </div>
+
+                    <div style="margin-bottom:2rem;">
+                        <h3 style="border-bottom:1px solid #cbd5e1; margin-bottom:0.8rem; padding-bottom:0.3rem; text-transform:uppercase; font-size:1.1rem;">Professional Summary</h3>
+                        <p style="line-height:1.6;">${s.career_goal || 'Highly motivated student seeking opportunities to apply technical skills in a professional environment.'}</p>
+                    </div>
+
+                    <div style="margin-bottom:2rem;">
+                        <h3 style="border-bottom:1px solid #cbd5e1; margin-bottom:0.8rem; padding-bottom:0.3rem; text-transform:uppercase; font-size:1.1rem;">Skills & Proficiencies</h3>
+                        <p style="line-height:1.8;"><strong>Core Skills:</strong> ${s.skills || 'Please add skills to your profile.'}</p>
+                    </div>
+
+                    <div style="margin-bottom:2rem;">
+                        <h3 style="border-bottom:1px solid #cbd5e1; margin-bottom:0.8rem; padding-bottom:0.3rem; text-transform:uppercase; font-size:1.1rem;">Academic Background</h3>
+                        <p><strong>${s.college || 'VIT Chennai'}</strong></p>
+                        <p>${s.department} | ${s.year} Year | Roll No: ${s.roll_number || 'N/A'}</p>
+                        <p>Current CGPA: <strong>${s.cgpa}</strong></p>
+                    </div>
+
+                    <div style="margin-bottom:2rem;">
+                        <h3 style="border-bottom:1px solid #cbd5e1; margin-bottom:0.8rem; padding-bottom:0.3rem; text-transform:uppercase; font-size:1.1rem;">Projects & Experience</h3>
+                        <div style="white-space:pre-wrap; line-height:1.6;">${s.projects || 'Notable projects will appear here.'}</div>
+                    </div>
+
+                    <div style="text-align:center; margin-top:4rem; font-size:0.8rem; color:#94a3b8; border-top:1px dashed #e2e8f0; padding-top:1rem;">
+                        Generated via SkillSync Career Management System · Verified Talent
+                    </div>
+                `;
+
+                modal.style.display = 'block';
+            } catch (err) {
+                console.error(err);
+                alert("Error generating resume. Please ensure your profile is saved.");
+            }
+        }
+
+        // Load and update on init
+        loadProfileFromStorage();
+        updateCompletion();
+    </script>
+</body>
+</html>

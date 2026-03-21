@@ -1,384 +1,382 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-<meta charset="UTF-8">
-<title>SkillSync Dashboard</title>
-
-<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-
-<style>
-
-*{
-margin:0;
-padding:0;
-box-sizing:border-box;
-font-family:'Segoe UI',sans-serif;
-}
-
-body{
-background:linear-gradient(135deg,#6a7ce8,#b8c0ff);
-min-height:100vh;
-padding:40px;
-color:#222;
-}
-
-/* HEADER */
-
-.header{
-display:flex;
-justify-content:space-between;
-align-items:center;
-margin-bottom:30px;
-color:white;
-}
-
-.header h1{
-font-size:32px;
-}
-
-.controls{
-display:flex;
-gap:10px;
-}
-
-select,button{
-padding:10px 18px;
-border:none;
-border-radius:30px;
-font-weight:600;
-}
-
-button{
-background:#111;
-color:white;
-cursor:pointer;
-transition:0.2s;
-}
-
-button:hover{
-transform:scale(1.05);
-}
-
-/* DASHBOARD GRID */
-
-.dashboard{
-display:grid;
-grid-template-columns:1fr 1fr;
-gap:25px;
-}
-
-/* CARDS */
-
-.card{
-background:rgba(255,255,255,0.9);
-padding:25px;
-border-radius:18px;
-box-shadow:0 10px 30px rgba(0,0,0,0.2);
-backdrop-filter:blur(10px);
-transition:0.25s;
-}
-
-.card:hover{
-transform:translateY(-8px);
-}
-
-.card h2{
-margin-bottom:15px;
-}
-
-/* PROGRESS BARS */
-
-.progress-bar{
-height:16px;
-background:#ddd;
-border-radius:20px;
-overflow:hidden;
-margin-top:5px;
-}
-
-.progress{
-height:100%;
-background:linear-gradient(90deg,#00c853,#69f0ae);
-animation:grow 1s ease;
-}
-
-@keyframes grow{
-from{width:0}
-}
-
-/* ITEMS */
-
-.skill-item,
-.career-item{
-margin-bottom:15px;
-}
-
-.highlight{
-font-size:22px;
-font-weight:bold;
-}
-
-.badge{
-display:inline-block;
-background:#00c853;
-color:white;
-padding:5px 10px;
-border-radius:10px;
-margin-top:5px;
-font-size:12px;
-}
-
-</style>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SkillSync | Dashboard</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Outfit:wght@400;600;700;800&display=swap" rel="stylesheet">
+    <script src="chart.js"></script>
+    <script src="../src/dashboard.js"></script>
+    <script src="../src/interview-engine.js"></script>
+    <link rel="stylesheet" href="../src/style.css">
 </head>
-
-<body>
-
-<div class="header">
-
-<h1>SkillSync Dashboard</h1>
-
-<div class="controls">
-
-<select id="studentSelect">
-<option value="1">Jagriti</option>
-<option value="2">Rahul</option>
-<option value="3">Dr Sharma</option>
-</select>
-
-<button onclick="loadDashboard()">Load Dashboard</button>
-
-</div>
-
-</div>
-
-
-<div class="dashboard">
-
-<div class="card">
-<h2>Recommended Career</h2>
-<div id="recommended-career"></div>
-</div>
-
-<div class="card">
-<h2>Student Info</h2>
-<div id="student-info"></div>
-</div>
-
-<div class="card">
-<h2>Skills</h2>
-<div id="skills"></div>
-</div>
-
-<div class="card">
-<h2>Career Match</h2>
-<div id="career-match"></div>
-</div>
-
-<div class="card">
-<h2>Skills To Learn</h2>
-<div id="skill-gap"></div>
-</div>
-
-<div class="card">
-<h2>Career Match Chart</h2>
-<canvas id="careerChart"></canvas>
-</div>
-
-<div class="card">
-<h2>Skill Radar</h2>
-<canvas id="skillRadar"></canvas>
-</div>
-
-<div class="card">
-<h2>Internship Recommendations</h2>
-<div id="internships"></div>
-</div>
-
-<div class="card">
-<h2>Admin Analytics</h2>
-<div id="analytics"></div>
-</div>
-
-</div>
-
-
-<script>
-
-let careerChart;
-let radarChart;
-
-async function loadDashboard(){
-
-const studentId=document.getElementById("studentSelect").value;
-
-/* DASHBOARD DATA */
-
-const response=await fetch(`http://127.0.0.1:3001/api/students/${studentId}/dashboard`);
-const data=await response.json();
-
-const gapResponse=await fetch(`http://127.0.0.1:3001/api/students/${studentId}/skill-gap`);
-const gapData=await gapResponse.json();
-
-
-/* STUDENT INFO */
-
-document.getElementById("student-info").innerHTML=
-`<b>Name:</b> ${data.student.name}<br>
-<b>Department:</b> ${data.student.department}<br>
-<b>Year:</b> ${data.student.year}`;
-
-
-/* RECOMMENDED CAREER */
-
-let bestCareer="";
-let highestMatch=0;
-
-data.career_match.forEach(c=>{
-const m=parseFloat(c.match_percentage);
-
-if(m>highestMatch){
-highestMatch=m;
-bestCareer=c.career_name;
-}
-});
-
-document.getElementById("recommended-career").innerHTML=
-`<div class="highlight">${bestCareer}</div>
-Match Score: ${highestMatch}%`;
-
-
-/* SKILLS */
-
-const skillsDiv=document.getElementById("skills");
-skillsDiv.innerHTML="";
-
-data.skills.forEach(skill=>{
-
-skillsDiv.innerHTML+=`
-<div class="skill-item">
-${skill.skill_name} (Level ${skill.skill_level})
-<div class="progress-bar">
-<div class="progress" style="width:${skill.skill_level*20}%"></div>
-</div>
-</div>
-`;
-
-});
-
-
-/* CAREER MATCH */
-
-const matchDiv=document.getElementById("career-match");
-matchDiv.innerHTML="";
-
-data.career_match.forEach(career=>{
-
-matchDiv.innerHTML+=`
-<div class="career-item">
-${career.career_name} - ${career.match_percentage}%
-<div class="progress-bar">
-<div class="progress" style="width:${career.match_percentage}%"></div>
-</div>
-</div>
-`;
-
-});
-
-
-/* SKILL GAP */
-
-const gapDiv=document.getElementById("skill-gap");
-gapDiv.innerHTML="";
-
-gapData.forEach(item=>{
-gapDiv.innerHTML+=`
-<div><b>${item.career_name}</b> → ${item.skill_name}</div>
-`;
-});
-
-
-/* INTERNSHIP RECOMMENDATION */
-
-document.getElementById("internships").innerHTML=
-`
-Software Developer Intern <span class="badge">Recommended</span><br><br>
-AI Research Intern<br><br>
-Data Analyst Intern
-`;
-
-
-/* ADMIN ANALYTICS */
-
-document.getElementById("analytics").innerHTML=
-`
-Most Demanded Skill: <b>Python</b><br><br>
-Top Career: <b>Software Developer</b><br><br>
-Average Skill Level: <b>3.7</b>
-`;
-
-
-/* CAREER CHART */
-
-const labels=[];
-const percentages=[];
-
-data.career_match.forEach(c=>{
-labels.push(c.career_name);
-percentages.push(parseFloat(c.match_percentage));
-});
-
-if(careerChart) careerChart.destroy();
-
-careerChart=new Chart(
-document.getElementById("careerChart"),
-{
-type:"bar",
-data:{
-labels:labels,
-datasets:[{
-data:percentages,
-backgroundColor:["#00c853","#2196F3","#FFC107"]
-}]
-},
-options:{
-plugins:{legend:{display:false}},
-scales:{y:{beginAtZero:true,max:100}}
-}
-});
-
-
-/* SKILL RADAR */
-
-const skillNames=[];
-const skillLevels=[];
-
-data.skills.forEach(s=>{
-skillNames.push(s.skill_name);
-skillLevels.push(s.skill_level);
-});
-
-if(radarChart) radarChart.destroy();
-
-radarChart=new Chart(
-document.getElementById("skillRadar"),
-{
-type:"radar",
-data:{
-labels:skillNames,
-datasets:[{
-data:skillLevels,
-backgroundColor:"rgba(0,200,83,0.3)",
-borderColor:"#00c853"
-}]
-},
-options:{
-scales:{r:{min:0,max:5,ticks:{stepSize:1}}}
-}
-});
-
-}
-
-</script>
-
+<body class="theme-lavender">
+    
+    <!-- Ambient mesh background -->
+    <div class="ambient-bg">
+        <div class="ambient-circle c-1"></div>
+        <div class="ambient-circle c-2"></div>
+        <div class="ambient-circle c-3"></div>
+        <!-- Glossy Bubbles -->
+        <div class="glossy-bubble b-1"></div>
+        <div class="glossy-bubble b-2"></div>
+        <div class="glossy-bubble b-3"></div>
+        <div class="glossy-bubble b-4"></div>
+        <div class="glossy-bubble b-5"></div>
+    </div>
+
+    <!-- Sidebar Navigation -->
+    <nav class="sidebar">
+        <div class="logo-container">
+            <div class="logo-icon">∞</div>
+            <h2>SkillSync</h2>
+        </div>
+        <ul class="nav-links">
+            <li class="active" onclick="window.location.href='index.html'">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="7" height="7"></rect><rect x="14" y="3" width="7" height="7"></rect><rect x="14" y="14" width="7" height="7"></rect><rect x="3" y="14" width="7" height="7"></rect></svg>
+                Dashboard
+            </li>
+            <li onclick="window.location.href='students.html'">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path><circle cx="9" cy="7" r="4"></circle><path d="M23 21v-2a4 4 0 0 0-3-3.87"></path><path d="M16 3.13a4 4 0 0 1 0 7.75"></path></svg>
+                Candidate Directory
+            </li>
+            <li onclick="window.location.href='profile.html'">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path><circle cx="12" cy="7" r="4"></circle></svg>
+                My Profile
+            </li>
+            <li onclick="window.location.href='applications.html'">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline></svg>
+                My Applications
+            </li>
+            <li onclick="window.location.href='skill-gap.html'">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 12h-4l-3 9L9 3l-3 9H2"></path></svg>
+                Skill Gap Analyzer
+            </li>
+            <li onclick="window.location.href='leaderboard.html'">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="23 6 13.5 15.5 8.5 10.5 1 18"></polyline><polyline points="17 6 23 6 23 12"></polyline></svg>
+                Leaderboard
+            </li>
+            <li onclick="window.location.href='resume-score.html'">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="9 11 12 14 22 4"></polyline><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"></path></svg>
+                Resume Score
+            </li>
+            <li onclick="window.location.href='hackathons.html'">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"></polygon></svg>
+                Hackathons
+            </li>
+            <li onclick="window.location.href='analytics.html'">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 12h-4l-3 9L9 3l-3 9H2"></path></svg>
+                Analytics
+            </li>
+            <li onclick="window.location.href='dashboard-careers.html'">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"></path><path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"></path></svg>
+                Careers
+            </li>
+            <li onclick="window.location.href='settings.html'">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"></circle><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"></path></svg>
+                Settings
+            </li>
+        </ul>
+        <div class="nav-footer">
+            <div class="admin-profile">
+                <div class="avatar" style="background:var(--primary);color:white;display:flex;align-items:center;justify-content:center;font-weight:bold;font-size:1.2rem;width:40px;height:40px;border-radius:50%;">U</div>
+                <div class="admin-info">
+                    <span class="admin-name" id="user-name-sidebar">Loading...</span>
+                    <span class="admin-role" id="user-role-sidebar">Student</span>
+                </div>
+            </div>
+            <button onclick="logout()" style="margin-top:0.75rem; width:100%; padding:0.5rem; background:rgba(239,68,68,0.12); border:1px solid rgba(239,68,68,0.2); border-radius:8px; color:#f87171; font-size:0.82rem; cursor:pointer; font-weight:600;">Sign Out</button>
+            <button onclick="toggleDark()" id="dark-toggle" style="margin-top:0.5rem; width:100%; padding:0.5rem; background:rgba(255,255,255,0.06); border:1px solid rgba(255,255,255,0.1); border-radius:8px; color:rgba(255,255,255,0.6); font-size:0.82rem; cursor:pointer; font-weight:600;">🌙 Dark Mode</button>
+        </div>
+    </nav>
+
+    <!-- Main Content Area -->
+    <main class="main-content">
+        <!-- Top Header -->
+        <header class="top-header">
+            <div>
+                <h1>Student Dashboard</h1>
+                <p class="subtitle">Your personalized career overview and skill analysis.</p>
+            </div>
+        </header>
+
+        <!-- Quick action banner: profile completion and hackathon link -->
+        <div id="profile-banner" style="display:none; background:linear-gradient(135deg,rgba(99,102,241,0.08),rgba(236,72,153,0.06)); border:1.5px dashed rgba(99,102,241,0.3); border-radius:var(--radius-xl); padding:1.25rem 1.5rem; margin-bottom:1.5rem; display:flex; align-items:center; justify-content:space-between; flex-wrap:wrap; gap:1rem;">
+            <div style="display:flex;align-items:center;gap:1rem;">
+                <div style="font-size:2rem;">📋</div>
+                <div>
+                    <div style="font-weight:700;color:var(--text-dark);font-size:0.95rem;">Complete your student profile</div>
+                    <div style="font-size:0.82rem;color:var(--text-muted);margin-top:0.1rem;">Profile completion: <strong id="dash-completion-pct" style="color:var(--primary);">0%</strong> — Add skills and resume to unlock full analytics</div>
+                </div>
+            </div>
+            <div style="display:flex;gap:0.75rem;align-items:center;">
+                <a href="hackathons.html" style="padding:0.5rem 1rem;background:rgba(99,102,241,0.1);border:1px solid rgba(99,102,241,0.25);border-radius:var(--radius-md);color:var(--primary);font-weight:600;font-size:0.82rem;text-decoration:none;">⚡ Hackathons</a>
+                <a href="profile.html" style="padding:0.5rem 1.25rem;background:linear-gradient(90deg,var(--primary),var(--secondary));border:none;border-radius:var(--radius-md);color:white;font-weight:700;font-size:0.85rem;text-decoration:none;">Fill Profile →</a>
+            </div>
+        </div>
+
+        <!-- Dashboard Grid -->
+        <div class="dashboard-grid">
+
+            <!-- The onboarding banner has been removed as per user request -->
+
+            <!-- ─── ONBOARDING SECTION (shown when profile is incomplete) ─── -->
+            <!-- ─── ONBOARDING SECTION (Mandatory Profile Setup) ─── -->
+
+            <!-- ─── DASHBOARD CONTENT (shown when profile is complete) ─── -->
+
+            <!-- Top Career Match -->
+            <div class="card glass-effect col-span-2 highlight-card" id="career-match-card">
+                <div class="card-content-flex">
+                    <div class="text-content">
+                        <span class="label">🏆 Top Career Match</span>
+                        <div id="recommended-career-loader" class="loader-container-small"><div class="spinner-small"></div></div>
+                        <h2 id="recommended-career-title" class="hidden">--</h2>
+                        <div class="match-score hidden" id="recommended-career-score"></div>
+                    </div>
+                    <div class="icon-content">
+                        <svg width="70" height="70" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path><polyline points="22 4 12 14.01 9 11.01"></polyline></svg>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Platform Stats -->
+            <div class="card glass-effect col-span-2" id="platform-stats-card">
+                <div class="card-header"><h2>Platform Stats</h2></div>
+                <div id="analytics-loader" class="loader-container-small"><div class="spinner-small"></div></div>
+                <div id="analytics" class="mini-stats hidden"></div>
+            </div>
+
+            <!-- Charts -->
+            <div class="card glass-effect col-span-2" id="career-chart-card">
+                <div class="card-header"><h2>Career Match Analysis</h2></div>
+                <div class="chart-container"><canvas id="careerChart"></canvas></div>
+            </div>
+
+            <div class="card glass-effect col-span-2" id="skill-radar-card">
+                <div class="card-header"><h2>Skill Proficiency Radar</h2></div>
+                <div class="chart-container radar-container"><canvas id="skillRadar"></canvas></div>
+            </div>
+
+            <!-- Skills and Gaps -->
+            <div class="card glass-effect col-span-1" id="skills-card">
+                <div class="card-header"><h2>Your Skills</h2></div>
+                <div id="skills-loader" class="loader-container"><div class="spinner"></div></div>
+                <div id="skills" class="list-container hidden"></div>
+            </div>
+
+            <div class="card glass-effect col-span-1" id="gap-card">
+                <div class="card-header"><h2>Skill Gaps</h2></div>
+                <div id="skill-gap-loader" class="loader-container"><div class="spinner"></div></div>
+                <div id="skill-gap" class="list-container hidden"></div>
+            </div>
+
+            <!-- Recommendations -->
+            <div class="card glass-effect col-span-2" id="rec-card">
+                <div class="card-header"><h2>Recommendations</h2></div>
+                <div id="internships-loader" class="loader-container"><div class="spinner"></div></div>
+                <div id="internships" class="internship-grid hidden"></div>
+            </div>
+
+            <!-- ─── BRAND NEW: PRO TOOLS HUB ─── -->
+            <div class="col-span-4" style="margin-top: 1rem; margin-bottom: 0.5rem; display: flex; align-items: center; gap: 0.8rem;">
+                <h2 style="font-size: 1.4rem; font-weight: 800; color: var(--text-dark);">🚀 AI Career Copilot Tools</h2>
+                <div style="height: 1px; flex: 1; background: linear-gradient(90deg, var(--border-strong), transparent);"></div>
+            </div>
+
+            <!-- Resume ATS Scorer -->
+            <div class="card glass-effect col-span-2" id="ats-card" style="background: linear-gradient(135deg, rgba(236,72,153,0.05), rgba(139,92,246,0.05)); border: 1px solid rgba(236,72,153,0.3);">
+                <div class="card-header" style="border-bottom:none; margin-bottom: 0;">
+                    <h2 style="color: var(--text-dark);">📄 ATS Resume Scanner</h2>
+                </div>
+                <div style="padding: 1rem 0;">
+                    <div id="ats-dropzone" style="border: 2px dashed rgba(139,92,246,0.5); border-radius: var(--radius-lg); padding: 2rem; text-align: center; cursor: pointer; transition: all 0.3s; background: rgba(255,255,255,0.4);" onclick="document.getElementById('ats-file-input').click()" ondragover="event.preventDefault(); this.style.background='rgba(139,92,246,0.1)'; this.style.borderColor='var(--primary)';" ondragleave="this.style.background='rgba(255,255,255,0.4)'; this.style.borderColor='rgba(139,92,246,0.5)';" ondrop="event.preventDefault(); this.style.background='rgba(255,255,255,0.4)'; this.style.borderColor='rgba(139,92,246,0.5)'; const dt = event.dataTransfer; if (dt.files && dt.files.length) { document.getElementById('ats-file-input').files = dt.files; simATS(); }" onmouseover="this.style.background='rgba(139,92,246,0.08)'; this.style.borderColor='var(--primary)'" onmouseout="this.style.background='rgba(255,255,255,0.4)'; this.style.borderColor='rgba(139,92,246,0.5)'">
+                        <div style="font-size: 2.8rem; margin-bottom: 0.5rem; text-shadow: 0 4px 10px rgba(139,92,246,0.3);">📥</div>
+                        <h4 style="font-size: 0.95rem; font-weight: 700; color: var(--text-dark);">Click or Drop your resume (PDF) here to scan</h4>
+                        <p style="font-size: 0.8rem; color: var(--text-muted); margin-top: 0.3rem;">Get instant feedback against your target career match.</p>
+                        <input type="file" id="ats-file-input" accept=".pdf" style="display:none;" onchange="simATS()">
+                    </div>
+                    <div id="ats-result" class="hidden" style="margin-top: 1.5rem; padding: 1.5rem; background: white; border-radius: var(--radius-md); box-shadow: var(--shadow-sm); border: 1px solid var(--border);">
+                        <!-- Injected via JS -->
+                    </div>
+                </div>
+            </div>
+
+            <!-- Salary Heatmap -->
+            <div class="card glass-effect col-span-1" id="salary-card" style="display:flex; flex-direction: column;">
+                <div class="card-header" style="margin-bottom: 0.5rem;"><h2>💸 Salary Insights</h2></div>
+                <div style="flex:1; display:flex; flex-direction:column; justify-content:center; align-items:center;">
+                    <div style="position:relative; width:120px; height:60px; overflow:hidden;">
+                        <!-- Semi-circle gauge -->
+                        <div style="width:120px; height:120px; border-radius:50%; border:15px solid #e2e8f0; border-bottom-color:transparent; border-left-color:transparent; transform:rotate(-45deg); position:absolute; top:0; left:0;"></div>
+                        <!-- Needle -->
+                        <div id="salary-needle" style="width:120px; height:120px; border-radius:50%; border:15px solid transparent; border-top-color:var(--primary); transform:rotate(-90deg); position:absolute; top:0; left:0; transition: transform 1.5s cubic-bezier(0.4, 0, 0.2, 1);"></div>
+                    </div>
+                    <h3 id="salary-role" style="font-size: 0.85rem; font-weight: 600; color: var(--text-muted); margin-top: 1rem; text-align:center;">Estimated CTC</h3>
+                    <div id="salary-val" style="font-size: 1.6rem; font-family: 'Outfit'; font-weight: 800; color: var(--text-dark); margin-top: 0.2rem;">--</div>
+                </div>
+            </div>
+
+            <!-- Peer Benchmarking -->
+            <div class="card glass-effect col-span-1" id="benchmarking-card">
+                <div class="card-header"><h2>📊 Peer Ranking</h2></div>
+                <div id="peer-benchmarking">
+                    <div class="loader-container-small"><div class="spinner-small"></div></div>
+                </div>
+            </div>
+
+            <!-- Mock Interview Launcher -->
+            <div class="card glass-effect col-span-1 highlight-card" id="interview-card" style="display:flex; flex-direction:column; justify-content:space-between; cursor: pointer; transition: transform 0.3s, box-shadow 0.3s;" onmouseover="this.style.transform='translateY(-5px) scale(1.02)'; this.style.boxShadow='var(--shadow-glow)';" onmouseout="this.style.transform='translateY(0) scale(1)'; this.style.boxShadow='0 8px 32px rgba(236,72,153,0.35)';" onclick="openInterviewModal()">
+                <div>
+                    <div style="font-size: 3rem; margin-bottom: 1rem; filter: drop-shadow(0 4px 10px rgba(0,0,0,0.2));">🤖</div>
+                    <h2 style="font-size: 1.25rem; font-weight: 800; margin-bottom: 0.5rem; font-family:'Outfit'; color: white;">Mock Interview AI</h2>
+                    <p style="font-size: 0.85rem; opacity: 0.9; line-height: 1.4; color: rgba(255,255,255,0.9);">Practice technical and HR rounds with our conversational AI calibrated to your career domains.</p>
+                </div>
+                <div style="margin-top: 1.5rem;">
+                    <button style="width: 100%; padding: 0.8rem; border-radius: 100px; border: none; background: rgba(255,255,255,0.2); backdrop-filter: blur(5px); color: white; font-weight: 700; cursor: pointer; transition: all 0.2s; border: 1px solid rgba(255,255,255,0.4);" onmouseover="this.style.background='rgba(255,255,255,0.3)'" onmouseout="this.style.background='rgba(255,255,255,0.2)'">Start Practice Session →</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Mock Interview Modal -->
+        <div id="interview-modal" style="display:none; position:fixed; inset:0; background:rgba(15, 23, 42, 0.9); z-index:10000; padding:2rem; backdrop-filter:blur(15px); -webkit-backdrop-filter:blur(15px);">
+            <div style="max-width:800px; margin:0 auto; background:rgba(255,255,255,0.03); border:1px solid rgba(255,255,255,0.1); border-radius:var(--radius-2xl); overflow:hidden; position:relative; box-shadow:0 40px 100px rgba(0,0,0,0.6); color:white;">
+                
+                <!-- Animated Background Mesh -->
+                <div style="position:absolute; inset:0; z-index:-1; opacity:0.3; background: radial-gradient(circle at 0% 0%, rgba(99,102,241,0.4) 0%, transparent 50%), radial-gradient(circle at 100% 100%, rgba(236,72,153,0.4) 0%, transparent 50%); pointer-events:none;"></div>
+
+                <div style="padding:1.5rem 2.5rem; background:rgba(255,255,255,0.05); border-bottom:1px solid rgba(255,255,255,0.1); display:flex; justify-content:space-between; align-items:center;">
+                    <div style="display:flex; align-items:center; gap:1rem;">
+                        <div style="width:44px; height:44px; background:linear-gradient(135deg, #6366f1, #06b6d4); border-radius:12px; display:flex; align-items:center; justify-content:center; font-size:1.5rem; box-shadow:0 0 20px rgba(99,102,241,0.4);">🤖</div>
+                        <div>
+                            <h3 style="font-family:'Outfit'; margin:0; font-size:1.2rem; font-weight:800; letter-spacing:0.5px;">AI INTERVIEW COACH</h3>
+                            <span style="font-size:0.75rem; color:rgba(255,255,255,0.6); text-transform:uppercase; font-weight:700;">Powered by SkillSync Intelligence</span>
+                        </div>
+                    </div>
+                    <button onclick="closeInterviewModal()" style="background:rgba(255,255,255,0.1); border:none; color:white; width:36px; height:36px; border-radius:50%; display:flex; align-items:center; justify-content:center; cursor:pointer; font-size:1.2rem; transition:background 0.2s;" onmouseover="this.style.background='rgba(239,68,68,0.3)'" onmouseout="this.style.background='rgba(255,255,255,0.1)'">&times;</button>
+                </div>
+                
+                <!-- SETUP STATE -->
+                <div id="interview-setup" style="padding:4rem 3rem; text-align:center;">
+                    <div style="font-size:4rem; margin-bottom:1.5rem; filter:drop-shadow(0 10px 20px rgba(99,102,241,0.3));">🚀</div>
+                    <h2 style="margin-bottom:1rem; font-family:'Outfit'; font-size:2.2rem; font-weight:800; background:linear-gradient(90deg, #fff, #94a3b8); -webkit-background-clip:text; background-clip:text; -webkit-text-fill-color:transparent;">Ready to level up?</h2>
+                    <p style="color:rgba(255,255,255,0.7); margin-bottom:3rem; font-size:1.1rem; max-width:500px; margin-left:auto; margin-right:auto; line-height:1.6;">Face a tailored 5-question technical drill calibrated for your career path. Sharpen your knowledge and get scored in real-time.</p>
+                    <button onclick="startInterview()" class="btn-primary" style="padding:1.2rem 4rem; font-size:1.1rem; border-radius:100px; font-weight:800; box-shadow:0 10px 30px rgba(99,102,241,0.4); border:1px solid rgba(255,255,255,0.2);">START DRILL →</button>
+                    <div style="margin-top:2rem; font-size:0.85rem; color:rgba(255,255,255,0.4);">Approx. Time: 5 Minutes</div>
+                </div>
+
+                <!-- RUNNING STATE -->
+                <div id="interview-running" style="display:none; padding:3rem;">
+                    <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:1rem;">
+                        <span id="question-count" style="font-weight:800; color:var(--primary); font-size:0.85rem; text-transform:uppercase; letter-spacing:1px; background:rgba(6,182,212,0.1); padding:0.4rem 1rem; border-radius:100px;">Question 1 / 5</span>
+                        <div id="interview-timer" style="font-family:'Outfit'; font-weight:800; color:rgba(255,255,255,0.9); background:rgba(255,255,255,0.05); padding:0.4rem 1rem; border-radius:100px; border:1px solid rgba(255,255,255,0.1); font-variant-numeric: tabular-nums;">00:00</div>
+                    </div>
+                    
+                    <!-- Progress Bar -->
+                    <div style="width:100%; height:8px; background:rgba(255,255,255,0.05); border-radius:100px; margin-bottom:3rem; overflow:hidden;">
+                        <div id="interview-progress" style="width:20%; height:100%; background:linear-gradient(90deg, var(--primary), var(--secondary)); border-radius:100px; transition:width 0.4s ease;"></div>
+                    </div>
+
+                    <div style="min-height:100px;">
+                        <h3 id="current-question" style="font-family:'Outfit'; font-size:1.6rem; font-weight:700; margin-bottom:2rem; line-height:1.4; color:white;">Constructing question...</h3>
+                    </div>
+
+                    <div style="position:relative;">
+                        <textarea id="interview-answer" style="width:100%; height:180px; padding:1.5rem; background:rgba(255,255,255,0.03); border:1px solid rgba(255,255,255,0.1); border-radius:var(--radius-xl); font-family:'Inter'; font-size:1.1rem; color:white; margin-bottom:2rem; outline:none; transition:all 0.3s; resize:none;" placeholder="Craft your detailed answer here..."></textarea>
+                        <div style="position:absolute; bottom:3rem; right:1.5rem; font-size:0.75rem; color:rgba(255,255,255,0.3);">Press Submit when ready</div>
+                    </div>
+
+                    <div style="display:flex; justify-content:space-between; align-items:center;">
+                        <p style="font-size:0.85rem; color:rgba(255,255,255,0.4); max-width:300px;">Be as detailed as possible. Keywords matter in our AI scoring algorithm.</p>
+                        <button id="next-q-btn" onclick="nextQuestion()" class="btn-primary" style="padding:1rem 3rem; border-radius:100px; font-weight:800; box-shadow:0 10px 20px rgba(99,102,241,0.2);">SUBMIT ANSWER</button>
+                    </div>
+                </div>
+
+                <!-- RESULT STATE -->
+                <div id="interview-result" style="display:none; padding:4rem 3rem; text-align:center;">
+                    <div id="result-emoji" style="font-size:5rem; margin-bottom:1.5rem; filter:drop-shadow(0 15px 30px rgba(16,185,129,0.3));">🏆</div>
+                    <h2 style="font-family:'Outfit'; font-size:2.2rem; font-weight:800; margin-bottom:0.5rem;">Drill Complete!</h2>
+                    <p style="color:rgba(255,255,255,0.5); margin-bottom:2.5rem;">Your readiness score has been calculated.</p>
+                    
+                    <div style="margin:2rem auto; width:180px; height:180px; border-radius:50%; background:rgba(255,255,255,0.03); border:4px solid rgba(255,255,255,0.05); display:flex; flex-direction:column; align-items:center; justify-content:center; position:relative;">
+                        <div style="position:absolute; inset:-8px; border-radius:50%; border:2px solid var(--primary); border-top-color:transparent; animation:spin 4s linear infinite;"></div>
+                        <div id="readiness-score" style="font-size:3.5rem; font-weight:900; color:white; font-family:'Outfit'; letter-spacing:-1px;">85%</div>
+                        <div style="font-size:0.75rem; font-weight:800; text-transform:uppercase; color:var(--primary); letter-spacing:1px;">Readiness</div>
+                    </div>
+
+                    <div style="background:rgba(255,255,255,0.03); border:1px solid rgba(255,255,255,0.1); padding:2rem; border-radius:var(--radius-xl); margin-bottom:3rem; text-align:left;">
+                        <h4 style="margin-bottom:0.75rem; font-family:'Outfit'; font-size:1.1rem; color:var(--primary);">Personalized Feedback</h4>
+                        <p id="result-feedback" style="color:rgba(255,255,255,0.7); line-height:1.6; font-size:1rem;">Great job! You showed strong conceptual understanding of Core Data Structures.</p>
+                    </div>
+
+                    <button onclick="closeInterviewModal()" class="btn-primary" style="padding:1rem 4rem; border-radius:100px; font-weight:800; border:1px solid rgba(255,255,255,0.2);">BACK TO DASHBOARD</button>
+                </div>
+            </div>
+        </div>
+        <!-- ─── PLACEMENT PREDICTOR + AUDITLOG ROW ───────────────────────────── -->
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:1.5rem;margin-top:1.5rem;">
+
+            <!-- Placement Predictor -->
+            <div class="card" style="position:relative;overflow:hidden;">
+                <div style="position:absolute;top:0;left:0;right:0;height:3px;background:linear-gradient(90deg,#10b981,#6366f1);"></div>
+                <div class="card-header"><h2>🎯 Placement Predictor</h2></div>
+                <div id="predict-loading" style="text-align:center;padding:1.5rem;color:var(--text-muted);font-size:0.85rem;">Calculating...</div>
+                <div id="predict-content" style="display:none;">
+                    <div style="display:flex;align-items:center;gap:1.5rem;margin-bottom:1rem;">
+                        <div style="position:relative;width:100px;height:100px;flex-shrink:0;">
+                            <svg style="width:100%;height:100%;transform:rotate(-90deg);" viewBox="0 0 100 100">
+                                <circle cx="50" cy="50" r="42" fill="none" stroke="rgba(16,185,129,0.1)" stroke-width="10"/>
+                                <circle id="predict-arc" cx="50" cy="50" r="42" fill="none" stroke="url(#pGrad)" stroke-width="10" stroke-linecap="round" stroke-dasharray="264" stroke-dashoffset="264" style="transition:stroke-dashoffset 1.2s ease;"/>
+                                <defs><linearGradient id="pGrad"><stop offset="0%" stop-color="#10b981"/><stop offset="100%" stop-color="#6366f1"/></linearGradient></defs>
+                            </svg>
+                            <div style="position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;">
+                                <div id="predict-score" style="font-size:1.6rem;font-weight:900;font-family:'Outfit';color:var(--text-dark);">—</div>
+                                <div style="font-size:0.6rem;font-weight:700;text-transform:uppercase;color:var(--text-muted);">/ 100</div>
+                            </div>
+                        </div>
+                        <div style="flex:1;">
+                            <div id="predict-label" style="font-size:1rem;font-weight:800;font-family:'Outfit';color:var(--text-dark);margin-bottom:0.25rem;">—</div>
+                            <div id="predict-dept" style="font-size:0.8rem;color:var(--text-muted);">vs dept avg: <strong id="predict-avg" style="color:var(--primary);">—</strong></div>
+                        </div>
+                    </div>
+                    <div id="predict-bars" style="display:flex;flex-direction:column;gap:0.6rem;"></div>
+                </div>
+            </div>
+
+            <!-- AuditLog / Activity Feed -->
+            <div class="card" style="position:relative;overflow:hidden;">
+                <div style="position:absolute;top:0;left:0;right:0;height:3px;background:linear-gradient(90deg,#f59e0b,#ec4899);"></div>
+                <div class="card-header"><h2>📋 Recent Activity</h2><a href="applications.html" style="font-size:0.78rem;font-weight:600;color:var(--primary);text-decoration:none;margin-left:auto;">View All →</a></div>
+                <div id="audit-feed" style="display:flex;flex-direction:column;gap:0.5rem;"></div>
+            </div>
+        </div>
+    </main>
+
+    <script src="lottie-player.js"></script>
+    <script src="../src/toast.js"></script>
+
+    <script>
+        (function() {
+            const userStr = localStorage.getItem('user');
+            if (!userStr) { window.location.href = 'login.html'; return; }
+            const user = JSON.parse(userStr);
+            if (user.role && user.role !== 'student') {
+                if (user.role === 'mentor' || user.role === 'company') {
+                    window.location.href = 'company-dashboard.html';
+                } else if (user.role === 'admin') {
+                    window.location.href = 'students.html';
+                }
+            }
+        })();
+
+        function loadTheme() {
+            const theme = localStorage.getItem('theme') || 'theme-lavender';
+            document.body.className = theme;
+        }
+        loadTheme();
+    </script>
+    <script src="../src/dashboard.js"></script>
 </body>
+
 </html>

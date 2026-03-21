@@ -1,0 +1,765 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SkillSync | Mentorship — Learn from Industry Leaders</title>
+    <meta name="description" content="SkillSync Mentorship — Connect with industry veterans and alumni from top companies for 1-on-1 career guidance, mock interviews, and resume reviews.">
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+
+    <style>
+        :root {
+            --primary: #a855f7;
+            --primary-dark: #7c3aed;
+            --secondary: #ec4899;
+            --accent: #10b981;
+            --cyan: #06b6d4;
+            --indigo: #6366f1;
+            --bg-dark: #050b1a;
+            --bg-card: rgba(255,255,255,0.04);
+            --text-light: #f1f5f9;
+            --text-muted: #94a3b8;
+            --border: rgba(255,255,255,0.08);
+        }
+
+        * { margin:0; padding:0; box-sizing:border-box; font-family:'Inter',sans-serif; }
+        html { scroll-behavior:smooth; }
+        body { background:var(--bg-dark); color:var(--text-light); overflow-x:hidden; line-height:1.6; }
+
+        /* NAV */
+        nav {
+            position: sticky; top:0; z-index:1000;
+            background: rgba(5,11,26,0.92);
+            backdrop-filter: blur(20px);
+            border-bottom: 1px solid var(--border);
+            padding: 1rem 6%;
+            display: flex; justify-content:space-between; align-items:center;
+        }
+
+        .logo { font-size:1.4rem; font-weight:800; text-decoration:none; background:linear-gradient(90deg,#c084fc,#f472b6,#34d399); -webkit-background-clip:text; background-clip:text; -webkit-text-fill-color:transparent; }
+
+        .nav-links { display:flex; gap:2rem; list-style:none; }
+        .nav-links a { text-decoration:none; color:var(--text-muted); font-weight:500; font-size:0.9rem; transition:color 0.2s; }
+        .nav-links a:hover { color:white; }
+
+        .btn { padding:0.55rem 1.4rem; border-radius:100px; font-weight:600; text-decoration:none; transition:all 0.3s; cursor:pointer; border:none; font-size:0.9rem; display:inline-flex; align-items:center; gap:0.4rem; }
+        .btn-ghost { background:transparent; color:var(--text-muted); border:1px solid var(--border); }
+        .btn-ghost:hover { color:white; background:var(--bg-card); }
+        .btn-primary { background:linear-gradient(135deg,var(--primary),var(--secondary)); color:white; box-shadow:0 0 20px rgba(168,85,247,0.3); }
+        .btn-primary:hover { transform:translateY(-2px); box-shadow:0 0 30px rgba(168,85,247,0.5); }
+        .btn-lg { padding:0.9rem 2.2rem; font-size:1rem; }
+        .btn-outline { border:2px solid var(--primary); color:var(--primary); background:transparent; }
+        .btn-outline:hover { background:var(--primary); color:white; }
+
+        /* HERO */
+        .page-hero {
+            padding: 5rem 6% 4rem;
+            position: relative;
+            overflow: hidden;
+            border-bottom: 1px solid var(--border);
+            text-align: center;
+        }
+
+        .page-hero::before {
+            content: '';
+            position: absolute;
+            inset: 0;
+            background: radial-gradient(ellipse 70% 80% at 50% 0%, rgba(168,85,247,0.18) 0%, transparent 70%),
+                        radial-gradient(ellipse 50% 50% at 15% 80%, rgba(99,102,241,0.1) 0%, transparent 60%),
+                        radial-gradient(ellipse 50% 50% at 85% 80%, rgba(236,72,153,0.1) 0%, transparent 60%);
+        }
+
+        .page-hero::after {
+            content: '';
+            position: absolute;
+            inset: 0;
+            background-image: linear-gradient(rgba(168,85,247,0.04) 1px, transparent 1px), linear-gradient(90deg, rgba(168,85,247,0.04) 1px, transparent 1px);
+            background-size: 50px 50px;
+        }
+
+        .hero-content { position:relative; z-index:2; max-width:800px; margin:0 auto; }
+
+        .section-tag {
+            display:inline-flex; align-items:center; gap:0.5rem;
+            padding:0.35rem 1rem; border-radius:100px;
+            font-size:0.78rem; font-weight:700; text-transform:uppercase; letter-spacing:0.08em;
+            margin-bottom:1.2rem;
+        }
+        .tag-purple { background:rgba(168,85,247,0.15); color:#c084fc; border:1px solid rgba(168,85,247,0.2); }
+        .tag-cyan { background:rgba(6,182,212,0.15); color:#22d3ee; border:1px solid rgba(6,182,212,0.2); }
+        .tag-green { background:rgba(16,185,129,0.15); color:#34d399; border:1px solid rgba(16,185,129,0.2); }
+        .tag-orange { background:rgba(249,115,22,0.15); color:#fb923c; border:1px solid rgba(249,115,22,0.2); }
+        .tag-indigo { background:rgba(99,102,241,0.15); color:#818cf8; border:1px solid rgba(99,102,241,0.2); }
+
+        .page-hero h1 { font-size:clamp(2.5rem,5vw,4.5rem); font-weight:900; line-height:1.1; margin-bottom:1.5rem; }
+        .gradient-purple { background:linear-gradient(135deg,#c084fc,#f472b6,#818cf8); -webkit-background-clip:text; background-clip:text; -webkit-text-fill-color:transparent; }
+
+        .page-hero p { font-size:1.15rem; color:var(--text-muted); margin-bottom:2.5rem; max-width:600px; margin-left:auto; margin-right:auto; }
+
+        .hero-actions { display:flex; gap:1rem; justify-content:center; flex-wrap:wrap; }
+
+        .page-hero-stats { display:flex; justify-content:center; gap:3rem; margin-top:3.5rem; padding-top:2.5rem; border-top:1px solid var(--border); flex-wrap:wrap; gap:2rem; }
+        .phs-item { text-align:center; }
+        .phs-num { font-size:2rem; font-weight:800; background:linear-gradient(90deg,#c084fc,#f472b6); -webkit-background-clip:text; background-clip:text; -webkit-text-fill-color:transparent; display:block; }
+        .phs-lbl { font-size:0.82rem; color:var(--text-muted); margin-top:0.2rem; }
+
+        /* SECTION BASE */
+        .section { padding:5rem 6%; }
+        .max-w { max-width:1200px; margin:0 auto; }
+        .section-center { text-align:center; margin-bottom:3.5rem; }
+        .section-center h2 { font-size:2.4rem; font-weight:800; margin-bottom:1rem; }
+        .section-center p { color:var(--text-muted); max-width:580px; margin:0 auto; }
+
+        /* HOW IT WORKS */
+        .hiw-section { background:rgba(255,255,255,0.01); border-top:1px solid var(--border); border-bottom:1px solid var(--border); }
+
+        .hiw-grid {
+            display:grid;
+            grid-template-columns:repeat(auto-fit,minmax(220px,1fr));
+            gap:1.5rem;
+            max-width:1100px;
+            margin:0 auto;
+        }
+
+        .hiw-card {
+            background:var(--bg-card);
+            border:1px solid var(--border);
+            border-radius:1.5rem;
+            padding:2.5rem 2rem;
+            text-align:center;
+            transition:all 0.3s;
+        }
+        .hiw-card:hover { transform:translateY(-8px); background:rgba(255,255,255,0.07); border-color:rgba(168,85,247,0.25); }
+
+        .hiw-step-num {
+            width:52px; height:52px;
+            border-radius:50%;
+            background:linear-gradient(135deg,var(--primary),var(--secondary));
+            display:flex; align-items:center; justify-content:center;
+            font-size:1.4rem; font-weight:900;
+            margin:0 auto 1.5rem;
+            box-shadow:0 0 20px rgba(168,85,247,0.35);
+        }
+        .hiw-card h3 { font-size:1.1rem; font-weight:700; margin-bottom:0.75rem; }
+        .hiw-card p { color:var(--text-muted); font-size:0.9rem; line-height:1.6; }
+
+        /* WHAT YOU GET */
+        .features-grid {
+            display:grid;
+            grid-template-columns:repeat(auto-fit,minmax(260px,1fr));
+            gap:1.5rem;
+            max-width:1100px;
+            margin:0 auto;
+        }
+
+        .feat-card {
+            background:var(--bg-card);
+            border:1px solid var(--border);
+            border-radius:1.5rem;
+            padding:2.5rem;
+            transition:all 0.3s;
+            position:relative;
+            overflow:hidden;
+        }
+
+        .feat-card::before {
+            content:'';
+            position:absolute;
+            top:0; left:0; right:0;
+            height:3px;
+            background:var(--fc, linear-gradient(90deg,var(--primary),var(--secondary)));
+            opacity:0;
+            transition:opacity 0.3s;
+        }
+        .feat-card:hover { transform:translateY(-7px); border-color:rgba(255,255,255,0.14); }
+        .feat-card:hover::before { opacity:1; }
+
+        .feat-emoji { font-size:2.2rem; margin-bottom:1rem; display:block; }
+        .feat-card h3 { font-size:1.1rem; font-weight:700; margin-bottom:0.7rem; }
+        .feat-card p { color:var(--text-muted); font-size:0.9rem; line-height:1.6; }
+
+        /* MENTOR CARDS */
+        .mentors-grid {
+            display:grid;
+            grid-template-columns:repeat(auto-fill,minmax(290px,1fr));
+            gap:1.5rem;
+            max-width:1200px;
+            margin:0 auto;
+        }
+
+        .mentor-card {
+            background:var(--bg-card);
+            border:1px solid var(--border);
+            border-radius:1.5rem;
+            padding:2rem;
+            text-align:center;
+            transition:all 0.3s;
+            position:relative;
+            overflow:hidden;
+        }
+
+        .mentor-card::before {
+            content:'';
+            position:absolute;
+            top:0; left:0; right:0;
+            height:80px;
+            background:var(--mc-bg, linear-gradient(135deg,rgba(168,85,247,0.3),rgba(236,72,153,0.3)));
+            z-index:0;
+        }
+
+        .mentor-card:hover { transform:translateY(-8px); border-color:rgba(168,85,247,0.3); box-shadow:0 20px 40px rgba(168,85,247,0.1); }
+
+        .mentor-avatar-wrap { position:relative; z-index:1; margin-bottom:0.8rem; }
+        .mentor-avatar {
+            width:80px; height:80px;
+            border-radius:50%;
+            border:3px solid rgba(255,255,255,0.2);
+            object-fit:cover;
+            display:inline-block;
+        }
+
+        .mentor-badge {
+            position:absolute;
+            bottom:-4px; right:calc(50% - 46px);
+            width:24px; height:24px;
+            border-radius:50%;
+            display:flex; align-items:center; justify-content:center;
+            font-size:0.75rem;
+            border:2px solid var(--bg-dark);
+        }
+
+        .mentor-name { font-size:1.1rem; font-weight:700; margin-bottom:0.15rem; }
+        .mentor-title { font-size:0.82rem; color:var(--text-muted); margin-bottom:0.3rem; }
+        .mentor-company { font-size:0.8rem; font-weight:600; margin-bottom:1.2rem; }
+
+        .mentor-tags { display:flex; flex-wrap:wrap; justify-content:center; gap:0.4rem; margin-bottom:1.2rem; }
+        .mentor-tag { padding:0.25rem 0.7rem; border-radius:100px; font-size:0.75rem; font-weight:600; }
+
+        .mentor-exp { display:flex; justify-content:center; gap:2rem; padding:1rem 0; border-top:1px solid var(--border); border-bottom:1px solid var(--border); margin-bottom:1.2rem; }
+        .me-val { font-size:1.1rem; font-weight:800; color:var(--primary); display:block; }
+        .me-lbl { font-size:0.72rem; color:var(--text-muted); text-transform:uppercase; letter-spacing:0.05em; }
+
+        .btn-connect {
+            display:block;
+            width:100%;
+            padding:0.7rem;
+            border-radius:100px;
+            background:rgba(255,255,255,0.04);
+            border:1px solid var(--border);
+            color:white;
+            font-weight:600;
+            font-size:0.88rem;
+            cursor:pointer;
+            transition:all 0.2s;
+            text-decoration:none;
+        }
+        .mentor-card:hover .btn-connect {
+            background:linear-gradient(135deg,var(--primary),var(--secondary));
+            border-color:transparent;
+            box-shadow:0 8px 20px rgba(168,85,247,0.3);
+        }
+
+        /* TESTIMONIALS */
+        .testimonials-section { background:rgba(255,255,255,0.01); border-top:1px solid var(--border); }
+
+        .test-grid {
+            display:grid;
+            grid-template-columns:repeat(auto-fit,minmax(300px,1fr));
+            gap:1.5rem;
+            max-width:1100px;
+            margin:0 auto;
+        }
+
+        .test-card {
+            background:var(--bg-card);
+            border:1px solid var(--border);
+            border-radius:1.5rem;
+            padding:2rem;
+            transition:all 0.3s;
+        }
+        .test-card:hover { transform:translateY(-5px); border-color:rgba(168,85,247,0.2); }
+
+        .test-stars { color:#fbbf24; font-size:0.95rem; letter-spacing:2px; margin-bottom:1rem; }
+        .test-text { font-size:0.95rem; color:var(--text-muted); line-height:1.7; margin-bottom:1.5rem; font-style:italic; }
+
+        .test-author { display:flex; align-items:center; gap:0.75rem; }
+        .test-avatar { width:42px; height:42px; border-radius:50%; object-fit:cover; }
+        .test-author-name { font-size:0.9rem; font-weight:700; }
+        .test-author-role { font-size:0.78rem; color:var(--text-muted); }
+
+        /* FAQ */
+        .faq-section { border-top:1px solid var(--border); }
+
+        .faq-list { max-width:800px; margin:0 auto; display:flex; flex-direction:column; gap:1rem; }
+
+        .faq-item {
+            background:var(--bg-card);
+            border:1px solid var(--border);
+            border-radius:1.2rem;
+            overflow:hidden;
+            transition:all 0.3s;
+        }
+        .faq-item:hover { border-color:rgba(168,85,247,0.2); }
+
+        .faq-q {
+            padding:1.4rem 1.8rem;
+            display:flex;
+            justify-content:space-between;
+            align-items:center;
+            cursor:pointer;
+            font-weight:600;
+            font-size:0.95rem;
+            user-select:none;
+        }
+
+        .faq-icon {
+            width:28px; height:28px;
+            border-radius:50%;
+            background:rgba(168,85,247,0.15);
+            color:#c084fc;
+            display:flex; align-items:center; justify-content:center;
+            font-size:1.1rem;
+            flex-shrink:0;
+            transition:transform 0.3s;
+        }
+
+        .faq-a {
+            max-height:0;
+            overflow:hidden;
+            transition:max-height 0.4s ease, padding 0.3s;
+            padding:0 1.8rem;
+            color:var(--text-muted);
+            font-size:0.9rem;
+            line-height:1.7;
+        }
+
+        .faq-item.open .faq-a { max-height:200px; padding:0 1.8rem 1.4rem; }
+        .faq-item.open .faq-icon { transform:rotate(45deg); }
+
+        /* CTA */
+        .cta-section { text-align:center; }
+        .cta-box {
+            background:linear-gradient(135deg,rgba(168,85,247,0.15),rgba(236,72,153,0.12),rgba(99,102,241,0.15));
+            border:1px solid rgba(168,85,247,0.2);
+            border-radius:2rem;
+            padding:4rem 3rem;
+            max-width:800px;
+            margin:0 auto;
+        }
+        .cta-box h2 { font-size:2.2rem; font-weight:800; margin-bottom:1rem; }
+        .cta-box p { color:var(--text-muted); margin-bottom:2rem; }
+        .cta-btns { display:flex; gap:1rem; justify-content:center; flex-wrap:wrap; }
+
+        /* FOOTER */
+        footer { padding:2rem 6%; border-top:1px solid var(--border); display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:1rem; }
+        footer p { color:var(--text-muted); font-size:0.88rem; }
+        .footer-links { display:flex; gap:2rem; list-style:none; }
+        .footer-links a { color:var(--text-muted); text-decoration:none; font-size:0.88rem; transition:color 0.2s; }
+        .footer-links a:hover { color:white; }
+
+        @keyframes fadeInUp { from { opacity:0; transform:translateY(25px); } to { opacity:1; transform:translateY(0); } }
+        .reveal { opacity:0; transform:translateY(25px); transition:opacity 0.6s ease, transform 0.6s ease; }
+        .reveal.visible { opacity:1; transform:translateY(0); }
+
+        @media(max-width:900px) {
+            .nav-links { display:none; }
+            .page-hero-stats { gap:1.5rem; }
+        }
+    </style>
+</head>
+<body>
+
+    <nav>
+        <a href="landing.html" class="logo">∞ SkillSync</a>
+        <ul class="nav-links">
+            <li><a href="landing.html">Home</a></li>
+            <li><a href="careers.html">Careers</a></li>
+            <li><a href="recruiters.html">Recruiters</a></li>
+            <li><a href="mentorship.html">Mentorship</a></li>
+        </ul>
+        <div style="display:flex;gap:0.8rem;">
+            <a href="login.html" class="btn btn-ghost">Log in</a>
+            <a href="signup.html" class="btn btn-primary">Join Free →</a>
+        </div>
+    </nav>
+
+    <!-- HERO -->
+    <section class="page-hero">
+        <div class="hero-content" style="animation:fadeInUp 0.8s ease-out;">
+            <div class="section-tag tag-purple">🌟 Campus Placement & Job Training</div>
+            <h1>Master your interviews with<br><span class="gradient-purple">expert mentorship</span></h1>
+            <p>Get properly mentored for campus placements and job training by experienced professionals, IIT/NIT alumni, and industry veterans from top companies.</p>
+            <div class="hero-actions">
+                <a href="#mentors" class="btn btn-primary btn-lg">Find My Mentor →</a>
+                <a href="signup.html" class="btn btn-outline btn-lg">Become a Mentor</a>
+            </div>
+            <div class="page-hero-stats">
+                <div class="phs-item">
+                    <span class="phs-num">320+</span>
+                    <span class="phs-lbl">Expert Mentors</span>
+                </div>
+                <div class="phs-item">
+                    <span class="phs-num">4,800+</span>
+                    <span class="phs-lbl">Mentorship Sessions</span>
+                </div>
+                <div class="phs-item">
+                    <span class="phs-num">98%</span>
+                    <span class="phs-lbl">Satisfaction Rate</span>
+                </div>
+                <div class="phs-item">
+                    <span class="phs-num">15+</span>
+                    <span class="phs-lbl">Industry Domains</span>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- HOW IT WORKS -->
+    <section class="section hiw-section">
+        <div class="section-center reveal">
+            <div class="section-tag tag-indigo">⚙️ Process</div>
+            <h2>How mentorship <span class="gradient-purple">works</span></h2>
+            <p>A simple, structured process to connect you with the right mentor fast.</p>
+        </div>
+        <div class="hiw-grid">
+            <div class="hiw-card reveal">
+                <div class="hiw-step-num">1</div>
+                <h3>Build Your Profile</h3>
+                <p>Sign up and complete your skill profile — your goals, interests, and current skill level. Takes less than 5 minutes.</p>
+            </div>
+            <div class="hiw-card reveal">
+                <div class="hiw-step-num">2</div>
+                <h3>Get Matched</h3>
+                <p>Our AI matches you with mentors based on your career aspirations, target companies, and skill gaps. See curated recommendations.</p>
+            </div>
+            <div class="hiw-card reveal">
+                <div class="hiw-step-num">3</div>
+                <h3>Book a Session</h3>
+                <p>Browse mentor profiles, choose one that resonates, and book a free 30-minute intro call to see if it's a great fit.</p>
+            </div>
+            <div class="hiw-card reveal">
+                <div class="hiw-step-num">4</div>
+                <h3>Grow Together</h3>
+                <p>Engage in ongoing 1-on-1 sessions, get resume reviews, mock interviews, and a personalized roadmap to your dream job.</p>
+            </div>
+        </div>
+    </section>
+
+    <!-- WHAT YOU GET -->
+    <section class="section">
+        <div class="section-center reveal">
+            <div class="section-tag tag-cyan">✨ Program Features</div>
+            <h2>Everything included in your <span class="gradient-purple">mentorship</span></h2>
+        </div>
+        <div class="features-grid max-w">
+            <div class="feat-card reveal" style="--fc:linear-gradient(90deg,#c084fc,#818cf8);">
+                <span class="feat-emoji">🎙️</span>
+                <h3>1-on-1 Video Sessions</h3>
+                <p>Direct video calls with your assigned mentor. Weekly or bi-weekly cadence, scheduled at your convenience. All sessions recorded for review.</p>
+            </div>
+            <div class="feat-card reveal" style="--fc:linear-gradient(90deg,#22d3ee,#818cf8);">
+                <span class="feat-emoji">📝</span>
+                <h3>Professional Resume Review</h3>
+                <p>Mentors who are hiring managers or HR professionals review your resume with an ATS eye and provide line-by-line improvement feedback.</p>
+            </div>
+            <div class="feat-card reveal" style="--fc:linear-gradient(90deg,#f472b6,#c084fc);">
+                <span class="feat-emoji">🎭</span>
+                <h3>Mock Interviews</h3>
+                <p>Simulate real technical and HR interviews with industry professionals. Get detailed feedback on communication, problem-solving, and code quality.</p>
+            </div>
+            <div class="feat-card reveal" style="--fc:linear-gradient(90deg,#34d399,#06b6d4);">
+                <span class="feat-emoji">🗺️</span>
+                <h3>Career Roadmaps</h3>
+                <p>Receive a custom, milestone-based learning plan tailored to your specific career goal — whether that's FAANG, startups, or core engineering.</p>
+            </div>
+            <div class="feat-card reveal" style="--fc:linear-gradient(90deg,#fb923c,#f472b6);">
+                <span class="feat-emoji">🔗</span>
+                <h3>Network Access</h3>
+                <p>Mentors share their professional networks, make warm introductions to recruiters, and help you find referrals at their companies.</p>
+            </div>
+            <div class="feat-card reveal" style="--fc:linear-gradient(90deg,#818cf8,#22d3ee);">
+                <span class="feat-emoji">🏆</span>
+                <h3>Skill Assessments</h3>
+                <p>Take curated coding and aptitude assessments recommended by your mentor. Earn verified badges that boost your SkillSync profile ranking.</p>
+            </div>
+        </div>
+    </section>
+
+    <!-- MENTOR CARDS -->
+    <section id="mentors" class="section" style="border-top:1px solid var(--border);">
+        <div class="section-center reveal">
+            <div class="section-tag tag-purple">👥 Our Mentors</div>
+            <h2>Meet some of our <span class="gradient-purple">expert mentors</span></h2>
+            <p>Experienced professionals from the world's best companies, dedicated to helping you grow.</p>
+        </div>
+        <div class="mentors-grid">
+
+            <div class="mentor-card reveal" style="--mc-bg:linear-gradient(135deg,rgba(99,102,241,0.35),rgba(168,85,247,0.25));">
+                <div class="mentor-avatar-wrap">
+                    <img src="https://ui-avatars.com/api/?name=Priya+Sharma&background=6366f1&color=fff&size=120" alt="Priya Sharma" class="mentor-avatar">
+                    <div class="mentor-badge" style="background:#6366f1;">💻</div>
+                </div>
+                <div class="mentor-name">Priya Sharma</div>
+                <div class="mentor-title">Senior Software Engineer</div>
+                <div class="mentor-company" style="color:#818cf8;">@ Google, Bangalore</div>
+                <div class="mentor-tags">
+                    <span class="mentor-tag" style="background:rgba(99,102,241,0.15);color:#818cf8;">DSA</span>
+                    <span class="mentor-tag" style="background:rgba(99,102,241,0.15);color:#818cf8;">System Design</span>
+                    <span class="mentor-tag" style="background:rgba(99,102,241,0.15);color:#818cf8;">FAANG Prep</span>
+                </div>
+                <div class="mentor-exp">
+                    <div><span class="me-val">8</span><span class="me-lbl">Yrs Exp</span></div>
+                    <div><span class="me-val">142</span><span class="me-lbl">Students</span></div>
+                    <div><span class="me-val">4.9</span><span class="me-lbl">Rating</span></div>
+                </div>
+                <a href="signup.html" class="btn-connect">Connect with Priya →</a>
+            </div>
+
+            <div class="mentor-card reveal" style="--mc-bg:linear-gradient(135deg,rgba(6,182,212,0.35),rgba(59,130,246,0.25));">
+                <div class="mentor-avatar-wrap">
+                    <img src="https://ui-avatars.com/api/?name=Arjun+Mehta&background=06b6d4&color=fff&size=120" alt="Arjun Mehta" class="mentor-avatar">
+                    <div class="mentor-badge" style="background:#06b6d4;">🤖</div>
+                </div>
+                <div class="mentor-name">Arjun Mehta</div>
+                <div class="mentor-title">Lead Data Scientist</div>
+                <div class="mentor-company" style="color:#22d3ee;">@ Microsoft, Hyderabad</div>
+                <div class="mentor-tags">
+                    <span class="mentor-tag" style="background:rgba(6,182,212,0.15);color:#22d3ee;">ML/AI</span>
+                    <span class="mentor-tag" style="background:rgba(6,182,212,0.15);color:#22d3ee;">Python</span>
+                    <span class="mentor-tag" style="background:rgba(6,182,212,0.15);color:#22d3ee;">Research</span>
+                </div>
+                <div class="mentor-exp">
+                    <div><span class="me-val">6</span><span class="me-lbl">Yrs Exp</span></div>
+                    <div><span class="me-val">98</span><span class="me-lbl">Students</span></div>
+                    <div><span class="me-val">4.8</span><span class="me-lbl">Rating</span></div>
+                </div>
+                <a href="signup.html" class="btn-connect">Connect with Arjun →</a>
+            </div>
+
+            <div class="mentor-card reveal" style="--mc-bg:linear-gradient(135deg,rgba(236,72,153,0.35),rgba(168,85,247,0.25));">
+                <div class="mentor-avatar-wrap">
+                    <img src="https://ui-avatars.com/api/?name=Sarah+Khan&background=ec4899&color=fff&size=120" alt="Sarah Khan" class="mentor-avatar">
+                    <div class="mentor-badge" style="background:#ec4899;">📦</div>
+                </div>
+                <div class="mentor-name">Sarah Khan</div>
+                <div class="mentor-title">Senior Product Manager</div>
+                <div class="mentor-company" style="color:#f472b6;">@ Flipkart, Bengaluru</div>
+                <div class="mentor-tags">
+                    <span class="mentor-tag" style="background:rgba(236,72,153,0.15);color:#f472b6;">Product</span>
+                    <span class="mentor-tag" style="background:rgba(236,72,153,0.15);color:#f472b6;">Agile</span>
+                    <span class="mentor-tag" style="background:rgba(236,72,153,0.15);color:#f472b6;">Analytics</span>
+                </div>
+                <div class="mentor-exp">
+                    <div><span class="me-val">5</span><span class="me-lbl">Yrs Exp</span></div>
+                    <div><span class="me-val">76</span><span class="me-lbl">Students</span></div>
+                    <div><span class="me-val">4.95</span><span class="me-lbl">Rating</span></div>
+                </div>
+                <a href="signup.html" class="btn-connect">Connect with Sarah →</a>
+            </div>
+
+            <div class="mentor-card reveal" style="--mc-bg:linear-gradient(135deg,rgba(16,185,129,0.35),rgba(6,182,212,0.25));">
+                <div class="mentor-avatar-wrap">
+                    <img src="https://ui-avatars.com/api/?name=Rohan+Das&background=10b981&color=fff&size=120" alt="Rohan Das" class="mentor-avatar">
+                    <div class="mentor-badge" style="background:#10b981;">💰</div>
+                </div>
+                <div class="mentor-name">Rohan Das</div>
+                <div class="mentor-title">Investment Analyst</div>
+                <div class="mentor-company" style="color:#34d399;">@ Goldman Sachs, Mumbai</div>
+                <div class="mentor-tags">
+                    <span class="mentor-tag" style="background:rgba(16,185,129,0.15);color:#34d399;">Finance</span>
+                    <span class="mentor-tag" style="background:rgba(16,185,129,0.15);color:#34d399;">Excel/VBA</span>
+                    <span class="mentor-tag" style="background:rgba(16,185,129,0.15);color:#34d399;">Case Prep</span>
+                </div>
+                <div class="mentor-exp">
+                    <div><span class="me-val">7</span><span class="me-lbl">Yrs Exp</span></div>
+                    <div><span class="me-val">115</span><span class="me-lbl">Students</span></div>
+                    <div><span class="me-val">4.85</span><span class="me-lbl">Rating</span></div>
+                </div>
+                <a href="signup.html" class="btn-connect">Connect with Rohan →</a>
+            </div>
+
+            <div class="mentor-card reveal" style="--mc-bg:linear-gradient(135deg,rgba(249,115,22,0.35),rgba(234,179,8,0.25));">
+                <div class="mentor-avatar-wrap">
+                    <img src="https://ui-avatars.com/api/?name=Kavya+Nair&background=f97316&color=fff&size=120" alt="Kavya Nair" class="mentor-avatar">
+                    <div class="mentor-badge" style="background:#f97316;">🔐</div>
+                </div>
+                <div class="mentor-name">Kavya Nair</div>
+                <div class="mentor-title">Cybersecurity Engineer</div>
+                <div class="mentor-company" style="color:#fb923c;">@ Cisco, Chennai</div>
+                <div class="mentor-tags">
+                    <span class="mentor-tag" style="background:rgba(249,115,22,0.15);color:#fb923c;">Networking</span>
+                    <span class="mentor-tag" style="background:rgba(249,115,22,0.15);color:#fb923c;">Pen Testing</span>
+                    <span class="mentor-tag" style="background:rgba(249,115,22,0.15);color:#fb923c;">SIEM</span>
+                </div>
+                <div class="mentor-exp">
+                    <div><span class="me-val">4</span><span class="me-lbl">Yrs Exp</span></div>
+                    <div><span class="me-val">54</span><span class="me-lbl">Students</span></div>
+                    <div><span class="me-val">4.9</span><span class="me-lbl">Rating</span></div>
+                </div>
+                <a href="signup.html" class="btn-connect">Connect with Kavya →</a>
+            </div>
+
+            <div class="mentor-card reveal" style="--mc-bg:linear-gradient(135deg,rgba(168,85,247,0.35),rgba(99,102,241,0.25));">
+                <div class="mentor-avatar-wrap">
+                    <img src="https://ui-avatars.com/api/?name=Dev+Patel&background=a855f7&color=fff&size=120" alt="Dev Patel" class="mentor-avatar">
+                    <div class="mentor-badge" style="background:#a855f7;">🎨</div>
+                </div>
+                <div class="mentor-name">Dev Patel</div>
+                <div class="mentor-title">UX Design Lead</div>
+                <div class="mentor-company" style="color:#c084fc;">@ Adobe, Noida</div>
+                <div class="mentor-tags">
+                    <span class="mentor-tag" style="background:rgba(168,85,247,0.15);color:#c084fc;">UX/UI</span>
+                    <span class="mentor-tag" style="background:rgba(168,85,247,0.15);color:#c084fc;">Figma</span>
+                    <span class="mentor-tag" style="background:rgba(168,85,247,0.15);color:#c084fc;">Design Thinking</span>
+                </div>
+                <div class="mentor-exp">
+                    <div><span class="me-val">6</span><span class="me-lbl">Yrs Exp</span></div>
+                    <div><span class="me-val">87</span><span class="me-lbl">Students</span></div>
+                    <div><span class="me-val">4.92</span><span class="me-lbl">Rating</span></div>
+                </div>
+                <a href="signup.html" class="btn-connect">Connect with Dev →</a>
+            </div>
+
+        </div>
+        <div style="text-align:center;margin-top:2.5rem;">
+            <a href="signup.html" class="btn btn-primary btn-lg">View All 320+ Mentors →</a>
+        </div>
+    </section>
+
+    <!-- TESTIMONIALS -->
+    <section class="section testimonials-section">
+        <div class="section-center reveal">
+            <div class="section-tag tag-green">💬 Success Stories</div>
+            <h2>What students are <span class="gradient-purple">saying</span></h2>
+        </div>
+        <div class="test-grid">
+            <div class="test-card reveal">
+                <div class="test-stars">★★★★★</div>
+                <p class="test-text">"My mentor Priya helped me crack Google's coding interview in just 2 months! She gave me a targeted DSA plan and did 6 mock interviews with me. Absolutely life-changing."</p>
+                <div class="test-author">
+                    <img src="https://ui-avatars.com/api/?name=Ananya+Rao&background=6366f1&color=fff&size=80" alt="" class="test-avatar">
+                    <div>
+                        <div class="test-author-name">Ananya Rao</div>
+                        <div class="test-author-role">CSE · Interned @ Google</div>
+                    </div>
+                </div>
+            </div>
+            <div class="test-card reveal">
+                <div class="test-stars">★★★★★</div>
+                <p class="test-text">"Arjun's mentorship in ML was exceptional. He reviewed my project, suggested improvements, and connected me to his team at Microsoft. Got a PPO right after my internship!"</p>
+                <div class="test-author">
+                    <img src="https://ui-avatars.com/api/?name=Tarun+Reddy&background=06b6d4&color=fff&size=80" alt="" class="test-avatar">
+                    <div>
+                        <div class="test-author-name">Tarun Reddy</div>
+                        <div class="test-author-role">ECE · Hired @ Microsoft</div>
+                    </div>
+                </div>
+            </div>
+            <div class="test-card reveal">
+                <div class="test-stars">★★★★★</div>
+                <p class="test-text">"Sarah's PM mentorship completely changed how I think about products. Her resume feedback got me shortlisted for roles I thought were out of reach. 100% recommend SkillSync Mentorship!"</p>
+                <div class="test-author">
+                    <img src="https://ui-avatars.com/api/?name=Meena+Krishnan&background=ec4899&color=fff&size=80" alt="" class="test-avatar">
+                    <div>
+                        <div class="test-author-name">Meena Krishnan</div>
+                        <div class="test-author-role">MBA · PM Intern @ Amazon</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- FAQ -->
+    <section class="section faq-section">
+        <div class="section-center reveal">
+            <div class="section-tag tag-purple">❓ FAQ</div>
+            <h2>Frequently Asked <span class="gradient-purple">Questions</span></h2>
+        </div>
+        <div class="faq-list">
+            <div class="faq-item reveal">
+                <div class="faq-q" onclick="toggleFaq(this)">
+                    Is the mentorship program free?
+                    <div class="faq-icon">+</div>
+                </div>
+                <div class="faq-a">The first intro session (30 minutes) with any mentor is completely free. Ongoing sessions are available on a subscription or pay-per-session basis at very affordable student prices.</div>
+            </div>
+            <div class="faq-item reveal">
+                <div class="faq-q" onclick="toggleFaq(this)">
+                    How are mentors verified?
+                    <div class="faq-icon">+</div>
+                </div>
+                <div class="faq-a">Every mentor goes through a verification process including LinkedIn profile review, company email verification, and a screening interview with our team. We only onboard professionals with at least 3 years of relevant experience.</div>
+            </div>
+            <div class="faq-item reveal">
+                <div class="faq-q" onclick="toggleFaq(this)">
+                    Can I switch mentors if it's not a good fit?
+                    <div class="faq-icon">+</div>
+                </div>
+                <div class="faq-a">Absolutely! If you feel your current mentor isn't the right match, you can request a switch at any time with no questions asked. We want to ensure you get the best possible guidance.</div>
+            </div>
+            <div class="faq-item reveal">
+                <div class="faq-q" onclick="toggleFaq(this)">
+                    How often are sessions held?
+                    <div class="faq-icon">+</div>
+                </div>
+                <div class="faq-a">Session frequency is agreed upon between you and your mentor. Most mentors offer weekly or bi-weekly sessions of 45-60 minutes. You can also schedule ad-hoc sessions for specific needs like pre-interview prep.</div>
+            </div>
+            <div class="faq-item reveal">
+                <div class="faq-q" onclick="toggleFaq(this)">
+                    Can I become a mentor on SkillSync?
+                    <div class="faq-icon">+</div>
+                </div>
+                <div class="faq-a">Yes! If you're an industry professional or an alumni with at least 3 years of experience, we'd love to have you. Click "Become a Mentor" to apply. Mentors on SkillSync earn recognition and can optionally receive session fees.</div>
+            </div>
+        </div>
+    </section>
+
+    <!-- CTA -->
+    <section class="section cta-section">
+        <div class="cta-box reveal">
+            <div class="section-tag tag-purple" style="margin:0 auto 1.5rem;display:inline-flex;">🚀 Get Started</div>
+            <h2>Find your <span class="gradient-purple">perfect mentor</span> today</h2>
+            <p>Join thousands of students who've accelerated their careers with SkillSync Mentorship. First session is free — no commitment needed.</p>
+            <div class="cta-btns">
+                <a href="signup.html" class="btn btn-primary btn-lg">Find My Mentor →</a>
+                <a href="careers.html" class="btn btn-ghost btn-lg">Explore Careers</a>
+            </div>
+        </div>
+    </section>
+
+    <!-- FOOTER -->
+    <footer>
+        <p>© 2025 SkillSync · All rights reserved.</p>
+        <ul class="footer-links">
+            <li><a href="landing.html">Home</a></li>
+            <li><a href="careers.html">Careers</a></li>
+            <li><a href="recruiters.html">Recruiters</a></li>
+            <li><a href="#">Privacy</a></li>
+        </ul>
+    </footer>
+
+    <script>
+        // Reveal animation
+        const obs = new IntersectionObserver(entries => {
+            entries.forEach((e, i) => {
+                if (e.isIntersecting) {
+                    setTimeout(() => e.target.classList.add('visible'), i * 80);
+                    obs.unobserve(e.target);
+                }
+            });
+        }, { threshold: 0.1, rootMargin: '0px 0px -40px 0px' });
+        document.querySelectorAll('.reveal').forEach(el => obs.observe(el));
+
+        // FAQ Toggle
+        function toggleFaq(el) {
+            const item = el.parentElement;
+            const isOpen = item.classList.contains('open');
+            document.querySelectorAll('.faq-item.open').forEach(i => i.classList.remove('open'));
+            if (!isOpen) item.classList.add('open');
+        }
+    </script>
+</body>
+</html>

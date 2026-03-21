@@ -1,0 +1,362 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SkillSync | Career Explorer</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Outfit:wght@600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="../src/style.css">
+    <style>
+        .career-explorer-main { background: var(--bg-main); }
+        .career-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(320px, 1fr)); gap: 1.5rem; }
+        
+        .career-card {
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: var(--radius-xl);
+            padding: 1.5rem;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            position: relative;
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+            box-shadow: var(--shadow-sm);
+        }
+        .career-card:hover { transform: translateY(-5px); border-color: var(--primary); box-shadow: var(--shadow-md); }
+        
+        .match-badge {
+            position: absolute; top: 1rem; right: 1rem;
+            padding: 0.35rem 0.8rem; border-radius: 100px;
+            font-size: 0.75rem; font-weight: 800;
+            background: rgba(16, 185, 129, 0.1); color: #10b981;
+            border: 1px solid rgba(16, 185, 129, 0.2);
+        }
+
+        .career-icon { font-size: 2.22rem; margin-bottom: 1rem; }
+        .career-title { font-family: 'Outfit'; font-size: 1.25rem; font-weight: 700; margin-bottom: 0.25rem; color: var(--text-dark); }
+        .career-dept { font-size: 0.82rem; color: var(--text-muted); margin-bottom: 1rem; }
+        
+        .stat-row { display: flex; justify-content: space-between; margin-bottom: 0.5rem; font-size: 0.88rem; }
+        .stat-label { color: var(--text-muted); }
+        .stat-val { font-weight: 700; color: var(--text-dark); }
+
+        .skills-summary { margin-top: 1rem; padding-top: 1rem; border-top: 1px solid var(--border); }
+        .skills-title { font-size: 0.75rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px; color: var(--text-muted); margin-bottom: 0.5rem; }
+        .skill-tags { display: flex; flex-wrap: wrap; gap: 0.4rem; }
+        .tag { padding: 0.2rem 0.6rem; background: #f1f5f9; border-radius: 6px; font-size: 0.7rem; font-weight: 600; color: #475569; border: 1px solid #e2e8f0; }
+
+        .search-hero {
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            border-radius: var(--radius-2xl);
+            padding: 3rem;
+            margin-bottom: 2.5rem;
+            color: white;
+            text-align: center;
+            box-shadow: 0 10px 30px rgba(99,102,241,0.2);
+        }
+        .search-hero h1 { font-family: 'Outfit'; font-size: 2.5rem; font-weight: 800; margin-bottom: 0.5rem; }
+        .search-hero p { opacity: 0.9; margin-bottom: 2rem; max-width: 600px; margin-left: auto; margin-right: auto; }
+        
+        .search-container {
+            max-width: 600px; margin: 0 auto;
+            display: flex; gap: 0.5rem;
+            background: white; padding: 0.5rem;
+            border-radius: 100px; box-shadow: var(--shadow-lg);
+        }
+        .search-input { border: none; flex: 1; padding: 0.5rem 1.5rem; font-size: 1rem; font-family: 'Inter'; border-radius: 100px; outline: none; }
+        .search-btn { background: var(--bg-dark); color: white; border: none; padding: 0.8rem 1.5rem; border-radius: 100px; font-weight: 700; cursor: pointer; transition: transform 0.2s; }
+        .search-btn:hover { transform: scale(1.05); }
+
+        .domain-filters { display: flex; justify-content: center; gap: 0.75rem; margin-top: 2rem; flex-wrap: wrap; }
+        .dom-btn { padding: 0.5rem 1.25rem; border-radius: 100px; border: 1px solid rgba(255,255,255,0.3); background: rgba(255,255,255,0.1); color: white; font-size: 0.82rem; font-weight: 600; cursor: pointer; transition: all 0.2s; }
+        .dom-btn:hover, .dom-btn.active { background: white; color: var(--primary); }
+
+        #no-results { display: none; text-align: center; padding: 4rem; color: var(--text-muted); }
+    </style>
+</head>
+<body>
+    <!-- Sidebar (Same as Dashboard) -->
+    <nav class="sidebar">
+        <div class="logo-container">
+            <div class="logo-icon">∞</div>
+            <h2>SkillSync</h2>
+        </div>
+        <ul class="nav-links">
+            <li onclick="window.location.href='index.html'">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="7" height="7"></rect><rect x="14" y="3" width="7" height="7"></rect><rect x="14" y="14" width="7" height="7"></rect><rect x="3" y="14" width="7" height="7"></rect></svg>
+                Dashboard
+            </li>
+            <li onclick="window.location.href='students.html'">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path><circle cx="9" cy="7" r="4"></circle><path d="M23 21v-2a4 4 0 0 0-3-3.87"></path><path d="M16 3.13a4 4 0 0 1 0 7.75"></path></svg>
+                Candidate Directory
+            </li>
+            <li onclick="window.location.href='profile.html'">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path><circle cx="12" cy="7" r="4"></circle></svg>
+                My Profile
+            </li>
+            <li onclick="window.location.href='applications.html'">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline></svg>
+                My Applications
+            </li>
+            <li onclick="window.location.href='hackathons.html'">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"></polygon></svg>
+                Hackathons
+            </li>
+            <li onclick="window.location.href='analytics.html'">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 12h-4l-3 9L9 3l-3 9H2"></path></svg>
+                Analytics
+            </li>
+            <li class="active" onclick="window.location.href='dashboard-careers.html'">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"></path><path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"></path></svg>
+                Careers
+            </li>
+            <li onclick="window.location.href='settings.html'">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"></circle><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1-2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"></path></svg>
+                Settings
+            </li>
+        </ul>
+        <div class="nav-footer">
+            <div class="admin-profile">
+                <img id="user-avatar" class="avatar" src="https://ui-avatars.com/api/?name=User&background=6366f1&color=fff" style="width:40px;height:40px;border-radius:50%;object-fit:cover;">
+                <div class="admin-info">
+                    <span class="admin-name" id="user-name-sidebar">Shreyash C.</span>
+                    <span class="admin-role" id="user-role-sidebar">Student</span>
+                </div>
+            </div>
+            <button onclick="logout()" style="margin-top:0.75rem;width:100%;padding:0.5rem;background:rgba(239,68,68,0.12);border:1px solid rgba(239,68,68,0.2);border-radius:8px;color:#f87171;font-size:0.82rem;cursor:pointer;font-weight:600;">Sign Out</button>
+        </div>
+    </nav>
+
+    <!-- Main Content -->
+    <main class="main-content career-explorer-main">
+        <header class="top-header">
+            <div>
+                <h1 style="font-family:'Outfit';">💼 Career Explorer</h1>
+                <p class="subtitle">Discover personalized career paths and salary benchmarks matching your skill profile.</p>
+            </div>
+        </header>
+
+        <section class="search-hero">
+            <h1>Find your <span style="text-decoration: underline; text-decoration-color: rgba(255,255,255,0.4);">dream</span> role</h1>
+            <p>Our intelligent system analyzes thousands of data points to find the roles where you'll thrive most based on your DNA — your skills.</p>
+            
+            <div class="search-container">
+                <input type="text" id="career-search-input" class="search-input" placeholder="Search roles, skills, or domains..." onkeyup="filterResults()">
+                <button class="search-btn" onclick="ftsSearch()">🔍 Search</button>
+            </div>
+
+            <div class="domain-filters" id="domain-filters">
+                <button class="dom-btn active" onclick="filterDomain('all', this)">All Careers</button>
+                <button class="dom-btn" onclick="filterDomain('Software', this)">💻 Software</button>
+                <button class="dom-btn" onclick="filterDomain('Data', this)">📊 Data Science</button>
+                <button class="dom-btn" onclick="filterDomain('Cloud', this)">☁️ Cloud</button>
+                <button class="dom-btn" onclick="filterDomain('Management', this)">📦 Product</button>
+            </div>
+        </section>
+
+        <div id="career-grid" class="career-grid">
+            <!-- Rendered via JS -->
+             <div class="loader-container" style="grid-column: 1/-1;"><div class="spinner"></div></div>
+        </div>
+
+        <div id="no-results">
+            <div style="font-size: 4rem; margin-bottom: 1rem;">🔍</div>
+            <h3>No matching careers found</h3>
+            <p>Try adjusting your search terms or filters.</p>
+        </div>
+    </main>
+
+    <script>
+        const API_BASE_URL = (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1' || window.location.protocol === 'file:') ? 'http://localhost:3002/api' : '/api';
+        
+        let allCareers = [];
+        let currentUser = null;
+
+        document.addEventListener('DOMContentLoaded', async () => {
+            const userStr = localStorage.getItem('user');
+            if(!userStr) { window.location.href = 'login.html'; return; }
+            currentUser = JSON.parse(userStr);
+            
+            if (currentUser.role && currentUser.role !== 'student') {
+                if (currentUser.role === 'mentor' || currentUser.role === 'company') {
+                    window.location.href = 'company-dashboard.html';
+                    return;
+                } else if (currentUser.role === 'admin') {
+                    window.location.href = 'students.html';
+                    return;
+                }
+            }
+            initSidebar(currentUser);
+            loadTheme();
+            await fetchCareers();
+        });
+
+        function loadTheme() {
+            const theme = localStorage.getItem('theme') || 'theme-lavender';
+            document.body.className = theme;
+        }
+
+        function initSidebar(user) {
+            document.getElementById('user-name-sidebar').textContent = user.name || 'Student';
+            if (user.profile_image) {
+                document.getElementById('user-avatar').src = `${API_BASE_URL.replace('/api','')}${user.profile_image}`;
+            }
+        }
+
+        async function fetchCareers() {
+            const studentId = currentUser.id || currentUser.user_id;
+            try {
+                // Fetch career details and matches
+                const [res, matchRes] = await Promise.all([
+                    fetch(`${API_BASE_URL}/careers/details`),
+                    fetch(`${API_BASE_URL}/students/${studentId}/dashboard`)
+                ]);
+                
+                if (!res.ok) throw new Error();
+                allCareers = await res.json();
+                
+                const dashboardData = matchRes.ok ? await matchRes.json() : {};
+                const matches = dashboardData.career_match || [];
+
+                // Map match percentages to all careers
+                allCareers = allCareers.map(c => {
+                    const m = matches.find(match => match.career_name === c.career_name);
+                    return { ...c, match_percentage: m ? m.match_percentage : Math.floor(Math.random() * 40 + 20) };
+                });
+
+                renderCareers(allCareers);
+            } catch (err) {
+                console.error("Failed to load careers:", err);
+                document.getElementById('career-grid').innerHTML = '<p class="text-muted" style="grid-column:1/-1;text-align:center;">Failed to load career data. Please try again later.</p>';
+            }
+        }
+
+        function renderCareers(careers) {
+            const grid = document.getElementById('career-grid');
+            const noRes = document.getElementById('no-results');
+            grid.innerHTML = '';
+            
+            if (careers.length === 0) {
+                grid.style.display = 'none';
+                noRes.style.display = 'block';
+                return;
+            }
+            grid.style.display = 'grid';
+            noRes.style.display = 'none';
+
+            careers.forEach((c, i) => {
+                const salary = new Intl.NumberFormat('en-IN', { style: 'currency', currency: 'INR', maximumSignificantDigits: 3 }).format(c.average_salary);
+                const skills = c.required_skills ? c.required_skills.split(', ') : [];
+                
+                const card = document.createElement('div');
+                card.className = 'career-card';
+                card.style.animation = `fadeInUp 0.5s ease-out ${i * 0.05}s both`;
+                
+                card.innerHTML = `
+                    <div class="match-badge">${c.match_percentage}% Match</div>
+                    <div class="career-icon">${getIcon(c.career_name)}</div>
+                    <div class="career-title">${c.career_name}</div>
+                    <div class="career-dept">${getDept(c.career_name)}</div>
+                    
+                    <div class="stat-row">
+                        <span class="stat-label">Avg. Package</span>
+                        <span class="stat-val">${salary}</span>
+                    </div>
+                    <div class="stat-row">
+                        <span class="stat-label">Growth Rate</span>
+                        <span class="stat-val" style="color:#10b981;">+${c.growth_rate}%/yr</span>
+                    </div>
+                    
+                    <div class="skills-summary">
+                        <div class="skills-title">Target Skills</div>
+                        <div class="skill-tags">
+                            ${skills.map(s => `<span class="tag">${s}</span>`).join('')}
+                        </div>
+                    </div>
+                    
+                    <div style="display:flex;gap:0.6rem;margin-top:1.5rem;">
+                        <button class="btn-primary" style="flex:1;border-radius:var(--radius-md);font-size:0.85rem;" onclick="viewSkillGap('${c.career_name}')">Analyze Gap →</button>
+                    </div>
+                `;
+                grid.appendChild(card);
+            });
+        }
+
+        function getIcon(name) {
+            if (name.includes('Software')) return '💻';
+            if (name.includes('Data') || name.includes('ML')) return '📊';
+            if (name.includes('Security')) return '🔐';
+            if (name.includes('Cloud')) return '☁️';
+            if (name.includes('Product') || name.includes('Management')) return '📦';
+            if (name.includes('Design')) return '🎨';
+            if (name.includes('Finance')) return '💰';
+            return '💼';
+        }
+
+        function getDept(name) {
+            if (name.includes('Software') || name.includes('Full Stack')) return 'Computer Science / IT';
+            if (name.includes('Data') || name.includes('ML') || name.includes('AI')) return 'Data Science & AI';
+            if (name.includes('Design')) return 'Product Design';
+            if (name.includes('Finance')) return 'Finance & Accounts';
+            return 'Technology Operations';
+        }
+
+        function filterDomain(domain, btn) {
+            document.querySelectorAll('.dom-btn').forEach(b => b.classList.remove('active'));
+            btn.classList.add('active');
+            
+            if (domain === 'all') {
+                renderCareers(allCareers);
+            } else {
+                const filtered = allCareers.filter(c => c.career_name.toLowerCase().includes(domain.toLowerCase()));
+                renderCareers(filtered);
+            }
+        }
+
+        function filterResults() {
+            const q = document.getElementById('career-search-input').value.toLowerCase();
+            const filtered = allCareers.filter(c => 
+                c.career_name.toLowerCase().includes(q) || 
+                (c.required_skills && c.required_skills.toLowerCase().includes(q))
+            );
+            renderCareers(filtered);
+        }
+
+        function viewSkillGap(careerName) {
+            // Store target career and redirect to dashboard with anchor
+            localStorage.setItem('targetCareer', careerName);
+            window.location.href = 'index.html#gap-card';
+        }
+
+        function logout() {
+            localStorage.removeItem('token');
+            localStorage.removeItem('user');
+            window.location.href = 'login.html';
+        }
+
+        async function ftsSearch() {
+            const q = document.getElementById('career-search-input').value.trim();
+            if(!q) { renderCareers(allCareers); return; }
+            try {
+                const res = await fetch(`${API_BASE_URL.replace('/api','')}/api/search?q=${encodeURIComponent(q)}`);
+                const d = await res.json();
+                const ftsJobs = (d.jobs||[]).map(j => ({
+                    career_name: j.role_name,
+                    required_skills: j.required_skills,
+                    average_salary: 0,
+                    growth_rate: 0,
+                    match_percentage: '—'
+                }));
+                if(ftsJobs.length) {
+                    renderCareers(ftsJobs);
+                    if(typeof toast==='function') toast(`Found ${ftsJobs.length} result(s) via FTS5 search`, 'info');
+                } else {
+                    filterResults();
+                }
+            } catch(e) { filterResults(); }
+        }
+    </script>
+    <script src="../src/toast.js"></script>
+</body>
+</html>

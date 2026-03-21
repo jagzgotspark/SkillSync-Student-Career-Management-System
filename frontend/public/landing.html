@@ -1,0 +1,1569 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SkillSync | Bridge Campus & Corporate</title>
+    <meta name="description"
+        content="SkillSync - The ultimate AI-powered platform connecting students with careers, mentors, and top recruiters. Upskill, explore, and get placed.">
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap"
+        rel="stylesheet">
+
+    <style>
+        :root {
+            --primary: #8b5cf6;
+            --primary-dark: #6d28d9;
+            --secondary: #ec4899;
+            --accent: #14b8a6;
+            --orange: #f97316;
+            --yellow: #eab308;
+            --cyan: #06b6d4;
+            --purple: #a855f7;
+            --bg-dark: #0f172a;
+            --bg-card: rgba(255, 255, 255, 0.04);
+            --text-light: #fdf4ff;
+            --text-muted: #94a3b8;
+            --border: rgba(255, 255, 255, 0.1);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Inter', sans-serif;
+        }
+
+        html {
+            scroll-behavior: smooth;
+        }
+
+        body {
+            background: var(--bg-dark);
+            color: var(--text-light);
+            overflow-x: hidden;
+            line-height: 1.6;
+        }
+
+        /* ─── NAVIGATION ─── */
+        nav {
+            position: fixed;
+            width: 100%;
+            top: 0;
+            z-index: 1000;
+            background: rgba(5, 11, 26, 0.85);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border-bottom: 1px solid var(--border);
+            padding: 1rem 6%;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            transition: all 0.3s ease;
+        }
+
+        .logo {
+            font-size: 1.5rem;
+            font-weight: 800;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            text-decoration: none;
+            background: linear-gradient(90deg, #c4b5fd, #f472b6, #67e8f9);
+            -webkit-background-clip: text;
+            background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .nav-links {
+            display: flex;
+            gap: 2.5rem;
+            list-style: none;
+            align-items: center;
+        }
+
+        .nav-links a {
+            text-decoration: none;
+            color: var(--text-muted);
+            font-weight: 500;
+            font-size: 0.95rem;
+            transition: color 0.2s;
+            position: relative;
+        }
+
+        .nav-links a::after {
+            content: '';
+            position: absolute;
+            bottom: -4px;
+            left: 0;
+            width: 0;
+            height: 2px;
+            background: linear-gradient(90deg, var(--primary), var(--secondary));
+            transition: width 0.3s ease;
+        }
+
+        .nav-links a:hover {
+            color: var(--text-light);
+        }
+
+        .nav-links a:hover::after {
+            width: 100%;
+        }
+
+        .auth-buttons {
+            display: flex;
+            gap: 1rem;
+            align-items: center;
+        }
+
+        .btn {
+            padding: 0.6rem 1.5rem;
+            border-radius: 100px;
+            font-weight: 600;
+            text-decoration: none;
+            transition: all 0.3s ease;
+            cursor: pointer;
+            border: none;
+            font-size: 0.9rem;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.4rem;
+        }
+
+        .btn-ghost {
+            background: transparent;
+            color: var(--text-muted);
+            border: 1px solid var(--border);
+        }
+
+        .btn-ghost:hover {
+            color: white;
+            background: var(--bg-card);
+            border-color: rgba(255, 255, 255, 0.15);
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            color: white;
+            box-shadow: 0 0 20px rgba(139, 92, 246, 0.35);
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 0 35px rgba(236, 72, 153, 0.55);
+        }
+
+        .btn-outline {
+            border: 2px solid var(--primary);
+            color: var(--primary);
+            background: transparent;
+        }
+
+        .btn-outline:hover {
+            background: var(--primary);
+            color: white;
+            transform: translateY(-2px);
+        }
+
+        .btn-lg {
+            padding: 1rem 2.5rem;
+            font-size: 1.05rem;
+        }
+
+        /* ─── HERO ─── */
+        .hero {
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 6rem 6% 4rem;
+            position: relative;
+            text-align: center;
+            overflow: hidden;
+        }
+
+        .hero-bg {
+            position: absolute;
+            inset: 0;
+            z-index: 0;
+        }
+
+        .orb {
+            position: absolute;
+            border-radius: 50%;
+            filter: blur(100px);
+            opacity: 0.45;
+            animation: drift 15s infinite alternate ease-in-out;
+        }
+
+        .orb-1 {
+            width: 600px;
+            height: 600px;
+            background: var(--primary);
+            top: -15%;
+            left: -10%;
+            animation-delay: 0s;
+        }
+
+        .orb-2 {
+            width: 500px;
+            height: 500px;
+            background: var(--secondary);
+            bottom: -10%;
+            right: -5%;
+            animation-delay: -5s;
+        }
+
+        .orb-3 {
+            width: 350px;
+            height: 350px;
+            background: var(--cyan);
+            top: 40%;
+            left: 40%;
+            animation-delay: -9s;
+        }
+
+        @keyframes drift {
+            0% {
+                transform: translate(0, 0) scale(1);
+            }
+
+            100% {
+                transform: translate(40px, -60px) scale(1.15);
+            }
+        }
+
+        /* Animated grid overlay */
+        .hero::before {
+            content: '';
+            position: absolute;
+            inset: 0;
+            background-image:
+                linear-gradient(rgba(99, 102, 241, 0.05) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(99, 102, 241, 0.05) 1px, transparent 1px);
+            background-size: 60px 60px;
+            z-index: 1;
+        }
+
+        .hero-content {
+            position: relative;
+            z-index: 10;
+            max-width: 900px;
+        }
+
+        .hero-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            padding: 0.5rem 1.2rem;
+            background: rgba(16, 185, 129, 0.12);
+            color: var(--accent);
+            border: 1px solid rgba(16, 185, 129, 0.25);
+            border-radius: 100px;
+            font-weight: 600;
+            font-size: 0.85rem;
+            margin-bottom: 2rem;
+            animation: fadeInDown 0.8s ease-out;
+        }
+
+        .hero-badge-dot {
+            width: 8px;
+            height: 8px;
+            background: var(--accent);
+            border-radius: 50%;
+            animation: pulse 2s infinite;
+        }
+
+        @keyframes pulse {
+
+            0%,
+            100% {
+                opacity: 1;
+                transform: scale(1);
+            }
+
+            50% {
+                opacity: 0.5;
+                transform: scale(0.8);
+            }
+        }
+
+        .hero h1 {
+            font-size: clamp(2.8rem, 6vw, 5.5rem);
+            font-weight: 900;
+            line-height: 1.08;
+            margin-bottom: 1.8rem;
+            animation: fadeInUp 0.8s ease-out 0.2s both;
+        }
+
+        .gradient-text {
+            background: linear-gradient(135deg, #818cf8 0%, #f472b6 50%, #34d399 100%);
+            -webkit-background-clip: text;
+            background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .hero p {
+            font-size: 1.2rem;
+            color: var(--text-muted);
+            margin-bottom: 3rem;
+            max-width: 650px;
+            margin-left: auto;
+            margin-right: auto;
+            animation: fadeInUp 0.8s ease-out 0.4s both;
+        }
+
+        .hero-cta {
+            display: flex;
+            gap: 1.2rem;
+            justify-content: center;
+            flex-wrap: wrap;
+            animation: fadeInUp 0.8s ease-out 0.6s both;
+        }
+
+        .hero-stats {
+            display: flex;
+            justify-content: center;
+            gap: 3rem;
+            margin-top: 4rem;
+            padding-top: 3rem;
+            border-top: 1px solid var(--border);
+            animation: fadeInUp 0.8s ease-out 0.8s both;
+            flex-wrap: wrap;
+            gap: 2rem;
+        }
+
+        .hero-stat-item {
+            text-align: center;
+        }
+
+        .hero-stat-num {
+            display: block;
+            font-size: 2rem;
+            font-weight: 800;
+            background: linear-gradient(90deg, var(--primary), var(--secondary));
+            -webkit-background-clip: text;
+            background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .hero-stat-label {
+            font-size: 0.85rem;
+            color: var(--text-muted);
+            margin-top: 0.25rem;
+            display: block;
+        }
+
+        /* ─── SECTION BASE ─── */
+        .section {
+            padding: 6rem 6%;
+            position: relative;
+        }
+
+        .section-tag {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            padding: 0.35rem 1rem;
+            border-radius: 100px;
+            font-size: 0.8rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.08em;
+            margin-bottom: 1rem;
+        }
+
+        .tag-purple {
+            background: rgba(168, 85, 247, 0.15);
+            color: #c084fc;
+            border: 1px solid rgba(168, 85, 247, 0.2);
+        }
+
+        .tag-cyan {
+            background: rgba(6, 182, 212, 0.15);
+            color: #22d3ee;
+            border: 1px solid rgba(6, 182, 212, 0.2);
+        }
+
+        .tag-orange {
+            background: rgba(249, 115, 22, 0.15);
+            color: #fb923c;
+            border: 1px solid rgba(249, 115, 22, 0.2);
+        }
+
+        .tag-green {
+            background: rgba(16, 185, 129, 0.15);
+            color: #34d399;
+            border: 1px solid rgba(16, 185, 129, 0.2);
+        }
+
+        .tag-pink {
+            background: rgba(236, 72, 153, 0.15);
+            color: #f472b6;
+            border: 1px solid rgba(236, 72, 153, 0.2);
+        }
+
+        .tag-indigo {
+            background: rgba(99, 102, 241, 0.15);
+            color: #818cf8;
+            border: 1px solid rgba(99, 102, 241, 0.2);
+        }
+
+        .section-header {
+            text-align: center;
+            margin-bottom: 4rem;
+        }
+
+        .section-header h2 {
+            font-size: clamp(2rem, 4vw, 3rem);
+            font-weight: 800;
+            margin-bottom: 1rem;
+        }
+
+        .section-header p {
+            font-size: 1.1rem;
+            color: var(--text-muted);
+            max-width: 600px;
+            margin: 0 auto;
+        }
+
+        /* ─── FEATURES ─── */
+        .features-section {
+            background: rgba(255, 255, 255, 0.01);
+            border-top: 1px solid var(--border);
+            border-bottom: 1px solid var(--border);
+        }
+
+        .features-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 1.5rem;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .feature-card {
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: 1.5rem;
+            padding: 2.5rem;
+            transition: all 0.4s ease;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .feature-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 2px;
+            background: var(--card-gradient, linear-gradient(90deg, var(--primary), var(--secondary)));
+            opacity: 0;
+            transition: opacity 0.3s ease;
+        }
+
+        .feature-card:hover {
+            transform: translateY(-8px);
+            background: rgba(255, 255, 255, 0.06);
+            border-color: rgba(255, 255, 255, 0.12);
+        }
+
+        .feature-card:hover::before {
+            opacity: 1;
+        }
+
+        .feature-icon {
+            width: 58px;
+            height: 58px;
+            border-radius: 16px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-bottom: 1.5rem;
+            font-size: 1.5rem;
+        }
+
+        .fi-purple {
+            background: rgba(168, 85, 247, 0.15);
+            --card-gradient: linear-gradient(90deg, #a855f7, #6366f1);
+        }
+
+        .fi-cyan {
+            background: rgba(6, 182, 212, 0.15);
+            --card-gradient: linear-gradient(90deg, #06b6d4, #3b82f6);
+        }
+
+        .fi-green {
+            background: rgba(16, 185, 129, 0.15);
+            --card-gradient: linear-gradient(90deg, #10b981, #06b6d4);
+        }
+
+        .fi-orange {
+            background: rgba(249, 115, 22, 0.15);
+            --card-gradient: linear-gradient(90deg, #f97316, #eab308);
+        }
+
+        .fi-pink {
+            background: rgba(236, 72, 153, 0.15);
+            --card-gradient: linear-gradient(90deg, #ec4899, #a855f7);
+        }
+
+        .fi-indigo {
+            background: rgba(99, 102, 241, 0.15);
+            --card-gradient: linear-gradient(90deg, #6366f1, #ec4899);
+        }
+
+        .feature-card h3 {
+            font-size: 1.2rem;
+            font-weight: 700;
+            margin-bottom: 0.75rem;
+        }
+
+        .feature-card p {
+            color: var(--text-muted);
+            font-size: 0.95rem;
+            line-height: 1.7;
+        }
+
+        /* ─── CAREERS SECTION ─── */
+        .careers-section {
+            background: linear-gradient(180deg, var(--bg-dark) 0%, #0a0f20 50%, var(--bg-dark) 100%);
+        }
+
+        .careers-layout {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 5rem;
+            align-items: center;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .careers-text h2 {
+            font-size: 2.6rem;
+            font-weight: 800;
+            line-height: 1.2;
+            margin-bottom: 1.5rem;
+        }
+
+        .careers-text p {
+            color: var(--text-muted);
+            font-size: 1.05rem;
+            margin-bottom: 2rem;
+            line-height: 1.8;
+        }
+
+        .career-highlights {
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+            margin-bottom: 2.5rem;
+        }
+
+        .highlight-item {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            color: var(--text-muted);
+            font-size: 0.95rem;
+        }
+
+        .highlight-dot {
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+            flex-shrink: 0;
+        }
+
+        .careers-visual {
+            position: relative;
+        }
+
+        .career-cards-preview {
+            display: grid;
+            gap: 1rem;
+        }
+
+        .mini-career-card {
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: 1rem;
+            padding: 1.5rem;
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            transition: all 0.3s ease;
+        }
+
+        .mini-career-card:hover {
+            transform: translateX(8px);
+            border-color: rgba(99, 102, 241, 0.3);
+        }
+
+        .mini-career-icon {
+            width: 48px;
+            height: 48px;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.4rem;
+            flex-shrink: 0;
+        }
+
+        .mini-career-info {
+            flex: 1;
+        }
+
+        .mini-career-info h4 {
+            font-size: 1rem;
+            font-weight: 700;
+            margin-bottom: 0.2rem;
+        }
+
+        .mini-career-info p {
+            font-size: 0.8rem;
+            color: var(--text-muted);
+        }
+
+        .mini-career-salary {
+            font-size: 0.9rem;
+            font-weight: 700;
+            color: var(--accent);
+        }
+
+        /* ─── MENTORSHIP SECTION ─── */
+        .mentorship-section {
+            background: linear-gradient(135deg, rgba(168, 85, 247, 0.08) 0%, rgba(99, 102, 241, 0.08) 50%, rgba(236, 72, 153, 0.08) 100%);
+            border-top: 1px solid var(--border);
+            border-bottom: 1px solid var(--border);
+        }
+
+        .mentorship-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 4rem;
+            align-items: center;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .mentor-cards-stack {
+            position: relative;
+        }
+
+        .mentor-card {
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid var(--border);
+            border-radius: 1.5rem;
+            padding: 1.8rem;
+            display: flex;
+            align-items: center;
+            gap: 1.2rem;
+            margin-bottom: 1rem;
+            transition: all 0.3s ease;
+        }
+
+        .mentor-card:hover {
+            background: rgba(255, 255, 255, 0.08);
+            transform: scale(1.02);
+        }
+
+        .mentor-avatar {
+            width: 56px;
+            height: 56px;
+            border-radius: 50%;
+            object-fit: cover;
+            flex-shrink: 0;
+            border: 2px solid rgba(255, 255, 255, 0.15);
+        }
+
+        .mentor-info h4 {
+            font-size: 1rem;
+            font-weight: 700;
+            margin-bottom: 0.15rem;
+        }
+
+        .mentor-info p {
+            font-size: 0.82rem;
+            color: var(--text-muted);
+        }
+
+        .mentor-badge {
+            margin-left: auto;
+            padding: 0.3rem 0.7rem;
+            border-radius: 100px;
+            font-size: 0.75rem;
+            font-weight: 700;
+        }
+
+        .m-swe {
+            background: rgba(99, 102, 241, 0.2);
+            color: #818cf8;
+        }
+
+        .m-ds {
+            background: rgba(6, 182, 212, 0.2);
+            color: #22d3ee;
+        }
+
+        .m-pm {
+            background: rgba(236, 72, 153, 0.2);
+            color: #f472b6;
+        }
+
+        .m-fin {
+            background: rgba(16, 185, 129, 0.2);
+            color: #34d399;
+        }
+
+        .mentorship-text h2 {
+            font-size: 2.5rem;
+            font-weight: 800;
+            line-height: 1.2;
+            margin-bottom: 1.5rem;
+        }
+
+        .mentorship-text p {
+            color: var(--text-muted);
+            font-size: 1.05rem;
+            margin-bottom: 2rem;
+            line-height: 1.8;
+        }
+
+        .mentorship-features {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 1rem;
+            margin-bottom: 2.5rem;
+        }
+
+        .mf-item {
+            background: rgba(255, 255, 255, 0.04);
+            border: 1px solid var(--border);
+            border-radius: 1rem;
+            padding: 1.2rem;
+        }
+
+        .mf-icon {
+            font-size: 1.4rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .mf-item h4 {
+            font-size: 0.9rem;
+            font-weight: 700;
+            margin-bottom: 0.3rem;
+        }
+
+        .mf-item p {
+            font-size: 0.8rem;
+            color: var(--text-muted);
+        }
+
+        /* ─── RECRUITERS SECTION ─── */
+        .recruiters-section {
+            background: linear-gradient(180deg, var(--bg-dark) 0%, #060d1e 100%);
+        }
+
+        .recruiters-layout {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 5rem;
+            align-items: center;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .recruiter-visual {
+            position: relative;
+        }
+
+        .recruiter-dashboard-preview {
+            background: rgba(255, 255, 255, 0.03);
+            border: 1px solid var(--border);
+            border-radius: 1.5rem;
+            padding: 2rem;
+            overflow: hidden;
+        }
+
+        .rdp-header {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .rdp-dot {
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+        }
+
+        .rdp-title {
+            font-size: 0.85rem;
+            color: var(--text-muted);
+            margin-left: 0.5rem;
+            font-weight: 600;
+        }
+
+        .student-row {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            padding: 0.85rem;
+            border-radius: 0.75rem;
+            background: rgba(255, 255, 255, 0.02);
+            margin-bottom: 0.5rem;
+            border: 1px solid transparent;
+            transition: all 0.2s ease;
+        }
+
+        .student-row:hover {
+            background: rgba(255, 255, 255, 0.05);
+            border-color: rgba(99, 102, 241, 0.2);
+        }
+
+        .student-row-avatar {
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            font-size: 0.75rem;
+            font-weight: 700;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-shrink: 0;
+        }
+
+        .student-row-name {
+            flex: 1;
+        }
+
+        .student-row-name h5 {
+            font-size: 0.9rem;
+            font-weight: 600;
+        }
+
+        .student-row-name p {
+            font-size: 0.75rem;
+            color: var(--text-muted);
+        }
+
+        .cgpa-badge {
+            padding: 0.3rem 0.7rem;
+            border-radius: 100px;
+            font-size: 0.78rem;
+            font-weight: 700;
+        }
+
+        .cgpa-high {
+            background: rgba(16, 185, 129, 0.15);
+            color: #34d399;
+        }
+
+        .cgpa-mid {
+            background: rgba(6, 182, 212, 0.15);
+            color: #22d3ee;
+        }
+
+        .recruiter-text h2 {
+            font-size: 2.5rem;
+            font-weight: 800;
+            line-height: 1.2;
+            margin-bottom: 1.5rem;
+        }
+
+        .recruiter-text p {
+            color: var(--text-muted);
+            font-size: 1.05rem;
+            margin-bottom: 2rem;
+            line-height: 1.8;
+        }
+
+        .recruiter-perks {
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+            margin-bottom: 2.5rem;
+        }
+
+        .perk-item {
+            display: flex;
+            align-items: flex-start;
+            gap: 1rem;
+            padding: 1.2rem;
+            background: rgba(255, 255, 255, 0.03);
+            border: 1px solid var(--border);
+            border-radius: 1rem;
+            transition: all 0.3s ease;
+        }
+
+        .perk-item:hover {
+            background: rgba(255, 255, 255, 0.06);
+            transform: translateX(5px);
+        }
+
+        .perk-icon {
+            font-size: 1.5rem;
+            flex-shrink: 0;
+            width: 2.2rem;
+            text-align: center;
+        }
+
+        .perk-info h4 {
+            font-size: 0.95rem;
+            font-weight: 700;
+            margin-bottom: 0.25rem;
+        }
+
+        .perk-info p {
+            font-size: 0.85rem;
+            color: var(--text-muted);
+        }
+
+        /* ─── STATS BAR ─── */
+        .stats-section {
+            background: linear-gradient(135deg, #0f172a 0%, #1e1035 50%, #0f172a 100%);
+            border-top: 1px solid var(--border);
+            border-bottom: 1px solid var(--border);
+        }
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 2rem;
+            max-width: 1100px;
+            margin: 0 auto;
+            text-align: center;
+        }
+
+        .stat-card {
+            padding: 2rem;
+        }
+
+        .stat-number {
+            font-size: 2.8rem;
+            font-weight: 900;
+            display: block;
+            margin-bottom: 0.5rem;
+        }
+
+        .stat-label {
+            font-size: 0.9rem;
+            color: var(--text-muted);
+        }
+
+        /* ─── TESTIMONIALS ─── */
+        .testimonials-section {
+            border-top: 1px solid var(--border);
+        }
+
+        .testimonials-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 1.5rem;
+            max-width: 1100px;
+            margin: 0 auto;
+        }
+
+        .testimonial-card {
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: 1.5rem;
+            padding: 2rem;
+            transition: all 0.3s ease;
+        }
+
+        .testimonial-card:hover {
+            transform: translateY(-5px);
+            border-color: rgba(255, 255, 255, 0.12);
+        }
+
+        .stars {
+            color: #fbbf24;
+            font-size: 1rem;
+            margin-bottom: 1rem;
+            letter-spacing: 2px;
+        }
+
+        .testimonial-text {
+            font-size: 0.95rem;
+            color: var(--text-muted);
+            line-height: 1.7;
+            margin-bottom: 1.5rem;
+            font-style: italic;
+        }
+
+        .testimonial-author {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+        }
+
+        .testimonial-avatar {
+            width: 44px;
+            height: 44px;
+            border-radius: 50%;
+            object-fit: cover;
+        }
+
+        .testimonial-author-info h5 {
+            font-size: 0.9rem;
+            font-weight: 700;
+        }
+
+        .testimonial-author-info p {
+            font-size: 0.8rem;
+            color: var(--text-muted);
+        }
+
+        /* ─── CTA SECTION ─── */
+        .cta-section {
+            padding: 8rem 6%;
+            text-align: center;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .cta-section::before {
+            content: '';
+            position: absolute;
+            inset: 0;
+            background: radial-gradient(ellipse 80% 60% at 50% 50%, rgba(99, 102, 241, 0.15) 0%, transparent 70%);
+        }
+
+        .cta-section h2 {
+            font-size: clamp(2.2rem, 5vw, 4rem);
+            font-weight: 900;
+            margin-bottom: 1.5rem;
+            position: relative;
+            z-index: 2;
+        }
+
+        .cta-section p {
+            font-size: 1.15rem;
+            color: var(--text-muted);
+            margin-bottom: 3rem;
+            position: relative;
+            z-index: 2;
+        }
+
+        .cta-buttons {
+            display: flex;
+            gap: 1.2rem;
+            justify-content: center;
+            flex-wrap: wrap;
+            position: relative;
+            z-index: 2;
+        }
+
+        /* ─── FOOTER ─── */
+        footer {
+            padding: 3rem 6%;
+            border-top: 1px solid var(--border);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 1rem;
+        }
+
+        footer p {
+            color: var(--text-muted);
+            font-size: 0.9rem;
+        }
+
+        footer .footer-links {
+            display: flex;
+            gap: 2rem;
+            list-style: none;
+        }
+
+        footer .footer-links a {
+            color: var(--text-muted);
+            text-decoration: none;
+            font-size: 0.9rem;
+            transition: color 0.2s;
+        }
+
+        footer .footer-links a:hover {
+            color: var(--text-light);
+        }
+
+        /* ─── ANIMATIONS ─── */
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        @keyframes fadeInDown {
+            from {
+                opacity: 0;
+                transform: translateY(-20px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        /* Scroll reveal */
+        .reveal {
+            opacity: 0;
+            transform: translateY(30px);
+            transition: opacity 0.7s ease, transform 0.7s ease;
+        }
+
+        .reveal.visible {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        /* ─── RESPONSIVE ─── */
+        @media (max-width: 900px) {
+
+            .careers-layout,
+            .mentorship-grid,
+            .recruiters-layout {
+                grid-template-columns: 1fr;
+                gap: 2.5rem;
+            }
+
+            .stats-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+
+            .nav-links {
+                display: none;
+            }
+        }
+
+        @media (max-width: 600px) {
+            .stats-grid {
+                grid-template-columns: 1fr 1fr;
+            }
+
+            .mentorship-features {
+                grid-template-columns: 1fr;
+            }
+
+            .hero-cta {
+                flex-direction: column;
+                align-items: center;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+    <!-- ─── NAVBAR ─── -->
+    <nav id="navbar">
+        <a href="landing.html" class="logo">∞ SkillSync</a>
+        <ul class="nav-links">
+            <li><a href="landing.html">Home</a></li>
+            <li><a href="careers.html">Careers</a></li>
+            <li><a href="recruiters.html">Recruiters</a></li>
+            <li><a href="mentorship.html">Mentorship</a></li>
+        </ul>
+        <div class="auth-buttons" id="nav-auth-buttons">
+            <a href="login.html" class="btn btn-ghost">Log in</a>
+            <a href="signup.html" class="btn btn-primary">Sign up →</a>
+        </div>
+    </nav>
+
+    <!-- ─── HERO ─── -->
+    <section class="hero">
+        <div class="hero-bg">
+            <div class="orb orb-1"></div>
+            <div class="orb orb-2"></div>
+            <div class="orb orb-3"></div>
+        </div>
+        <div class="hero-content">
+            <div class="hero-badge">
+                <div class="hero-badge-dot"></div>
+                AI-Powered Skill &amp; Career Mapping Platform
+            </div>
+            <h1>Bridge the gap between<br><span class="gradient-text">Campus &amp; Corporate</span></h1>
+            <p>The ultimate platform for universities to upskill students, connect them with mentors, and help top
+                companies discover verified talent effortlessly.</p>
+            <div class="hero-cta">
+                <a href="signup.html" class="btn btn-primary btn-lg">Get Started Free — It's ∞</a>
+                <a href="mentorship.html" class="btn btn-ghost btn-lg">Explore Mentorship</a>
+            </div>
+            <div class="hero-stats">
+                <div class="hero-stat-item">
+                    <span class="hero-stat-num">12,000+</span>
+                    <span class="hero-stat-label">Students Enrolled</span>
+                </div>
+                <div class="hero-stat-item">
+                    <span class="hero-stat-num">850+</span>
+                    <span class="hero-stat-label">Hiring Partners</span>
+                </div>
+                <div class="hero-stat-item">
+                    <span class="hero-stat-num">320+</span>
+                    <span class="hero-stat-label">Expert Mentors</span>
+                </div>
+                <div class="hero-stat-item">
+                    <span class="hero-stat-num">94%</span>
+                    <span class="hero-stat-label">Placement Rate</span>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- ─── FEATURES ─── -->
+    <section id="features" class="section features-section">
+        <div class="section-header reveal">
+            <div class="section-tag tag-indigo">⚡ Core Features</div>
+            <h2>Everything you need to <span class="gradient-text">succeed</span></h2>
+            <p>Empowering every stakeholder in the university-to-industry pipeline with purpose-built tools.</p>
+        </div>
+        <div class="features-grid">
+            <div class="feature-card reveal" style="--card-gradient: linear-gradient(90deg,#6366f1,#ec4899);">
+                <div class="feature-icon fi-purple">📊</div>
+                <h3>Real-Time Skill Analytics</h3>
+                <p>Visualize your skill proficiencies using radar charts. Track growth against market benchmarks and
+                    identify gaps instantly.</p>
+            </div>
+            <div class="feature-card reveal" style="--card-gradient: linear-gradient(90deg,#06b6d4,#3b82f6);">
+                <div class="feature-icon fi-cyan">🎯</div>
+                <h3>AI Career Matching</h3>
+                <p>Our intelligent algorithm cross-references your skills with industry demands to recommend high-growth
+                    career paths suited to you.</p>
+            </div>
+            <div class="feature-card reveal" style="--card-gradient: linear-gradient(90deg,#10b981,#06b6d4);">
+                <div class="feature-icon fi-green">🤝</div>
+                <h3>Mentor Connect</h3>
+                <p>Get paired with industry veterans and alumni who guide your journey from campus to your dream company
+                    with 1-on-1 sessions.</p>
+            </div>
+            <div class="feature-card reveal" style="--card-gradient: linear-gradient(90deg,#f97316,#eab308);">
+                <div class="feature-icon fi-orange">🔍</div>
+                <h3>Recruiter Directory</h3>
+                <p>Placement officers and companies can filter our database by CGPA, department, and technical skills to
+                    find the perfect candidate.</p>
+            </div>
+            <div class="feature-card reveal" style="--card-gradient: linear-gradient(90deg,#ec4899,#a855f7);">
+                <div class="feature-icon fi-pink">📋</div>
+                <h3>ATS-Ready Resumes</h3>
+                <p>Auto-generate professional, ATS-optimized resumes that highlight your verified skills and project
+                    portfolio with one click.</p>
+            </div>
+            <div class="feature-card reveal" style="--card-gradient: linear-gradient(90deg,#6366f1,#ec4899);">
+                <div class="feature-icon fi-indigo">📈</div>
+                <h3>Progress Tracking</h3>
+                <p>Set weekly skill goals, track completion, earn achievement badges, and showcase verified
+                    certifications to recruiters directly.</p>
+            </div>
+        </div>
+    </section>
+
+    <!-- ─── CAREERS SECTION ─── -->
+    <section id="careers" class="section careers-section">
+        <div class="careers-layout">
+            <div class="careers-text reveal">
+                <div class="section-tag tag-cyan">🚀 Career Paths</div>
+                <h2>Explore <span class="gradient-text">high-growth</span> career opportunities</h2>
+                <p>Discover the hottest career paths in tech, finance, and management. See real salary data, required
+                    skills, and growth trajectories pulled live from the market.</p>
+                <div class="career-highlights">
+                    <div class="highlight-item">
+                        <div class="highlight-dot" style="background:#22d3ee;"></div>
+                        Personalized career recommendations based on your skill profile
+                    </div>
+                    <div class="highlight-item">
+                        <div class="highlight-dot" style="background:#818cf8;"></div>
+                        Live salary benchmarks from real hiring data across India
+                    </div>
+                    <div class="highlight-item">
+                        <div class="highlight-dot" style="background:#f472b6;"></div>
+                        Skill gap analysis with curated learning roadmaps
+                    </div>
+                    <div class="highlight-item">
+                        <div class="highlight-dot" style="background:#34d399;"></div>
+                        Industry growth rate forecasts for better decision making
+                    </div>
+                </div>
+                <a href="careers.html" class="btn btn-primary btn-lg">Explore All Careers →</a>
+            </div>
+            <div class="careers-visual reveal">
+                <div class="career-cards-preview">
+                    <div class="mini-career-card">
+                        <div class="mini-career-icon" style="background:rgba(99,102,241,0.2);">💻</div>
+                        <div class="mini-career-info">
+                            <h4>Full Stack Developer</h4>
+                            <p>React · Node.js · Databases · Cloud</p>
+                        </div>
+                        <div class="mini-career-salary">₹18 LPA</div>
+                    </div>
+                    <div class="mini-career-card">
+                        <div class="mini-career-icon" style="background:rgba(6,182,212,0.2);">🤖</div>
+                        <div class="mini-career-info">
+                            <h4>AI / ML Engineer</h4>
+                            <p>Python · TensorFlow · PyTorch · SQL</p>
+                        </div>
+                        <div class="mini-career-salary">₹24 LPA</div>
+                    </div>
+                    <div class="mini-career-card">
+                        <div class="mini-career-icon" style="background:rgba(16,185,129,0.2);">🔐</div>
+                        <div class="mini-career-info">
+                            <h4>Cybersecurity Analyst</h4>
+                            <p>Networking · SIEM · Pen Testing</p>
+                        </div>
+                        <div class="mini-career-salary">₹15 LPA</div>
+                    </div>
+                    <div class="mini-career-card">
+                        <div class="mini-career-icon" style="background:rgba(168,85,247,0.2);">📦</div>
+                        <div class="mini-career-info">
+                            <h4>Product Manager</h4>
+                            <p>Strategy · Agile · Analytics · Design</p>
+                        </div>
+                        <div class="mini-career-salary">₹22 LPA</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- ─── MENTORSHIP SECTION ─── -->
+    <section id="mentorship" class="section mentorship-section">
+        <div class="mentorship-grid">
+            <div class="mentor-cards-stack reveal">
+                <div class="mentor-card">
+                    <img src="https://ui-avatars.com/api/?name=Priya+Sharma&background=6366f1&color=fff&size=100"
+                        alt="Priya Sharma" class="mentor-avatar">
+                    <div class="mentor-info">
+                        <h4>Priya Sharma</h4>
+                        <p>Senior SWE @ Google · 8 yrs exp</p>
+                    </div>
+                    <span class="mentor-badge m-swe">SWE</span>
+                </div>
+                <div class="mentor-card">
+                    <img src="https://ui-avatars.com/api/?name=Arjun+Mehta&background=06b6d4&color=fff&size=100"
+                        alt="Arjun Mehta" class="mentor-avatar">
+                    <div class="mentor-info">
+                        <h4>Arjun Mehta</h4>
+                        <p>Data Scientist @ Microsoft · 6 yrs exp</p>
+                    </div>
+                    <span class="mentor-badge m-ds">Data Science</span>
+                </div>
+                <div class="mentor-card">
+                    <img src="https://ui-avatars.com/api/?name=Sarah+Khan&background=ec4899&color=fff&size=100"
+                        alt="Sarah Khan" class="mentor-avatar">
+                    <div class="mentor-info">
+                        <h4>Sarah Khan</h4>
+                        <p>Product Manager @ Flipkart · 5 yrs exp</p>
+                    </div>
+                    <span class="mentor-badge m-pm">Product</span>
+                </div>
+                <div class="mentor-card">
+                    <img src="https://ui-avatars.com/api/?name=Rohan+Das&background=10b981&color=fff&size=100"
+                        alt="Rohan Das" class="mentor-avatar">
+                    <div class="mentor-info">
+                        <h4>Rohan Das</h4>
+                        <p>Investment Analyst @ Goldman · 7 yrs exp</p>
+                    </div>
+                    <span class="mentor-badge m-fin">Finance</span>
+                </div>
+            </div>
+            <div class="mentorship-text reveal">
+                <div class="section-tag tag-purple">🌟 Mentorship</div>
+                <h2>Learn from those who've <span class="gradient-text">been there</span></h2>
+                <p>Connect with experienced professionals and alumni from top companies. Our mentors provide
+                    personalized guidance, mock interviews, and resume reviews to fast-track your career.</p>
+                <div class="mentorship-features">
+                    <div class="mf-item">
+                        <div class="mf-icon">🎙️</div>
+                        <h4>1-on-1 Sessions</h4>
+                        <p>Direct video calls with industry experts</p>
+                    </div>
+                    <div class="mf-item">
+                        <div class="mf-icon">📝</div>
+                        <h4>Resume Reviews</h4>
+                        <p>Get feedback from hiring managers</p>
+                    </div>
+                    <div class="mf-item">
+                        <div class="mf-icon">🎭</div>
+                        <h4>Mock Interviews</h4>
+                        <p>Real-world interview simulation</p>
+                    </div>
+                    <div class="mf-item">
+                        <div class="mf-icon">🗺️</div>
+                        <h4>Career Roadmaps</h4>
+                        <p>Custom learning paths for your goals</p>
+                    </div>
+                </div>
+                <a href="mentorship.html" class="btn btn-primary btn-lg">Find Your Mentor →</a>
+            </div>
+        </div>
+    </section>
+
+
+
+    <!-- ─── STATS ─── -->
+    <section class="section stats-section">
+        <div class="stats-grid">
+            <div class="stat-card reveal">
+                <span class="stat-number"
+                    style="background: linear-gradient(90deg,#818cf8,#6366f1); -webkit-background-clip:text; background-clip:text; -webkit-text-fill-color:transparent;">12,500+</span>
+                <span class="stat-label">Students Placed</span>
+            </div>
+            <div class="stat-card reveal">
+                <span class="stat-number"
+                    style="background: linear-gradient(90deg,#f472b6,#ec4899); -webkit-background-clip:text; background-clip:text; -webkit-text-fill-color:transparent;">850+</span>
+                <span class="stat-label">Companies</span>
+            </div>
+            <div class="stat-card reveal">
+                <span class="stat-number"
+                    style="background: linear-gradient(90deg,#34d399,#10b981); -webkit-background-clip:text; background-clip:text; -webkit-text-fill-color:transparent;">320+</span>
+                <span class="stat-label">Expert Mentors</span>
+            </div>
+            <div class="stat-card reveal">
+                <span class="stat-number"
+                    style="background: linear-gradient(90deg,#fb923c,#f97316); -webkit-background-clip:text; background-clip:text; -webkit-text-fill-color:transparent;">94%</span>
+                <div class="stat-label">📈 Placement Rate</div>
+            </div>
+        </div>
+    </section>
+
+    <!-- ─── TESTIMONIALS ─── -->
+    <section class="section testimonials-section">
+        <div class="section-header reveal">
+            <div class="section-tag tag-green">💬 Success Stories</div>
+            <h2>Loved by students <span class="gradient-text">&amp; recruiters alike</span></h2>
+        </div>
+        <div class="testimonials-grid">
+            <div class="testimonial-card reveal">
+                <div class="stars">★★★★★</div>
+                <p class="testimonial-text">"SkillSync helped me identify my skill gaps and within 3 months I landed an
+                    internship at a top MNC. The career matching is incredibly accurate!"</p>
+                <div class="testimonial-author">
+                    <img src="https://ui-avatars.com/api/?name=Ananya+Rao&background=6366f1&color=fff&size=80"
+                        alt="Ananya Rao" class="testimonial-avatar">
+                    <div class="testimonial-author-info">
+                        <h5>Ananya Rao</h5>
+                        <p>CSE Junior → Interned at TCS</p>
+                    </div>
+                </div>
+            </div>
+            <div class="testimonial-card reveal">
+                <div class="stars">★★★★★</div>
+                <p class="testimonial-text">"As a recruiter, I found three perfect Python developers in under 10
+                    minutes. The verified skill profiles save us hours of screening time every week."</p>
+                <div class="testimonial-author">
+                    <img src="https://ui-avatars.com/api/?name=Vikram+Singh&background=ec4899&color=fff&size=80"
+                        alt="Vikram Singh" class="testimonial-avatar">
+                    <div class="testimonial-author-info">
+                        <h5>Vikram Singh</h5>
+                        <p>HR Manager @ Infosys</p>
+                    </div>
+                </div>
+            </div>
+            <div class="testimonial-card reveal">
+                <div class="stars">★★★★★</div>
+                <p class="testimonial-text">"My mentor from Google helped me crack the interview process and guided me
+                    on exactly what to build for my portfolio. Life-changing experience!"</p>
+                <div class="testimonial-author">
+                    <img src="https://ui-avatars.com/api/?name=Mohammed+Ali&background=10b981&color=fff&size=80"
+                        alt="Mohammed Ali" class="testimonial-avatar">
+                    <div class="testimonial-author-info">
+                        <h5>Mohammed Ali</h5>
+                        <p>ECE Senior → Placed at Wipro</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- ─── CTA ─── -->
+    <section class="cta-section">
+        <div class="section-tag tag-pink" style="margin: 0 auto 1.5rem; display:inline-flex;">🚀 Start Today</div>
+        <h2>Ready to <span class="gradient-text">launch</span> your career?</h2>
+        <p>Join thousands of students and companies already on SkillSync. It's free to get started.</p>
+        <div class="cta-buttons">
+            <a href="signup.html" class="btn btn-primary btn-lg">Create Free Account →</a>
+            <a href="login.html" class="btn btn-ghost btn-lg">Login to Dashboard</a>
+        </div>
+    </section>
+
+    <!-- ─── FOOTER ─── -->
+    <footer>
+        <p>© 2025 SkillSync · Built for VIT Chennai. All rights reserved.</p>
+        <ul class="footer-links">
+            <li><a href="#">Privacy</a></li>
+            <li><a href="#">Terms</a></li>
+            <li><a href="careers.html">Careers Insights</a></li>
+            <li><a href="mentorship.html">Mentorship</a></li>
+            <li><a href="recruiters.html">Recruiters</a></li>
+        </ul>
+    </footer>
+
+    <script>
+        // Navbar scroll effect
+        const navbar = document.getElementById('navbar');
+        window.addEventListener('scroll', () => {
+            if (window.scrollY > 60) {
+                navbar.style.background = 'rgba(5,11,26,0.97)';
+                navbar.style.padding = '0.7rem 6%';
+            } else {
+                navbar.style.background = 'rgba(5,11,26,0.85)';
+                navbar.style.padding = '1rem 6%';
+            }
+        });
+
+        // Auth state
+        document.addEventListener('DOMContentLoaded', () => {
+            const token = localStorage.getItem('token');
+            const userStr = localStorage.getItem('user');
+            if (token && userStr) {
+                try {
+                    const user = JSON.parse(userStr);
+                    const authButtons = document.getElementById('nav-auth-buttons');
+                    authButtons.innerHTML = `
+                        <span style="color:var(--text-muted);font-size:0.9rem;">👋 ${user.name}</span>
+                        <a href="index.html" class="btn btn-primary">Dashboard →</a>
+                        <button onclick="logout()" class="btn btn-ghost">Logout</button>
+                    `;
+                } catch (e) { }
+            }
+        });
+
+        function logout() {
+            localStorage.removeItem('token');
+            localStorage.removeItem('user');
+            window.location.reload();
+        }
+
+        // Scroll reveal animation
+        const revealElements = document.querySelectorAll('.reveal');
+        const revealObserver = new IntersectionObserver((entries) => {
+            entries.forEach((entry, i) => {
+                if (entry.isIntersecting) {
+                    setTimeout(() => {
+                        entry.target.classList.add('visible');
+                    }, i * 80);
+                    revealObserver.unobserve(entry.target);
+                }
+            });
+        }, { threshold: 0.1, rootMargin: '0px 0px -50px 0px' });
+
+        revealElements.forEach(el => revealObserver.observe(el));
+    </script>
+</body>
+
+</html>

@@ -1,0 +1,544 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SkillSync | Company / Mentor Dashboard</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Outfit:wght@700;800;900&display=swap" rel="stylesheet">
+    <style>
+        *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+        :root {
+            --primary: #6366f1;
+            --secondary: #8b5cf6;
+            --accent: #ec4899;
+            --bg: #f1f5f9;
+            --card: #ffffff;
+            --border: rgba(99,102,241,0.12);
+            --text: #1e293b;
+            --muted: #64748b;
+            --radius: 1rem;
+            --shadow: 0 4px 24px rgba(0,0,0,0.07);
+        }
+        body { font-family:'Inter',sans-serif; background:var(--bg); color:var(--text); min-height:100vh; }
+
+        /* ── Top Bar ── */
+        .topbar {
+            background:white; border-bottom:1px solid var(--border);
+            padding:0.9rem 2rem; display:flex; align-items:center;
+            gap:1rem; position:sticky; top:0; z-index:100; box-shadow:var(--shadow);
+        }
+        .brand { font-family:'Outfit'; font-size:1.3rem; font-weight:900; color:var(--primary); display:flex; align-items:center; gap:0.5rem; }
+        .role-badge { font-size:0.75rem; font-weight:700; padding:0.25rem 0.75rem; border-radius:2rem; background:rgba(99,102,241,0.1); color:var(--primary); }
+        .topbar-right { margin-left:auto; display:flex; align-items:center; gap:0.75rem; }
+        .btn-logout { padding:0.4rem 1rem; background:rgba(239,68,68,0.08); color:#dc2626; border:1px solid rgba(239,68,68,0.2); border-radius:0.5rem; font-size:0.82rem; font-weight:600; cursor:pointer; transition:all 0.2s; }
+        .btn-logout:hover { background:rgba(239,68,68,0.15); }
+        .user-pill { font-size:0.84rem; font-weight:600; color:var(--muted); display:flex; align-items:center; gap:0.4rem; }
+        .avatar-sm { width:32px; height:32px; border-radius:50%; background:linear-gradient(135deg,var(--primary),var(--accent)); color:white; font-weight:800; font-size:0.85rem; display:grid; place-items:center; flex-shrink:0; }
+
+        /* ── Page layout ── */
+        .page { max-width:1280px; margin:0 auto; padding:2rem 1.5rem; }
+
+        /* ── Hero ── */
+        .hero {
+            background: linear-gradient(135deg,#6366f1,#8b5cf6,#ec4899);
+            border-radius:var(--radius); padding:2rem 2.5rem;
+            color:white; margin-bottom:2rem;
+            display:flex; align-items:center; justify-content:space-between; flex-wrap:wrap; gap:1rem;
+        }
+        .hero h1 { font-family:'Outfit'; font-size:1.75rem; font-weight:900; margin-bottom:0.25rem; }
+        .hero p  { opacity:0.88; font-size:0.88rem; }
+        .hero-stats { display:flex; gap:1.5rem; }
+        .hero-stat { text-align:center; }
+        .hero-stat .num { font-family:'Outfit'; font-size:2rem; font-weight:900; }
+        .hero-stat .lbl { font-size:0.75rem; opacity:0.85; font-weight:600; }
+
+        /* ── Filters ── */
+        .filter-bar {
+            display:flex; gap:0.75rem; flex-wrap:wrap; align-items:center;
+            background:white; border-radius:var(--radius); padding:1rem 1.5rem;
+            border:1px solid var(--border); box-shadow:var(--shadow); margin-bottom:1.75rem;
+        }
+        .filter-bar input, .filter-bar select {
+            padding:0.5rem 1rem; border:1.5px solid var(--border); border-radius:0.625rem;
+            font-size:0.85rem; font-family:'Inter'; color:var(--text);
+            background:var(--bg); transition:border-color 0.2s;
+            min-width:160px;
+        }
+        .filter-bar input:focus, .filter-bar select:focus { outline:none; border-color:var(--primary); }
+        .filter-bar input[type=search] { flex:1; min-width:200px; }
+        .filter-lbl { font-size:0.78rem; font-weight:700; color:var(--muted); white-space:nowrap; }
+
+        /* ── Student Grid (Folder layout) ── */
+        .student-grid {
+            display:grid;
+            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+            gap:1.25rem;
+        }
+
+        /* ── Student Folder Card ── */
+        .folder-card {
+            background:var(--card); border-radius:var(--radius);
+            border:1.5px solid var(--border); box-shadow:var(--shadow);
+            cursor:pointer; transition:all 0.22s; overflow:hidden;
+            position:relative;
+        }
+        .folder-card:hover {
+            transform:translateY(-4px); box-shadow:0 12px 40px rgba(99,102,241,0.15);
+            border-color:var(--primary);
+        }
+        .folder-tab {
+            height:6px; width:100%;
+            background:linear-gradient(90deg,var(--primary),var(--accent));
+        }
+        .folder-body { padding:1.25rem; }
+        .folder-avatar {
+            width:52px; height:52px; border-radius:50%;
+            background:linear-gradient(135deg,var(--primary),var(--accent));
+            color:white; font-family:'Outfit'; font-size:1.4rem; font-weight:900;
+            display:grid; place-items:center; margin-bottom:0.75rem;
+            flex-shrink:0; overflow:hidden;
+        }
+        .folder-avatar img { width:100%; height:100%; object-fit:cover; }
+        .student-name { font-weight:800; font-size:1rem; color:var(--text); margin-bottom:0.15rem; }
+        .student-dept { font-size:0.78rem; color:var(--muted); font-weight:500; }
+
+        .folder-meta {
+            display:grid; grid-template-columns:1fr 1fr 1fr;
+            gap:0.5rem; margin:0.9rem 0; text-align:center;
+        }
+        .folder-meta .m-box {
+            background:rgba(99,102,241,0.06); border-radius:0.5rem; padding:0.4rem 0.25rem;
+        }
+        .folder-meta .m-val { font-family:'Outfit'; font-size:1.1rem; font-weight:800; color:var(--primary); }
+        .folder-meta .m-lbl { font-size:0.66rem; color:var(--muted); font-weight:700; text-transform:uppercase; }
+
+        .skill-tags { display:flex; flex-wrap:wrap; gap:0.3rem; margin-top:0.5rem; }
+        .skill-tag { font-size:0.68rem; font-weight:600; padding:0.18rem 0.55rem; border-radius:2rem; background:rgba(6,182,212,0.08); color:#0891b2; }
+
+        .open-btn {
+            width:100%; margin-top:1rem; padding:0.55rem;
+            background:linear-gradient(90deg,var(--primary),var(--secondary));
+            color:white; border:none; border-radius:0.625rem;
+            font-weight:700; font-size:0.83rem; cursor:pointer;
+            transition:all 0.2s; letter-spacing:0.2px;
+        }
+        .open-btn:hover { filter:brightness(1.1); transform:translateY(-1px); }
+
+        /* ── Student Detail Modal ── */
+        .modal-overlay {
+            position:fixed; inset:0; background:rgba(15,15,40,0.55);
+            backdrop-filter:blur(6px); z-index:200;
+            display:flex; align-items:center; justify-content:center;
+            padding:1rem; opacity:0; pointer-events:none; transition:opacity 0.25s;
+        }
+        .modal-overlay.open { opacity:1; pointer-events:all; }
+        .modal {
+            background:white; border-radius:1.25rem; width:100%; max-width:720px;
+            max-height:90vh; overflow-y:auto; box-shadow:0 24px 80px rgba(0,0,0,0.22);
+            transform:scale(0.95); transition:transform 0.25s;
+        }
+        .modal-overlay.open .modal { transform:scale(1); }
+        .modal-header {
+            background:linear-gradient(135deg,var(--primary),var(--secondary));
+            padding:1.5rem 2rem; display:flex; align-items:center; gap:1rem;
+        }
+        .modal-avatar {
+            width:64px; height:64px; border-radius:50%; border:3px solid rgba(255,255,255,0.4);
+            background:rgba(255,255,255,0.2); color:white; font-family:'Outfit'; font-size:1.8rem; font-weight:900;
+            display:grid; place-items:center; overflow:hidden; flex-shrink:0;
+        }
+        .modal-avatar img { width:100%; height:100%; object-fit:cover; }
+        .modal-title { color:white; }
+        .modal-title h2 { font-family:'Outfit'; font-size:1.3rem; font-weight:900; }
+        .modal-title p { opacity:0.85; font-size:0.83rem; margin-top:0.2rem; }
+        .modal-close {
+            margin-left:auto; width:32px; height:32px; border-radius:50%;
+            background:rgba(255,255,255,0.2); border:none; color:white; font-size:1.1rem;
+            cursor:pointer; display:grid; place-items:center; transition:all 0.2s;
+        }
+        .modal-close:hover { background:rgba(255,255,255,0.35); }
+
+        .modal-body { padding:1.75rem 2rem; }
+        .detail-grid { display:grid; grid-template-columns:1fr 1fr 1fr; gap:1rem; margin-bottom:1.5rem; }
+        .detail-box { background:rgba(99,102,241,0.05); border-radius:0.75rem; padding:0.85rem; text-align:center; }
+        .detail-box .dv { font-family:'Outfit'; font-size:1.5rem; font-weight:900; color:var(--primary); }
+        .detail-box .dl { font-size:0.72rem; color:var(--muted); font-weight:700; text-transform:uppercase; margin-top:0.15rem; }
+
+        .section-title { font-family:'Outfit'; font-size:0.85rem; font-weight:800; text-transform:uppercase; letter-spacing:0.8px; color:var(--muted); margin:1.25rem 0 0.6rem; padding-bottom:0.4rem; border-bottom:1.5px solid var(--border); }
+
+        .skill-list { display:flex; flex-wrap:wrap; gap:0.35rem; }
+        .skill-badge { font-size:0.78rem; font-weight:600; padding:0.25rem 0.7rem; border-radius:2rem; border:1px solid rgba(99,102,241,0.2); background:rgba(99,102,241,0.07); color:var(--primary); }
+        .skill-badge.expert { background:rgba(16,185,129,0.08); color:#059669; border-color:rgba(16,185,129,0.25); }
+        .skill-badge.intermediate { background:rgba(99,102,241,0.08); color:var(--primary); }
+        .skill-badge.beginner { background:rgba(245,158,11,0.08); color:#b45309; border-color:rgba(245,158,11,0.25); }
+
+        .proj-card { background:var(--bg); border-radius:0.625rem; padding:0.85rem; margin-bottom:0.6rem; }
+        .proj-title { font-weight:700; font-size:0.9rem; color:var(--text); }
+        .proj-desc  { font-size:0.78rem; color:var(--muted); margin-top:0.25rem; }
+        .proj-tech  { font-size:0.72rem; color:var(--primary); font-weight:600; margin-top:0.3rem; }
+
+        .app-row { display:flex; align-items:center; gap:0.75rem; padding:0.6rem 0; border-bottom:1px solid var(--border); font-size:0.84rem; }
+        .app-row:last-child { border:none; }
+        .app-status { font-size:0.72rem; font-weight:700; padding:0.15rem 0.55rem; border-radius:2rem; }
+        .s-selected { background:rgba(16,185,129,0.1); color:#059669; }
+        .s-applied   { background:rgba(99,102,241,0.1); color:var(--primary); }
+        .s-rejected  { background:rgba(239,68,68,0.1); color:#dc2626; }
+        .s-shortlisted { background:rgba(245,158,11,0.1); color:#b45309; }
+
+        .no-data { color:var(--muted); font-size:0.84rem; font-style:italic; }
+
+        /* ── Shimmer ── */
+        .shimmer { background:linear-gradient(90deg,rgba(0,0,0,0.05) 25%,rgba(0,0,0,0.08) 50%,rgba(0,0,0,0.05) 75%); background-size:200% 100%; animation:shim 1.4s infinite; border-radius:0.75rem; }
+        @keyframes shim { to{background-position:-200% 0;} }
+
+        @media(max-width:600px) {
+            .hero { flex-direction:column; }
+            .filter-bar { flex-direction:column; }
+            .detail-grid { grid-template-columns:1fr 1fr; }
+            .modal-body { padding:1.25rem; }
+        }
+    </style>
+</head>
+<body>
+
+<!-- Top Bar -->
+<div class="topbar">
+    <div class="brand">∞ SkillSync</div>
+    <div class="role-badge" id="role-badge-top">👔 Company</div>
+    <div class="topbar-right">
+        <div class="user-pill">
+            <div class="avatar-sm" id="top-avatar">C</div>
+            <span id="top-name">User</span>
+        </div>
+        <button class="btn-logout" onclick="logout()">Sign Out</button>
+    </div>
+</div>
+
+<!-- Page -->
+<div class="page">
+
+    <!-- Hero -->
+    <div class="hero">
+        <div>
+            <h1 id="hero-greeting">👥 Student Directory</h1>
+            <p>Browse and review individual student profiles, skills, projects, and certificates</p>
+        </div>
+        <div class="hero-stats">
+            <div class="hero-stat">
+                <div class="num" id="stat-total">—</div>
+                <div class="lbl">Students</div>
+            </div>
+            <div class="hero-stat">
+                <div class="num" id="stat-depts">—</div>
+                <div class="lbl">Departments</div>
+            </div>
+            <div class="hero-stat">
+                <div class="num" id="stat-cgpa">—</div>
+                <div class="lbl">Avg CGPA</div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Filters -->
+    <div class="filter-bar">
+        <span class="filter-lbl">🔍 Filter:</span>
+        <input type="search" id="search-input" placeholder="Search by name or department..." oninput="filterStudents()">
+        <select id="dept-filter" onchange="filterStudents()">
+            <option value="">All Departments</option>
+        </select>
+        <select id="cgpa-filter" onchange="filterStudents()">
+            <option value="">Any CGPA</option>
+            <option value="9">9.0+</option>
+            <option value="8">8.0+</option>
+            <option value="7">7.0+</option>
+            <option value="6">6.0+</option>
+        </select>
+        <select id="sort-filter" onchange="filterStudents()">
+            <option value="cgpa">Sort: CGPA High→Low</option>
+            <option value="name">Sort: Name A→Z</option>
+            <option value="skills">Sort: Most Skills</option>
+            <option value="points">Sort: Most Points</option>
+        </select>
+    </div>
+
+    <!-- Student Grid -->
+    <div class="student-grid" id="student-grid">
+        <!-- Shimmer placeholders -->
+        <div class="shimmer" style="height:260px;"></div>
+        <div class="shimmer" style="height:260px;"></div>
+        <div class="shimmer" style="height:260px;"></div>
+        <div class="shimmer" style="height:260px;"></div>
+        <div class="shimmer" style="height:260px;"></div>
+        <div class="shimmer" style="height:260px;"></div>
+    </div>
+
+    <div id="empty-state" style="display:none;text-align:center;padding:4rem 2rem;">
+        <div style="font-size:3rem;margin-bottom:1rem;">🔍</div>
+        <p style="color:var(--muted);font-size:1rem;font-weight:600;">No students match your search.</p>
+    </div>
+</div>
+
+<!-- Student Detail Modal -->
+<div class="modal-overlay" id="modal-overlay" onclick="closeModal(event)">
+    <div class="modal" id="modal">
+        <div class="modal-header">
+            <div class="modal-avatar" id="m-avatar">S</div>
+            <div class="modal-title">
+                <h2 id="m-name">Student Name</h2>
+                <p id="m-dept">Department · Year</p>
+            </div>
+            <button class="modal-close" onclick="closeModalNow()">✕</button>
+        </div>
+        <div class="modal-body" id="modal-body">
+            <div class="shimmer" style="height:6rem;margin-bottom:1rem;"></div>
+            <div class="shimmer" style="height:4rem;"></div>
+        </div>
+    </div>
+</div>
+
+<script>
+    const API_BASE_URL = (window.location.hostname==='localhost'||window.location.hostname==='127.0.0.1'||window.location.protocol==='file:')
+        ? 'http://localhost:3002/api' : '/api';
+
+    // ── Auth guard: only allow mentor/company ──────────────────────────────────
+    const userStr = localStorage.getItem('user');
+    if (!userStr) { window.location.href = 'login.html'; }
+    const user = JSON.parse(userStr || '{}');
+    const role = user.role || 'company';
+    if (role === 'student') { window.location.href = `index.html?studentId=${user.id}`; }
+
+    // ── Header init ───────────────────────────────────────────────────────────
+    document.getElementById('top-name').textContent   = user.name || 'User';
+    document.getElementById('top-avatar').textContent = (user.name || 'U').charAt(0).toUpperCase();
+    const roleLabel = role === 'mentor' ? '🎓 Mentor' : role === 'admin' ? '🛡️ Admin' : '🏢 Company';
+    document.getElementById('role-badge-top').textContent = roleLabel;
+    document.getElementById('hero-greeting').textContent  = `${roleLabel} — Student Directory`;
+
+    function logout() {
+        localStorage.removeItem('token');
+        localStorage.removeItem('user');
+        window.location.href = 'login.html';
+    }
+
+    // ── Data store ────────────────────────────────────────────────────────────
+    let allStudents = [];
+
+    // ── Load all students ─────────────────────────────────────────────────────
+    async function loadStudents() {
+        try {
+            const data = await fetch(`${API_BASE_URL}/students`).then(r => r.json());
+            allStudents = Array.isArray(data) ? data : [];
+
+            // Update hero stats
+            const depts = [...new Set(allStudents.map(s => s.department).filter(Boolean))];
+            const avgCgpa = allStudents.length
+                ? (allStudents.reduce((a,s) => a + (s.cgpa||0), 0) / allStudents.length).toFixed(1)
+                : '—';
+            document.getElementById('stat-total').textContent = allStudents.length;
+            document.getElementById('stat-depts').textContent = depts.length;
+            document.getElementById('stat-cgpa').textContent  = avgCgpa;
+
+            // Populate dept filter
+            const sel = document.getElementById('dept-filter');
+            depts.sort().forEach(d => {
+                const o = document.createElement('option');
+                o.value = d; o.textContent = d;
+                sel.appendChild(o);
+            });
+
+            renderStudents(allStudents);
+        } catch(e) {
+            document.getElementById('student-grid').innerHTML = `
+                <div style="grid-column:1/-1;text-align:center;padding:3rem;color:var(--muted);">
+                    <div style="font-size:2rem;margin-bottom:1rem;">⚠️</div>
+                    <p style="font-weight:600;">Backend offline. Start with <code>node server.js</code></p>
+                </div>`;
+        }
+    }
+
+    // ── Render folder cards ───────────────────────────────────────────────────
+    function renderStudents(students) {
+        const grid  = document.getElementById('student-grid');
+        const empty = document.getElementById('empty-state');
+
+        if (!students.length) {
+            grid.innerHTML = ''; empty.style.display = 'block'; return;
+        }
+        empty.style.display = 'none';
+
+        grid.innerHTML = students.map(s => {
+            const initials = (s.name||'?').split(' ').map(n=>n[0]).join('').substr(0,2).toUpperCase();
+            const skills   = s.top_skills ? s.top_skills.split(',').filter(Boolean).slice(0,4) : [];
+            const cgpaColor = s.cgpa >= 8.5 ? '#10b981' : s.cgpa >= 7 ? '#6366f1' : '#f59e0b';
+            const imgHtml = s.profile_image
+                ? `<img src="${s.profile_image.startsWith('http') ? s.profile_image : 'http://localhost:3002'+s.profile_image}" alt="avatar" onerror="this.parentElement.textContent='${initials}'">`
+                : initials;
+
+            return `<div class="folder-card" onclick="openStudentModal(${s.student_id})">
+                <div class="folder-tab"></div>
+                <div class="folder-body">
+                    <div style="display:flex;align-items:center;gap:0.75rem;margin-bottom:0.6rem;">
+                        <div class="folder-avatar">${imgHtml}</div>
+                        <div>
+                            <div class="student-name">${s.name}</div>
+                            <div class="student-dept">📚 ${s.department||'—'} · Year ${s.year||'?'}</div>
+                        </div>
+                    </div>
+                    <div class="folder-meta">
+                        <div class="m-box">
+                            <div class="m-val" style="color:${cgpaColor}">${s.cgpa||'—'}</div>
+                            <div class="m-lbl">CGPA</div>
+                        </div>
+                        <div class="m-box">
+                            <div class="m-val">${s.skill_count||0}</div>
+                            <div class="m-lbl">Skills</div>
+                        </div>
+                        <div class="m-box">
+                            <div class="m-val" style="color:#ec4899">${s.total_points||0}</div>
+                            <div class="m-lbl">Points</div>
+                        </div>
+                    </div>
+                    ${skills.length ? `<div class="skill-tags">${skills.map(sk=>`<span class="skill-tag">${sk.trim()}</span>`).join('')}${s.skill_count>4?`<span class="skill-tag">+${s.skill_count-4}</span>`:''}</div>` : ''}
+                    <button class="open-btn" onclick="event.stopPropagation();openStudentModal(${s.student_id})">
+                        📂 View Full Profile →
+                    </button>
+                </div>
+            </div>`;
+        }).join('');
+    }
+
+    // ── Filter & Sort ─────────────────────────────────────────────────────────
+    function filterStudents() {
+        const search = document.getElementById('search-input').value.toLowerCase();
+        const dept   = document.getElementById('dept-filter').value;
+        const minCgpa= parseFloat(document.getElementById('cgpa-filter').value) || 0;
+        const sort   = document.getElementById('sort-filter').value;
+
+        let filtered = allStudents.filter(s => {
+            const nameMatch = (s.name||'').toLowerCase().includes(search) || (s.department||'').toLowerCase().includes(search);
+            const deptMatch = !dept || s.department === dept;
+            const cgpaMatch = !minCgpa || (s.cgpa||0) >= minCgpa;
+            return nameMatch && deptMatch && cgpaMatch;
+        });
+
+        if (sort === 'cgpa')   filtered.sort((a,b) => (b.cgpa||0) - (a.cgpa||0));
+        if (sort === 'name')   filtered.sort((a,b) => (a.name||'').localeCompare(b.name||''));
+        if (sort === 'skills') filtered.sort((a,b) => (b.skill_count||0) - (a.skill_count||0));
+        if (sort === 'points') filtered.sort((a,b) => (b.total_points||0) - (a.total_points||0));
+
+        renderStudents(filtered);
+    }
+
+    // ── Modal: open student detail ────────────────────────────────────────────
+    async function openStudentModal(studentId) {
+        document.getElementById('modal-overlay').classList.add('open');
+        document.getElementById('modal-body').innerHTML = `
+            <div class="shimmer" style="height:5rem;margin-bottom:1rem;"></div>
+            <div class="shimmer" style="height:3rem;margin-bottom:0.75rem;"></div>
+            <div class="shimmer" style="height:4rem;"></div>`;
+
+        try {
+            const s = await fetch(`${API_BASE_URL}/students/${studentId}/detail`).then(r => r.json());
+
+            // Update modal header
+            const initials = (s.name||'?').split(' ').map(n=>n[0]).join('').substr(0,2).toUpperCase();
+            const av = document.getElementById('m-avatar');
+            if (s.profile_image) {
+                av.innerHTML = `<img src="${s.profile_image.startsWith('http')?s.profile_image:'http://localhost:3002'+s.profile_image}" alt="avatar" onerror="this.parentElement.textContent='${initials}'" style="width:100%;height:100%;object-fit:cover;border-radius:50%;">`;
+            } else { av.textContent = initials; }
+            document.getElementById('m-name').textContent = s.name || '—';
+            document.getElementById('m-dept').textContent = `${s.department||'—'} · Year ${s.year||'?'} · ${s.email||''}`;
+
+            const cgpaColor = s.cgpa >= 8.5 ? '#10b981' : s.cgpa >= 7 ? '#6366f1' : '#f59e0b';
+
+            // Build modal body
+            const skillsHtml = s.skills?.length
+                ? s.skills.map(sk => `<span class="skill-badge ${(sk.level||'').toLowerCase()}">${sk.skill_name} <small style="opacity:0.7">${sk.level||''}</small></span>`).join(' ')
+                : '<span class="no-data">No skills added yet</span>';
+
+            const projectsHtml = s.projects?.length
+                ? s.projects.map(p => `
+                    <div class="proj-card">
+                        <div class="proj-title">📁 ${p.title}</div>
+                        ${p.description ? `<div class="proj-desc">${p.description.slice(0,120)}${p.description.length>120?'...':''}</div>` : ''}
+                        ${p.tech_stack ? `<div class="proj-tech">🛠 ${p.tech_stack}</div>` : ''}
+                    </div>`).join('')
+                : '<span class="no-data">No projects added yet</span>';
+
+            const certsHtml = s.certificates?.length
+                ? s.certificates.map(c => `
+                    <div style="display:flex;align-items:center;gap:0.5rem;padding:0.5rem 0;border-bottom:1px solid var(--border);">
+                        <span style="font-size:1.1rem;">🏆</span>
+                        <div>
+                            <div style="font-weight:600;font-size:0.87rem;">${c.name}</div>
+                            <div style="font-size:0.75rem;color:var(--muted);">${c.issuer||''}${c.issue_date?' · '+c.issue_date:''}</div>
+                        </div>
+                    </div>`).join('')
+                : '<span class="no-data">No certificates yet</span>';
+
+            const appsHtml = s.applications?.length
+                ? s.applications.map(a => {
+                    const sc = {Selected:'s-selected',Applied:'s-applied',Rejected:'s-rejected',Shortlisted:'s-shortlisted'}[a.status]||'s-applied';
+                    return `<div class="app-row">
+                        <span style="flex:1;font-weight:600;">${a.role_name}</span>
+                        <span style="color:var(--muted);font-size:0.8rem;">${a.company_name}</span>
+                        <span class="app-status ${sc}">${a.status}</span>
+                    </div>`;
+                }).join('')
+                : '<span class="no-data">No applications yet</span>';
+
+            const linksHtml = (s.linkedin_url||s.github_url) ? `
+                <div style="display:flex;gap:1rem;margin-top:0.5rem;">
+                    ${s.linkedin_url?`<a href="${s.linkedin_url}" target="_blank" style="color:var(--primary);font-size:0.84rem;font-weight:600;">🔗 LinkedIn</a>`:''}
+                    ${s.github_url?`<a href="${s.github_url}" target="_blank" style="color:var(--primary);font-size:0.84rem;font-weight:600;">💻 GitHub</a>`:''}
+                </div>` : '';
+
+            document.getElementById('modal-body').innerHTML = `
+                <div class="detail-grid">
+                    <div class="detail-box">
+                        <div class="dv" style="color:${cgpaColor}">${s.cgpa||'—'}</div>
+                        <div class="dl">CGPA</div>
+                    </div>
+                    <div class="detail-box">
+                        <div class="dv">${s.skills?.length||0}</div>
+                        <div class="dl">Skills</div>
+                    </div>
+                    <div class="detail-box">
+                        <div class="dv" style="color:#ec4899">${s.total_points||0}</div>
+                        <div class="dl">Points</div>
+                    </div>
+                </div>
+                <div style="font-size:0.83rem;color:var(--muted);">📞 ${s.phone||'Not provided'}</div>
+                ${linksHtml}
+
+                <div class="section-title">⚡ Skills (${s.skills?.length||0})</div>
+                <div class="skill-list">${skillsHtml}</div>
+
+                <div class="section-title">🗂️ Projects (${s.projects?.length||0})</div>
+                ${projectsHtml}
+
+                <div class="section-title">🏆 Certificates (${s.certificates?.length||0})</div>
+                ${certsHtml}
+
+                <div class="section-title">📋 Applications (${s.applications?.length||0})</div>
+                ${appsHtml}
+            `;
+        } catch(e) {
+            document.getElementById('modal-body').innerHTML = `<p style="color:red;padding:1rem;">Failed to load student data.</p>`;
+        }
+    }
+
+    function closeModal(event) {
+        if (event.target === document.getElementById('modal-overlay')) closeModalNow();
+    }
+    function closeModalNow() {
+        document.getElementById('modal-overlay').classList.remove('open');
+    }
+    document.addEventListener('keydown', e => { if(e.key==='Escape') closeModalNow(); });
+
+    // ── Init ──────────────────────────────────────────────────────────────────
+    loadStudents();
+</script>
+</body>
+</html>

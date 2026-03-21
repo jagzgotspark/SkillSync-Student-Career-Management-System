@@ -1,0 +1,313 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SkillSync | Student Candidates</title>
+    
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    
+    <link rel="stylesheet" href="../src/style.css">
+    
+    <style>
+        .students-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 2rem;
+            margin-top: 1rem;
+        }
+        
+        .candidate-card {
+            background: rgba(255,255,255,0.4);
+            backdrop-filter: blur(16px);
+            -webkit-backdrop-filter: blur(16px);
+            border-radius: var(--radius-xl);
+            padding: 2rem;
+            text-align: center;
+            box-shadow: var(--shadow-md);
+            border: 1px solid rgba(255,255,255,0.6);
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .candidate-card:hover {
+            transform: translateY(-8px);
+            box-shadow: var(--shadow-glow);
+            border-color: rgba(255,255,255,0.9);
+        }
+        
+        .candidate-card::before {
+            content: '';
+            position: absolute;
+            top: 0; left: 0; right: 0;
+            height: 60px;
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            z-index: 0;
+            opacity: 0.9;
+        }
+        
+        .candidate-avatar {
+            width: 80px;
+            height: 80px;
+            border-radius: 50%;
+            border: 4px solid var(--bg-card);
+            background: #fff;
+            margin: 0 auto 1rem;
+            position: relative;
+            z-index: 1;
+            box-shadow: var(--shadow-sm);
+            object-fit: cover;
+        }
+        
+        .candidate-name {
+            font-size: 1.2rem;
+            font-weight: 700;
+            color: var(--text-dark);
+            margin-bottom: 0.25rem;
+            position: relative;
+            z-index: 1;
+        }
+        
+        .candidate-dept {
+            font-size: 0.9rem;
+            color: var(--text-muted);
+            margin-bottom: 1.5rem;
+            position: relative;
+            z-index: 1;
+        }
+        
+        .candidate-stats {
+            display: flex;
+            justify-content: center;
+            gap: 1.5rem;
+            margin-bottom: 1.5rem;
+            padding: 1rem 0;
+            border-top: 1px dashed var(--border);
+            border-bottom: 1px dashed var(--border);
+        }
+        
+        .stat-box {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+        
+        .stat-box-val {
+            font-size: 1.1rem;
+            font-weight: 700;
+            color: var(--primary);
+        }
+        
+        .stat-box-lbl {
+            font-size: 0.75rem;
+            color: var(--text-muted);
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+        
+        .candidate-skills {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: 0.5rem;
+            margin-bottom: 1.5rem;
+            min-height: 65px;
+        }
+        
+        .skill-chip {
+            background: linear-gradient(135deg, #e0e7ff, #fbcfe8);
+            color: var(--primary-dark);
+            font-size: 0.8rem;
+            font-weight: 700;
+            padding: 0.3rem 0.8rem;
+            border-radius: 100px;
+            box-shadow: 0 2px 5px rgba(139, 92, 246, 0.1);
+        }
+        
+        .btn-view-profile {
+            display: block;
+            width: 100%;
+            background: rgba(255,255,255,0.5);
+            backdrop-filter: blur(5px);
+            color: var(--text-dark);
+            padding: 0.8rem;
+            border-radius: 100px;
+            text-decoration: none;
+            font-weight: 700;
+            transition: all 0.2s;
+            border: 1px solid rgba(255,255,255,0.8);
+        }
+        
+        .candidate-card:hover .btn-view-profile {
+            background: linear-gradient(90deg, var(--primary), var(--secondary));
+            color: white;
+            border-color: transparent;
+            box-shadow: 0 4px 15px rgba(236,72,153,0.3);
+        }
+    </style>
+</head>
+
+<body class="theme-lavender">
+    <div class="ambient-bg">
+        <div class="ambient-circle c-1"></div>
+        <div class="ambient-circle c-2"></div>
+        <div class="ambient-circle c-3"></div>
+        <!-- Glossy Bubbles -->
+        <div class="glossy-bubble b-1"></div>
+        <div class="glossy-bubble b-2"></div>
+        <div class="glossy-bubble b-3"></div>
+        <div class="glossy-bubble b-4"></div>
+        <div class="glossy-bubble b-5"></div>
+    </div>
+    <!-- Sidebar Navigation -->
+    <nav class="sidebar">
+        <div class="logo-container">
+            <div class="logo-icon">∞</div>
+            <h2>SkillSync</h2>
+        </div>
+        <ul class="nav-links">
+            <li onclick="window.location.href='index.html'">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="7" height="7"></rect><rect x="14" y="3" width="7" height="7"></rect><rect x="14" y="14" width="7" height="7"></rect><rect x="3" y="14" width="7" height="7"></rect></svg>
+                Dashboard
+            </li>
+            <li class="active" onclick="window.location.href='students.html'">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path><circle cx="9" cy="7" r="4"></circle><path d="M23 21v-2a4 4 0 0 0-3-3.87"></path><path d="M16 3.13a4 4 0 0 1 0 7.75"></path></svg>
+                Candidate Directory
+            </li>
+            <li onclick="window.location.href='profile.html'">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path><circle cx="12" cy="7" r="4"></circle></svg>
+                My Profile
+            </li>
+            <li onclick="window.location.href='hackathons.html'">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"></polygon></svg>
+                Hackathons
+            </li>
+            <li onclick="window.location.href='analytics.html'">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 12h-4l-3 9L9 3l-3 9H2"></path></svg>
+                Analytics
+            </li>
+            <li onclick="window.location.href='dashboard-careers.html'">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"></path><path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"></path></svg>
+                Careers
+            </li>
+            <li onclick="window.location.href='settings.html'">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"></circle><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"></path></svg>
+                Settings
+            </li>
+        </ul>
+        <div class="nav-footer">
+            <div class="admin-profile">
+                <!-- Avatar fallback -->
+                <div class="avatar" style="background:var(--primary);color:white;display:flex;align-items:center;justify-content:center;font-weight:bold;font-size:1.2rem;width:40px;height:40px;border-radius:50%;">P</div>
+                <div class="admin-info">
+                    <span class="admin-name">Placement Office</span>
+                    <span class="admin-role">Recruiter View</span>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Main Content Area -->
+    <main class="main-content">
+        <!-- Top Header -->
+        <header class="top-header" style="margin-bottom: 1rem;">
+            <div>
+                <h1>Candidate Directory</h1>
+                <p class="subtitle">Discover, filter, and analyze top student talent for placements and internships.</p>
+            </div>
+        </header>
+
+        <!-- Dynamic Grid -->
+        <div id="loader" class="loader-container" style="height: 50vh;">
+            <div class="spinner"></div>
+        </div>
+        
+        <div id="students-container" class="students-grid hidden">
+            <!-- Dynamic Candidate Cards -->
+        </div>
+
+    </main>
+
+    <script>
+        (function() {
+            const userStr = localStorage.getItem('user');
+            if (!userStr) { window.location.href = 'login.html'; return; }
+            const user = JSON.parse(userStr);
+            if (user.role && user.role === 'student') {
+                window.location.href = `index.html?studentId=${user.id}`;
+                return;
+            }
+        })();
+
+        function loadTheme() {
+            const theme = localStorage.getItem('theme') || 'theme-lavender';
+            document.body.className = theme;
+        }
+        loadTheme();
+
+        document.addEventListener('DOMContentLoaded', async () => {
+            const container = document.getElementById('students-container');
+            const loader = document.getElementById('loader');
+            const API = (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1' || window.location.protocol === 'file:') ? 'http://localhost:3002/api' : '/api';
+            try {
+                const response = await fetch(`${API}/students`);
+                if (!response.ok) throw new Error('API Error');
+                
+                const students = await response.json();
+                
+                loader.classList.add('hidden');
+                container.classList.remove('hidden');
+
+                if (students.length === 0) {
+                    container.innerHTML = "<p>No candidates available directly from the database.</p>";
+                    return;
+                }
+
+                students.forEach(student => {
+                    // Safety checks
+                    const skillsArray = student.top_skills ? student.top_skills.split(', ') : ['No tracked skills'];
+                    const cgpa = student.cgpa ? parseFloat(student.cgpa).toFixed(2) : 'N/A';
+                    
+                    let skillsHtml = skillsArray.slice(0, 3).map(skill => 
+                        `<span class="skill-chip">${skill}</span>`
+                    ).join('');
+
+                    const avatarUrl = student.profile_image ? `${API}${student.profile_image}` : `https://ui-avatars.com/api/?name=${encodeURIComponent(student.name)}&background=6366f1&color=fff&size=150`;
+
+                    container.innerHTML += `
+                        <div class="candidate-card glass-effect">
+                            <img src="${avatarUrl}" alt="${student.name}" class="candidate-avatar">
+                            <h3 class="candidate-name">${student.name}</h3>
+                            <p class="candidate-dept">${student.department}</p>
+                            
+                            <div class="candidate-stats">
+                                <div class="stat-box">
+                                    <span class="stat-box-val">${student.year}</span>
+                                    <span class="stat-box-lbl">Year</span>
+                                </div>
+                                <div class="stat-box">
+                                    <span class="stat-box-val">${cgpa}</span>
+                                    <span class="stat-box-lbl">CGPA</span>
+                                </div>
+                            </div>
+                            
+                            <div class="candidate-skills">
+                                ${skillsHtml}
+                            </div>
+                            
+                            <a href="index.html?studentId=${student.student_id}" class="btn-view-profile">View Full Analytics</a>
+                        </div>
+                    `;
+                });
+                
+            } catch (error) {
+                console.error(error);
+                loader.innerHTML = '<p style="color:red">Failed to load candidates. Ensure backend is running.</p>';
+            }
+        });
+    </script>
+</body>
+</html>

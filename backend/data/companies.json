@@ -1,0 +1,56 @@
+[
+  {
+    "id": 1,
+    "name": "TechFlow Innovations",
+    "industry": "Software Tech",
+    "description": "A leading provider of enterprise cloud solutions and AI automation tools.",
+    "location": "Bangalore",
+    "logo": "TF",
+    "bg_color": "#818cf8"
+  },
+  {
+    "id": 2,
+    "name": "FinEdge Analytics",
+    "industry": "FinTech",
+    "description": "Revolutionizing wealth management with data-driven insights.",
+    "location": "Mumbai",
+    "logo": "FE",
+    "bg_color": "#34d399"
+  },
+  {
+    "id": 3,
+    "name": "HealthSync Labs",
+    "industry": "HealthTech",
+    "description": "Building sustainable infrastructure for modern healthcare ecosystems.",
+    "location": "Hyderabad",
+    "logo": "HS",
+    "bg_color": "#f472b6"
+  },
+  {
+    "id": 4,
+    "name": "EcoLogistics",
+    "industry": "Supply Chain",
+    "description": "Green supply chain tracking and automated fulfillment networks.",
+    "location": "Chennai",
+    "logo": "EL",
+    "bg_color": "#fb923c"
+  },
+  {
+    "id": 5,
+    "name": "Nimbus Cloud Services",
+    "industry": "Cloud Computing",
+    "description": "Scalable computing power for next-generation startups.",
+    "location": "Pune",
+    "logo": "NC",
+    "bg_color": "#22d3ee"
+  },
+  {
+    "id": 6,
+    "name": "Nexus Security",
+    "industry": "Cybersecurity",
+    "description": "Advanced threat detection and zero-trust architecture.",
+    "location": "Noida",
+    "logo": "NX",
+    "bg_color": "#c084fc"
+  }
+]

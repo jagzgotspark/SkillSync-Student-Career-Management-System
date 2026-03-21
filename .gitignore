@@ -1,2 +1,8 @@
-backend/node_modules
-backend/.env
+node_modules/
+.env
+.DS_Store
+Thumbs.db
+*.log
+backend/uploads/*
+!backend/uploads/.gitkeep
+database.sqlite-journal
